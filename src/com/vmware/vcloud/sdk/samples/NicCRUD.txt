@@ -1,0 +1,11 @@
+INPUT:
+-----
+java NicCRUD VcloudUrl Username@vcloud-oragnization Password OrganizationName vAppName vmName networkName CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java NicCRUD https://vcloud username@Organization password orgName vappName vmName networkName
+java NicCRUD https://vcloud username@Organization password orgName vappName vmName networkName certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+-------
+VM Found: vmName - vmHref
+	New nics Added
+	Deleted nic with nic-id - {id}

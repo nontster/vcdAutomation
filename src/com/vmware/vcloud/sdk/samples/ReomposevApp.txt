@@ -1,0 +1,16 @@
+INPUT:
+-----
+java RecomposevApp vCloudURL user@organization password orgname vdcname vdcName2 vappName vappName vmName CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java RecomposevApp https://vcloud user@Organization password orgname vdcname2(whereTheToBeRecomposedVappExists) vdcName(whereTheToBeAddedVmExists) toBeRecomposedvAppName vAppNameContainingToBeAddedVm vmName
+java RecomposevApp https://vcloud user@Organization password orgname vdcname2(whereTheToBeRecomposedVappExists) vdcName(whereTheToBeAddedVmExists) toBeRecomposedvAppName vAppNameContainingToBeAddedVm vmName certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+------
+To Be Recomposed Vapp : vappName1
+Vapp Containing, To Be Added VM : vappName2
+	To Be Added VM : vmName
+
+Recompose vApp : vappName1
+	Waiting for Task
+		Task Success
+vApp Recomposed : RecomposedVapp

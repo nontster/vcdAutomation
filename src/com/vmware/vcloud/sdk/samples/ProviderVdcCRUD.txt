@@ -1,0 +1,28 @@
+INPUT:
+------
+java ProviderVdcCRUD Vcloud user@organization password VimServerName ResourcePoolName StorageProfileName ProviderVdcName CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java ProviderVdcCRUD https://vcloud username@Organization password vimservername resourcepoolname storageprofilename providervdcname
+java ProviderVdcCRUD https://vcloud username@Organization password vimservername resourcepoolname storageprofilename providervdcname certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+------
+Vcloud Login
+	Validating Certificate using CustomSSLSocketFactory.java
+	Login Success
+
+Add VMWProviderVdc
+
+VMWProviderVdc added
+	VMWProviderVdc:	providerVdcName
+
+Update VMWProviderVdc
+
+VMWProviderVdc Updated
+	Updated VMWProviderVdc:	providerVdcName_Updated
+
+Get VMWProviderVdc
+	providerVdcName_Updated
+
+Delete VMWProviderVdc
+
+VMWProviderVdc deleted

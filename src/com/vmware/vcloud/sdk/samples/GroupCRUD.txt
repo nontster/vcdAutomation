@@ -1,0 +1,26 @@
+INPUT:
+------
+java GroupCRUD VcloudUrl Username@vcloud-organization Password OrgName CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java GroupCRUD https://vcloud user@Organization password orgname
+java GroupCRUD https://vcloud user@Organization password orgname certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+-------
+Vcloud Login
+	Validating Certificate using CustomSSLSocketFactory.java
+	Login Success
+
+Get Vcloud Admin
+	http://vcloud/api/admin/
+
+Get Admin Organization
+	http://vcloud/api/admin/org/90
+
+Add Group
+	http://vcloud/api/admin/group/147
+
+Update Group
+	http://vcloud/api/admin/group/147
+
+Delete Group
+	Deleted

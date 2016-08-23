@@ -1,0 +1,23 @@
+INPUT:
+------
+java RoleCRUD VcloudUrl Username@vcloud-oragnization Password CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java RoleCRUD https://vcloud user@Organization password
+java RoleCRUD https://vcloud user@Organization password certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+-------
+Vcloud Login
+	Validating Certificate using CustomSSLSocketFactory.java
+	Login Success
+
+Get Vcloud Admin
+	https://vcloud/api/admin/
+
+Add Role
+	eerole
+
+Update Role
+	eerole
+
+Delete Role
+	Deleted

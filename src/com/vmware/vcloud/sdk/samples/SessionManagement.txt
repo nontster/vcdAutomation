@@ -1,0 +1,45 @@
+INPUT:
+------
+java SessionManagement vCloudURL user@organization password CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java SessionManagement https://vcloud user@System password
+java SessionManagement https://vcloud user@System password certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+-------
+Note 1 : Every Authenticated VcloudClient instance gets a seperate token
+VcloudClient 1
+	Login Successful
+	Token - 1DedtWMvedJY4+SNThNTeic0yb+T5OfLVI08+c6a3I0=
+	vCloud Director 5.5.0
+VcloudClient 2
+	Login Successful
+	Token - ecU1YOCbE6lgIMrdVc9MgrXKOUAs84XoQp+M4fV7WKM=
+	vCloud Director 5.5.0
+
+Note 2 : Logging out a VcloudClient instance does not affect other VcloudClient instance
+VcloudClient 1
+	Logout Successful
+VcloudClient 2
+	Still valid
+	Token - ecU1YOCbE6lgIMrdVc9MgrXKOUAs84XoQp+M4fV7WKM=
+	vCloud Director 5.5.0
+
+Note 3: Reusing the token from VcloudClient 2 to VcloudClient 1
+VcloudClient 1
+	vCloud Director 5.5.0
+	Token - ecU1YOCbE6lgIMrdVc9MgrXKOUAs84XoQp+M4fV7WKM=
+VcloudClient 2
+	Token - ecU1YOCbE6lgIMrdVc9MgrXKOUAs84XoQp+M4fV7WKM=
+	vCloud Director 5.5.0
+
+Note 4: Extending the current session before it timesout. Default session timeout is 30 mins
+VcloudClient 1 session extended for another 30 mins
+VcloudClient 2 session extended for another 30 mins
+
+Note 5: Since the same token has been shared across VcloudClient 1 and VcloudClient 2. Logging out VcloudClint 1 or VcloudClient 2 will void the other session.
+VcloudClient 1
+	Logout Successful
+VcloudClient 1
+	Login and try the operation
+VcloudClient 2
+	Access is forbidden

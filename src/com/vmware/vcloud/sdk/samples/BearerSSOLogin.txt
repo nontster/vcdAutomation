@@ -1,0 +1,18 @@
+INPUT:
+------
+java BearerSSOLogin VcloudUrl OrgName SSOUrl SSO_user@domain SSO_password CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java BearerSSOLogin https://vcloud orgName ssourl sso_user@domain sso_password
+java BearerSSOLogin https://vcloud orgName ssoUrl sso_user@domain sso_password certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+-------
+Vcloud SSO Login
+----------------
+Token details:
+	AssertionId = {assertion_id}
+	Token type = {token_type}
+	Issued On = yyyy-mm-ddTtime
+
+	Logged in using the SAML Assertion
+	Get Vcloud Admin
+	Logout

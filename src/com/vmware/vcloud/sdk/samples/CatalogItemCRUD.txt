@@ -1,0 +1,23 @@
+INPUT:
+------
+java CatalogItemCRUD VcloudUrl Username@vcloud-organization Password orgName CatalogName vdcName newMediaName CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java CatalogItemCRUD https://vcloud user@Orgnanization password orgName catalogName vdcName newMediaName
+java CatalogItemCRUD https://vcloud user@Orgnanization password orgName catalogName vdcName newMediaName certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+-------
+Vcloud Login
+	Validating Certificate using CustomSSLSocketFactory.java
+	Login Success
+
+Get Catalog
+	https://vcloud/api/catalog/227749638
+
+Add CatalogItem
+	https://vcloud/api/catalogItem/126072184
+
+Update CatalogItem
+	https://vcloud/api/catalogItem/126072184
+
+Delete CatalogItem
+	Deleted

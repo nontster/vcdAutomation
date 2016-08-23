@@ -1,0 +1,30 @@
+INPUT:
+------
+java VdcCRUD Vcloud user@organization password OrgName CertificateKeyStorePath[optional] CertificateKeyStorePassword[optional]
+java VdcCRUD https://vcloud username@Organization password orgname
+java VdcCRUD https://vcloud username@Organization password orgname certificatekeystorepath certificatekeystorepassword
+
+OUTPUT:
+------
+Vcloud Login
+	Validating Certificate using CustomSSLSocketFactory.java
+	Login Success
+
+Get Vcloud Admin
+	https://vcloud/api/admin/
+
+Get Admin Organization
+	https://vcloud/api/admin/org/579833780
+
+Add Vdc
+	Waiting for Task
+		Task Success
+	https://vcloud/api/admin/vdc/941394159
+
+Update Vdc
+	Waiting for Task
+		Task Success
+	https://vcloud/api/admin/vdc/941394159
+
+Delete Vdc
+	Deleted

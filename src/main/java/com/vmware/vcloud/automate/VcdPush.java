@@ -123,7 +123,7 @@ public class VcdPush {
 		OrgGeneralSettingsType orgGeneralSettings = new OrgGeneralSettingsType();
 		orgGeneralSettings.setStoredVmQuota(0);
 		orgGeneralSettings.setDeployedVMQuota(0);
-		orgGeneralSettings.setCanPublishCatalogs(true);
+		orgGeneralSettings.setCanPublishCatalogs(false);
 		
 		OrgVAppTemplateLeaseSettingsType orgVAppTemplateLeaseSettings = new OrgVAppTemplateLeaseSettingsType();
 		orgVAppTemplateLeaseSettings.setDeleteOnStorageLeaseExpiration(false);
@@ -140,7 +140,6 @@ public class VcdPush {
 		orgSettings.setOrgEmailSettings(orgEmailSettings);
 		orgSettings.setVAppTemplateLeaseSettings(orgVAppTemplateLeaseSettings);
 		orgSettings.setOrgPasswordPolicySettings(orgPasswordPolicySettings);
-	
 		
 		AdminOrgType adminOrgType = new AdminOrgType();
 		adminOrgType.setName("CustomAdminOrg");
@@ -228,7 +227,6 @@ public class VcdPush {
 
 				// Create user on the organization
 				addUserToOrg(adminOrg);
-				
 				
 				
 				System.out.println("Update Organization to Disabled");

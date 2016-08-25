@@ -84,7 +84,6 @@ public class ReceiveNotifications {
 			e.printStackTrace();
 		}
 		connection.addShutdownListener(new ShutdownListener() {
-			@Override
 			public void shutdownCompleted(ShutdownSignalException cause) {
 				connection = null;
 			}

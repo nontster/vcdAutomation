@@ -1,0 +1,28 @@
+Organization:
+  - Name: CustomAdminOrg
+  - Description: Custom Admin Org Desc
+  - FullName: Custom Admin Org Full Name
+  - IsEnabled: True
+  - OrgSettings:
+    - OrgLeaseSettings:
+      - DeleteOnStorageLeaseExpiration: False
+      - DeploymentLeaseSeconds: 0
+      - StorageLeaseSeconds: 0
+    - OrgGeneralSettings:
+      - StoredVmQuota: 0
+      - DeployedVMQuota: 0
+      - CanPublishCatalogs: False
+    - OrgVAppTemplateLeaseSettings:
+      - setDeleteOnStorageLeaseExpiration: False
+      - StorageLeaseSeconds: 0
+    - OrgPasswordPolicySettings:
+      - AccountLockoutEnabled: True
+      - AccountLockoutIntervalMinutes: 15
+      - InvalidLoginsBeforeLockout: 15
+  - User:
+    - Name: sampleuser
+    - Password: samplepassword
+    - IsEnabled: True
+    - RoleName: 'Customer Managed Service'
+    - FullName: 'User Full Name'
+    - EmailAddress: 'user@company.com'

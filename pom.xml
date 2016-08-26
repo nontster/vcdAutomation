@@ -36,9 +36,9 @@
 			<version>2.8.6</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.yaml</groupId>
-    		<artifactId>snakeyaml</artifactId>
-    		<version>1.17</version>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.15</version>
 		</dependency>
 		<dependency>
 			<groupId>rest-api-schemas</groupId>

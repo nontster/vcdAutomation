@@ -13,19 +13,15 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.vmware.vcloud.api.rest.schema.AdminOrgType;
-import com.vmware.vcloud.api.rest.schema.OrgEmailSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgGeneralSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgLeaseSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgPasswordPolicySettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgVAppTemplateLeaseSettingsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
-import com.vmware.vcloud.api.rest.schema.RoleType;
-import com.vmware.vcloud.api.rest.schema.SmtpServerSettingsType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
 import com.vmware.vcloud.api.rest.schema.UserType;
-import com.vmware.vcloud.api.rest.schema.UsersListType;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VcloudClient;
@@ -42,15 +38,13 @@ public class VcdPush {
 	private static String username;
 	private static String password;
 	
-	
-
 	private static void addUserToOrg(AdminOrganization adminOrg)
 			throws TimeoutException {
 		UserType newUserType = new UserType();
 
 		// Credentias
-		newUserType.setName("API_Sample_user");
-		newUserType.setPassword("password");
+		newUserType.setName("sampleuser");
+		newUserType.setPassword("samplepassword");
 		newUserType.setIsEnabled(true);
 
 		// Role : 'Customer Managed Service'
@@ -102,7 +96,7 @@ public class VcdPush {
 	 */
 	private static AdminOrgType createNewAdminOrgType() throws VCloudException {
 
-		SmtpServerSettingsType smtpServerSettings = new SmtpServerSettingsType();
+/*		SmtpServerSettingsType smtpServerSettings = new SmtpServerSettingsType();
 		smtpServerSettings.setHost("custom");
 		smtpServerSettings.setIsUseAuthentication(true);
 		smtpServerSettings.setPassword("custom");
@@ -113,7 +107,7 @@ public class VcdPush {
 		orgEmailSettings.setIsDefaultSmtpServer(true);
 		orgEmailSettings.setFromEmailAddress("custom@custom.com");
 		orgEmailSettings.setDefaultSubjectPrefix("");
-		orgEmailSettings.setSmtpServerSettings(smtpServerSettings);
+		orgEmailSettings.setSmtpServerSettings(smtpServerSettings);*/
 
 		OrgLeaseSettingsType orgLeaseSettings = new OrgLeaseSettingsType();
 		orgLeaseSettings.setDeleteOnStorageLeaseExpiration(false);
@@ -137,7 +131,7 @@ public class VcdPush {
 		OrgSettingsType orgSettings = new OrgSettingsType();
 		orgSettings.setOrgGeneralSettings(orgGeneralSettings);
 		orgSettings.setVAppLeaseSettings(orgLeaseSettings);
-		orgSettings.setOrgEmailSettings(orgEmailSettings);
+		//orgSettings.setOrgEmailSettings(orgEmailSettings);
 		orgSettings.setVAppTemplateLeaseSettings(orgVAppTemplateLeaseSettings);
 		orgSettings.setOrgPasswordPolicySettings(orgPasswordPolicySettings);
 		
@@ -205,7 +199,12 @@ public class VcdPush {
 				vcdurl = cmd.getOptionValue("vcdurl");
 				username = cmd.getOptionValue("u");
 				password = cmd.getOptionValue("p");
-								
+									
+				
+				ConfigParser cparser = new ConfigParser("/customer.yaml");
+				
+				System.exit(0);
+				
 				VcloudClient.setLogLevel(Level.OFF);
 				System.out.println("Vcloud Login");
 				client = new VcloudClient(vcdurl, Version.V5_5); 
@@ -228,8 +227,8 @@ public class VcdPush {
 				// Create user on the organization
 				addUserToOrg(adminOrg);
 				
-				
-				System.out.println("Update Organization to Disabled");
+
+/*				System.out.println("Update Organization to Disabled");
 				adminOrg.getResource().setIsEnabled(false);
 				adminOrg.updateAdminOrg(adminOrg.getResource());
 				task = returnTask(adminOrg);
@@ -239,7 +238,7 @@ public class VcdPush {
 
 				System.out.println("Delete Organization");
 				adminOrg.delete();
-				System.out.println("	Deleted\n");
+				System.out.println("	Deleted\n");*/
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

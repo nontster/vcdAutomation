@@ -5,10 +5,23 @@ public class Organization {
 	private String description;
 	private String fullName;
 	private boolean enabled;
+	private User user;
+	private OrgSettings orgSettings;
 	
 	public Organization() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public Organization(String name, String description, String fullName, boolean enabled, User user,
+			OrgSettings orgSettings) {
+		super();
+		this.name = name;
+		this.description = description;
+		this.fullName = fullName;
+		this.enabled = enabled;
+		this.user = user;
+		this.orgSettings = orgSettings;
 	}
 
 	public String getName() {
@@ -43,34 +56,20 @@ public class Organization {
 		this.enabled = enabled;
 	}
 
-	class OrgSettings {
-		class OrgLeaseSettings{
-			private boolean deleteOnStorageLeaseExpiration;
-			private int deploymentLeaseSeconds;
-			private int storageLeaseSeconds;
-			
-			public boolean isDeleteOnStorageLeaseExpiration() {
-				return deleteOnStorageLeaseExpiration;
-			}
-			public void setDeleteOnStorageLeaseExpiration(boolean deleteOnStorageLeaseExpiration) {
-				this.deleteOnStorageLeaseExpiration = deleteOnStorageLeaseExpiration;
-			}
-			public int getDeploymentLeaseSeconds() {
-				return deploymentLeaseSeconds;
-			}
-			public void setDeploymentLeaseSeconds(int deploymentLeaseSeconds) {
-				this.deploymentLeaseSeconds = deploymentLeaseSeconds;
-			}
-			public int getStorageLeaseSeconds() {
-				return storageLeaseSeconds;
-			}
-			public void setStorageLeaseSeconds(int storageLeaseSeconds) {
-				this.storageLeaseSeconds = storageLeaseSeconds;
-			}
-			
-			
-		}
+	public User getUser() {
+		return user;
 	}
-	
-	
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public OrgSettings getOrgSettings() {
+		return orgSettings;
+	}
+
+	public void setOrgSettings(OrgSettings orgSettings) {
+		this.orgSettings = orgSettings;
+	}
+
 }

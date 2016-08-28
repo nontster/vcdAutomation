@@ -22,6 +22,7 @@ import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
 import com.vmware.vcloud.api.rest.schema.UserType;
+import com.vmware.vcloud.model.Organization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VcloudClient;
@@ -33,12 +34,13 @@ import com.vmware.vcloud.sdk.constants.Version;
 public class VcdPush {
 	private static VcloudClient client;
 	private static VcloudAdmin admin;
+	
 	private static String config;
 	private static String vcdurl;
 	private static String username;
 	private static String password;
 	
-	private static void addUserToOrg(AdminOrganization adminOrg)
+	private static void addUserToOrg(AdminOrganization adminOrg, Organization org)
 			throws TimeoutException {
 		UserType newUserType = new UserType();
 
@@ -94,7 +96,7 @@ public class VcdPush {
 	 * @throws VCloudException 
 	 * 
 	 */
-	private static AdminOrgType createNewAdminOrgType() throws VCloudException {
+	private static AdminOrgType createNewAdminOrgType(Organization org) throws VCloudException {
 
 /*		SmtpServerSettingsType smtpServerSettings = new SmtpServerSettingsType();
 		smtpServerSettings.setHost("custom");
@@ -110,23 +112,23 @@ public class VcdPush {
 		orgEmailSettings.setSmtpServerSettings(smtpServerSettings);*/
 
 		OrgLeaseSettingsType orgLeaseSettings = new OrgLeaseSettingsType();
-		orgLeaseSettings.setDeleteOnStorageLeaseExpiration(false);
-		orgLeaseSettings.setDeploymentLeaseSeconds(0);
-		orgLeaseSettings.setStorageLeaseSeconds(0);
+		orgLeaseSettings.setDeleteOnStorageLeaseExpiration(org.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration());
+		orgLeaseSettings.setDeploymentLeaseSeconds(org.getOrgSettings().getOrgLeaseSettings().getDeploymentLeaseSeconds());
+		orgLeaseSettings.setStorageLeaseSeconds(org.getOrgSettings().getOrgLeaseSettings().getStorageLeaseSeconds());
 
 		OrgGeneralSettingsType orgGeneralSettings = new OrgGeneralSettingsType();
-		orgGeneralSettings.setStoredVmQuota(0);
-		orgGeneralSettings.setDeployedVMQuota(0);
-		orgGeneralSettings.setCanPublishCatalogs(false);
+		orgGeneralSettings.setStoredVmQuota(org.getOrgSettings().getOrgGeneralSettings().getStoredVmQuota());
+		orgGeneralSettings.setDeployedVMQuota(org.getOrgSettings().getOrgGeneralSettings().getDeployedVMQuota());
+		orgGeneralSettings.setCanPublishCatalogs(org.getOrgSettings().getOrgGeneralSettings().isCanPublishCatalogs());
 		
 		OrgVAppTemplateLeaseSettingsType orgVAppTemplateLeaseSettings = new OrgVAppTemplateLeaseSettingsType();
-		orgVAppTemplateLeaseSettings.setDeleteOnStorageLeaseExpiration(false);
-		orgVAppTemplateLeaseSettings.setStorageLeaseSeconds(0);	
+		orgVAppTemplateLeaseSettings.setDeleteOnStorageLeaseExpiration(org.getOrgSettings().getOrgVAppTemplateLeaseSettings().isDeleteOnStorageLeaseExpiration());
+		orgVAppTemplateLeaseSettings.setStorageLeaseSeconds(org.getOrgSettings().getOrgVAppTemplateLeaseSettings().getStorageLeaseSeconds());	
 		
 		OrgPasswordPolicySettingsType orgPasswordPolicySettings = new OrgPasswordPolicySettingsType();
-		orgPasswordPolicySettings.setAccountLockoutEnabled(true);
-		orgPasswordPolicySettings.setAccountLockoutIntervalMinutes(15);
-		orgPasswordPolicySettings.setInvalidLoginsBeforeLockout(15);
+		orgPasswordPolicySettings.setAccountLockoutEnabled(org.getOrgSettings().getOrgPasswordPolicySettings().isAccountLockoutEnabled());
+		orgPasswordPolicySettings.setAccountLockoutIntervalMinutes(org.getOrgSettings().getOrgPasswordPolicySettings().getAccountLockoutIntervalMinutes());
+		orgPasswordPolicySettings.setInvalidLoginsBeforeLockout(org.getOrgSettings().getOrgPasswordPolicySettings().getInvalidLoginsBeforeLockout());
 		
 		OrgSettingsType orgSettings = new OrgSettingsType();
 		orgSettings.setOrgGeneralSettings(orgGeneralSettings);
@@ -136,11 +138,11 @@ public class VcdPush {
 		orgSettings.setOrgPasswordPolicySettings(orgPasswordPolicySettings);
 		
 		AdminOrgType adminOrgType = new AdminOrgType();
-		adminOrgType.setName("CustomAdminOrg");
-		adminOrgType.setDescription("Custom Admin Org Desc");
-		adminOrgType.setFullName("Custom Admin Org Full Name");
+		adminOrgType.setName(org.getName()); 
+		adminOrgType.setDescription(org.getDescription());
+		adminOrgType.setFullName(org.getFullName());
 		adminOrgType.setSettings(orgSettings);
-		adminOrgType.setIsEnabled(true);
+		adminOrgType.setIsEnabled(org.isEnabled());
 		
 		return adminOrgType;
 	}
@@ -168,6 +170,7 @@ public class VcdPush {
 		Options options = new Options();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLineParser parser = new DefaultParser();
+		Organization org;
 		
 		Option optConfig = new Option( "config", true, "configuration file" );
 		Option optVcdurl = new Option( "vcdurl", true, "vCloud Director url" );
@@ -199,11 +202,9 @@ public class VcdPush {
 				vcdurl = cmd.getOptionValue("vcdurl");
 				username = cmd.getOptionValue("u");
 				password = cmd.getOptionValue("p");
-									
-				
-				ConfigParser cparser = new ConfigParser("/customer.yaml");
-				
-				System.exit(0);
+													
+				ConfigParser cParser = ConfigParser.getParser("/customer.yaml");
+				org = cParser.getOrg();
 				
 				VcloudClient.setLogLevel(Level.OFF);
 				System.out.println("Vcloud Login");
@@ -217,7 +218,7 @@ public class VcdPush {
 				System.out.println("	" + admin.getResource().getHref() + "\n");					
 
 				System.out.println("Add New Organization");
-				AdminOrganization adminOrg = admin.createAdminOrg(createNewAdminOrgType());
+				AdminOrganization adminOrg = admin.createAdminOrg(createNewAdminOrgType(org));
 				Task task = returnTask(adminOrg);
 				if (task != null)
 					task.waitForTask(0);
@@ -225,10 +226,9 @@ public class VcdPush {
 				System.out.println("	" + adminOrg.getResource().getHref() + "\n");
 
 				// Create user on the organization
-				addUserToOrg(adminOrg);
-				
-
-/*				System.out.println("Update Organization to Disabled");
+				addUserToOrg(adminOrg, org);
+			
+				System.out.println("Update Organization to Disabled");
 				adminOrg.getResource().setIsEnabled(false);
 				adminOrg.updateAdminOrg(adminOrg.getResource());
 				task = returnTask(adminOrg);
@@ -238,7 +238,7 @@ public class VcdPush {
 
 				System.out.println("Delete Organization");
 				adminOrg.delete();
-				System.out.println("	Deleted\n");*/
+				System.out.println("	Deleted\n");
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

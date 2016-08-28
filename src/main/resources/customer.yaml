@@ -1,28 +1,28 @@
-Organization:
-  - Name: CustomAdminOrg
-  - Description: Custom Admin Org Desc
-  - FullName: Custom Admin Org Full Name
-  - IsEnabled: True
-  - OrgSettings:
-    - OrgLeaseSettings:
-      - DeleteOnStorageLeaseExpiration: False
-      - DeploymentLeaseSeconds: 0
-      - StorageLeaseSeconds: 0
-    - OrgGeneralSettings:
-      - StoredVmQuota: 0
-      - DeployedVMQuota: 0
-      - CanPublishCatalogs: False
-    - OrgVAppTemplateLeaseSettings:
-      - setDeleteOnStorageLeaseExpiration: False
-      - StorageLeaseSeconds: 0
-    - OrgPasswordPolicySettings:
-      - AccountLockoutEnabled: True
-      - AccountLockoutIntervalMinutes: 15
-      - InvalidLoginsBeforeLockout: 15
-  - User:
-    - Name: sampleuser
-    - Password: samplepassword
-    - IsEnabled: True
-    - RoleName: 'Customer Managed Service'
-    - FullName: 'User Full Name'
-    - EmailAddress: 'user@company.com'
+!organization
+name: CustomAdminOrg
+description: Custom Admin Org Desc
+fullName: Custom Admin Org Full Name
+enabled: True
+user:
+  name: sampleuser
+  password: samplepassword
+  enabled: True
+  roleName: 'Customer Managed Service'
+  fullName: 'User Full Name'
+  emailAddress: 'user@company.com'
+orgSettings:
+  orgLeaseSettings:
+    deleteOnStorageLeaseExpiration: False
+    deploymentLeaseSeconds: 0
+    storageLeaseSeconds: 0
+  orgGeneralSettings:
+    storedVmQuota: 0
+    deployedVMQuota: 0
+    canPublishCatalogs: False
+  orgVAppTemplateLeaseSettings:
+    deleteOnStorageLeaseExpiration: False
+    storageLeaseSeconds: 0
+  orgPasswordPolicySettings:
+    accountLockoutEnabled: True
+    accountLockoutIntervalMinutes: 15
+    invalidLoginsBeforeLockout: 15

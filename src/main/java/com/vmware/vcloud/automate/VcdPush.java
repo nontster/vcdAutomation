@@ -1,5 +1,6 @@
 package com.vmware.vcloud.automate;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -164,7 +165,7 @@ public class VcdPush {
 		return null;
 	}
 	
-	public static void main(String[] args) throws VCloudException, TimeoutException {
+	public static void main(String[] args) throws VCloudException, TimeoutException, FileNotFoundException {
 		// TODO Auto-generated method stub
 		// create Options object
 		Options options = new Options();
@@ -186,7 +187,9 @@ public class VcdPush {
 		options.addOption(optHelp);
 		options.addOption(optDebug);
 		
-		if(args.length < 4) {
+		System.out.println(args.length);
+		
+		if(args.length < 6) {
 			formatter.printHelp("vcdpush", options);
 			System.exit(1);
 		}
@@ -198,12 +201,12 @@ public class VcdPush {
 				formatter.printHelp("vcdpush", options); // automatically generate the help statement
 			else {
 
-				config = cmd.getOptionValue("config");
 				vcdurl = cmd.getOptionValue("vcdurl");
 				username = cmd.getOptionValue("u");
 				password = cmd.getOptionValue("p");
-													
-				ConfigParser cParser = ConfigParser.getParser("/customer.yaml");
+				config = cmd.getOptionValue("config");
+																					
+				ConfigParser cParser = ConfigParser.getParser(config);
 				org = cParser.getOrg();
 				
 				VcloudClient.setLogLevel(Level.OFF);

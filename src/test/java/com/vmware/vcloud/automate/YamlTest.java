@@ -2,6 +2,7 @@ package com.vmware.vcloud.automate;
 
 import static org.junit.Assert.*;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.junit.Test;
@@ -14,7 +15,7 @@ import com.vmware.vcloud.model.Organization;
 public class YamlTest {
 
 	@Test
-	public void YamlUnmarshallingTest(){
+	public void YamlUnmarshallingTest() throws FileNotFoundException{
 		
 		ConfigParser cParser = ConfigParser.getParser("/customer.yaml");
 		Organization org = cParser.getOrg();

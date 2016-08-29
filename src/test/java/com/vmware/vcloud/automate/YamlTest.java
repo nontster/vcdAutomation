@@ -17,7 +17,7 @@ public class YamlTest {
 	@Test
 	public void YamlUnmarshallingTest() throws FileNotFoundException{
 		
-		ConfigParser cParser = ConfigParser.getParser("/customer.yaml");
+		ConfigParser cParser = ConfigParser.getParser("");
 		Organization org = cParser.getOrg();
 		
 		assertEquals("CustomAdminOrg", org.getName());

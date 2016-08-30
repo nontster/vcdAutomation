@@ -7,6 +7,8 @@ public class Organization {
 	private boolean enabled;
 	private User user;
 	private OrgSettings orgSettings;
+	private CloudResources cloudResources;
+	private Vdc vdc;
 	
 	public Organization() {
 		super();
@@ -14,7 +16,7 @@ public class Organization {
 	}
 
 	public Organization(String name, String description, String fullName, boolean enabled, User user,
-			OrgSettings orgSettings) {
+			OrgSettings orgSettings, CloudResources cloudResources) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -22,6 +24,7 @@ public class Organization {
 		this.enabled = enabled;
 		this.user = user;
 		this.orgSettings = orgSettings;
+		this.cloudResources = cloudResources;
 	}
 
 	public String getName() {
@@ -72,4 +75,19 @@ public class Organization {
 		this.orgSettings = orgSettings;
 	}
 
+	public CloudResources getCloudResources() {
+		return cloudResources;
+	}
+
+	public void setCloudResources(CloudResources cloudResources) {
+		this.cloudResources = cloudResources;
+	}
+
+	public Vdc getVdc() {
+		return vdc;
+	}
+
+	public void setVdc(Vdc vdc) {
+		this.vdc = vdc;
+	}
 }

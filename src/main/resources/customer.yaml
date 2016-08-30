@@ -26,3 +26,38 @@ orgSettings:
     accountLockoutEnabled: True
     accountLockoutIntervalMinutes: 15
     invalidLoginsBeforeLockout: 15
+cloudResources:
+  providerVdc:
+    name: TLS1-ALLOC-PVDC01
+  networkPool:
+    name: TLS1-ALLOC-PVDC01-VXLAN-NP
+vdc:
+  vdcParams:
+    name: customer-vdc
+    enabled: True
+    resourceGuaranteedCpu: 0.2
+    resourceGuaranteedMemory: 0.2
+    vmQuota: 0
+    description: 'VDC for Customer'
+    computeCapacity:
+      cpu:
+        allocated: 0
+        overhead: 0
+        units: MHz
+        used: 0
+        limit: 0
+      memory:
+        allocated: 0
+        overhead: 0
+        units: 
+        used:
+        limit: 0
+    networkQuota: 1
+    vdcStorageProfile:
+      enabled: True
+      def: True
+      limit: 0
+      units: MB
+      
+      
+             

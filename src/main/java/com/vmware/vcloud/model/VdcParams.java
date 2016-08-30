@@ -3,8 +3,8 @@ package com.vmware.vcloud.model;
 public class VdcParams {
     private String name;
     private boolean enabled;
-    private double resourceGuaranteedCpu;
-    private double resourceGuaranteedMemory;
+    private float resourceGuaranteedCpu;
+    private float resourceGuaranteedMemory;
     private int vmQuota;
     private String description;
     private ComputeCapacity computeCapacity;
@@ -47,7 +47,7 @@ public class VdcParams {
 		this.enabled = enabled;
 	}
 
-	public double getResourceGuaranteedCpu() {
+	public float getResourceGuaranteedCpu() {
 		return resourceGuaranteedCpu;
 	}
 
@@ -55,7 +55,7 @@ public class VdcParams {
 		this.resourceGuaranteedCpu = resourceGuaranteedCpu;
 	}
 
-	public double getResourceGuaranteedMemory() {
+	public float getResourceGuaranteedMemory() {
 		return resourceGuaranteedMemory;
 	}
 

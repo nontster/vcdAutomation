@@ -73,10 +73,10 @@ public class VcdPush {
 
 		// Select Allocation Model - 'Pay As You Go' Model
 		createVdcParams.setAllocationModel(AllocationModelType.ALLOCATIONVAPP.value());
-
-		createVdcParams.setResourceGuaranteedCpu(org.getVdc().getVdcParams().getResourceGuaranteedCpu()); // 20% CPU Resources
+		
+		createVdcParams.setResourceGuaranteedCpu(Double.parseDouble(new Float(org.getVdc().getVdcParams().getResourceGuaranteedCpu()).toString())); // 20% CPU Resources
 		// guaranteed
-		createVdcParams.setResourceGuaranteedMemory(org.getVdc().getVdcParams().getResourceGuaranteedMemory()); // 20% Memory
+		createVdcParams.setResourceGuaranteedMemory(Double.parseDouble(new Float(org.getVdc().getVdcParams().getResourceGuaranteedMemory()).toString())); // 20% Memory
 		// resources
 		// guaranteed
 		// Rest all Defaults for the 'Pay As You Go Model' configuration.
@@ -84,19 +84,19 @@ public class VcdPush {
 		// COmpute Capacity -- this is needed. UI Uses defaults.
 		ComputeCapacityType computeCapacity = new ComputeCapacityType();
 		CapacityWithUsageType cpu = new CapacityWithUsageType();
-		cpu.setAllocated(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getAllocated()); 
-		cpu.setOverhead(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getOverhead());
+		cpu.setAllocated(new Long(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getAllocated())); 
+		cpu.setOverhead(new Long(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getOverhead()));
 		cpu.setUnits(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getUnits());
-		cpu.setUsed(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getUsed());
+		cpu.setUsed(new Long(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getUsed()));
 		cpu.setLimit(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getLimit());
 
 		computeCapacity.setCpu(cpu);
 
 		CapacityWithUsageType mem = new CapacityWithUsageType();
-		mem.setAllocated(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getAllocated());
-		mem.setOverhead(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getOverhead());
+		mem.setAllocated(new Long(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getAllocated()));
+		mem.setOverhead(new Long(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getOverhead()));
 		mem.setUnits(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getUnits());
-		mem.setUsed(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getUsed());
+		mem.setUsed(new Long(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getUsed()));
 		mem.setLimit(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getLimit());
 
 		computeCapacity.setMemory(mem);

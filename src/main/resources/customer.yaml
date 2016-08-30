@@ -49,8 +49,8 @@ vdc:
       memory:
         allocated: 0
         overhead: 0
-        units: 
-        used:
+        units: MHz 
+        used: 0
         limit: 0
     networkQuota: 1
     vdcStorageProfile:

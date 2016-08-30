@@ -1,11 +1,11 @@
 package com.vmware.vcloud.model;
 
 public class Cpu {
-	private long allocated;
-	private long overhead;
+	private int allocated;
+	private int overhead;
 	private String units;
-	private long used;
-	private long limit;
+	private int used;
+	private int limit;
 	
 	public Cpu() {
 		super();
@@ -21,7 +21,7 @@ public class Cpu {
 		this.limit = limit;
 	}
 
-	public long getAllocated() {
+	public int getAllocated() {
 		return allocated;
 	}
 
@@ -29,7 +29,7 @@ public class Cpu {
 		this.allocated = allocated;
 	}
 
-	public long getOverhead() {
+	public int getOverhead() {
 		return overhead;
 	}
 
@@ -45,7 +45,7 @@ public class Cpu {
 		this.units = units;
 	}
 
-	public long getUsed() {
+	public int getUsed() {
 		return used;
 	}
 
@@ -53,12 +53,12 @@ public class Cpu {
 		this.used = used;
 	}
 
-	public long getLimit() {
+	public int getLimit() {
 		return limit;
 	}
 
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
-
+	
 }

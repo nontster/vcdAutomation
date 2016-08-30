@@ -15,8 +15,9 @@ public class Organization {
 		// TODO Auto-generated constructor stub
 	}
 
+
 	public Organization(String name, String description, String fullName, boolean enabled, User user,
-			OrgSettings orgSettings, CloudResources cloudResources) {
+			OrgSettings orgSettings, CloudResources cloudResources, Vdc vdc) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -25,6 +26,7 @@ public class Organization {
 		this.user = user;
 		this.orgSettings = orgSettings;
 		this.cloudResources = cloudResources;
+		this.vdc = vdc;
 	}
 
 	public String getName() {

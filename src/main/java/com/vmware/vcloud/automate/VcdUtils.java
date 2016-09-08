@@ -18,7 +18,7 @@ import com.vmware.vcloud.sdk.admin.ProviderVdc;
 import com.vmware.vcloud.sdk.admin.VcloudAdmin;
 import com.vmware.vcloud.sdk.constants.AllocationModelType;
 
-public class VdcUtils {
+public class VcdUtils {
 	
 	/**
 	 * Adding the pay as you go vdc.

@@ -822,7 +822,7 @@ public class VcdPush {
 				System.out.println("	" + adminOrg.getResource().getHref() + "\n");
 
 				// Create vDC You may end using one of the following.
-				adminVdc = VdcUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg);
+				adminVdc = VcdUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg);
 
 				// Create user on the organization
 				UserUtils.addUserToOrg(vCloudOrg, admin, adminOrg);

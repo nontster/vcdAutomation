@@ -1,6 +1,6 @@
 package com.vmware.vcloud.model;
 
-public class Organization {
+public class VCloudOrganization {
 	private String name;
 	private String description;
 	private String fullName;
@@ -9,15 +9,15 @@ public class Organization {
 	private OrgSettings orgSettings;
 	private CloudResources cloudResources;
 	private Vdc vdc;
+	private EdgeGateway edgeGateway;
 	
-	public Organization() {
+	public VCloudOrganization() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-
-	public Organization(String name, String description, String fullName, boolean enabled, User user,
-			OrgSettings orgSettings, CloudResources cloudResources, Vdc vdc) {
+	public VCloudOrganization(String name, String description, String fullName, boolean enabled, User user,
+			OrgSettings orgSettings, CloudResources cloudResources, Vdc vdc, EdgeGateway edgeGateway) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -27,6 +27,7 @@ public class Organization {
 		this.orgSettings = orgSettings;
 		this.cloudResources = cloudResources;
 		this.vdc = vdc;
+		this.edgeGateway = edgeGateway;
 	}
 
 	public String getName() {
@@ -92,4 +93,15 @@ public class Organization {
 	public void setVdc(Vdc vdc) {
 		this.vdc = vdc;
 	}
+
+
+	public EdgeGateway getEdgeGateway() {
+		return edgeGateway;
+	}
+
+
+	public void setEdgeGateway(EdgeGateway edgeGateway) {
+		this.edgeGateway = edgeGateway;
+	}
+	
 }

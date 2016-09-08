@@ -31,6 +31,8 @@ cloudResources:
     name: TLS1-ALLOC-PVDC01
   networkPool:
     name: TLS1-ALLOC-PVDC01-VXLAN-NP
+  externalNetwork:
+    name: Tenant-External-Internet02
 vdc:
   vdcParams:
     name: customer-vdc
@@ -49,7 +51,7 @@ vdc:
       memory:
         allocated: 0
         overhead: 0
-        units: MHz 
+        units: MB 
         used: 0
         limit: 0
     networkQuota: 1
@@ -58,6 +60,23 @@ vdc:
       def: True
       limit: 0
       units: MB
-      
+edgeGateway:
+  gatewayParams:
+    name: custom-edgege-01
+    description: 'Custom edge gateway'
+    gatewayConfiguration:
+      gatewayBackingConfig: COMPACT
+      haEnabled: False
+      useDefaultRouteForDnsRelay: False
+      gatewayInterfaces:  
+        - displayName: 'Custom gateway interface'
+          interfaceType: UPLINK
+          subnetParticipation:    
+            gateway: 
+            netmask: 
+            ipRanges:
+              - startAddress: 110.49.214.101
+                endAddress: 110.49.214.101
+          useForDefaultRoute: True
       
              

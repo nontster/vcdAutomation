@@ -27,6 +27,7 @@ import com.vmware.vcloud.api.rest.schema.GatewayInterfaceType;
 import com.vmware.vcloud.api.rest.schema.GatewayInterfacesType;
 import com.vmware.vcloud.api.rest.schema.GatewayNatRuleType;
 import com.vmware.vcloud.api.rest.schema.GatewayType;
+import com.vmware.vcloud.api.rest.schema.GuestCustomizationSectionType;
 import com.vmware.vcloud.api.rest.schema.InstantiationParamsType;
 import com.vmware.vcloud.api.rest.schema.IpRangeType;
 import com.vmware.vcloud.api.rest.schema.IpRangesType;
@@ -54,7 +55,9 @@ import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
 import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
 import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
+import com.vmware.vcloud.api.rest.schema.ovf.RASDType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
+import com.vmware.vcloud.api.rest.schema.ovf.VirtualHardwareSectionType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Expression;
 import com.vmware.vcloud.sdk.Filter;
@@ -63,6 +66,7 @@ import com.vmware.vcloud.sdk.QueryParams;
 import com.vmware.vcloud.sdk.RecordResult;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
+import com.vmware.vcloud.sdk.VM;
 import com.vmware.vcloud.sdk.Vapp;
 import com.vmware.vcloud.sdk.VappTemplate;
 import com.vmware.vcloud.sdk.VcloudClient;
@@ -109,7 +113,7 @@ public class VcdPush {
 	 * @throws VCloudException
 	 */
 
-	public static ComposeVAppParamsType createComposeParams(ReferenceType vappTemplateRef, Vdc vdc, String vAppName)
+	public static ComposeVAppParamsType createComposeParams(ReferenceType vappTemplateRef, Vdc vdc)
 			throws VCloudException {
 
 	
@@ -147,7 +151,8 @@ public class VcdPush {
 		ComposeVAppParamsType composeVAppParamsType = new ComposeVAppParamsType(); 
 		composeVAppParamsType.setDeploy(false);
 		composeVAppParamsType.setInstantiationParams(vappOrvAppTemplateInstantiationParamsType);
-		composeVAppParamsType.setName(vAppName);
+		composeVAppParamsType.setName(vCloudOrg.getvApp().getName());
+		composeVAppParamsType.setDescription(vCloudOrg.getvApp().getDescription());
 		
 		List<SourcedCompositionItemParamType> items = composeVAppParamsType.getSourcedItem();
 
@@ -171,7 +176,7 @@ public class VcdPush {
 		SourcedCompositionItemParamType vappTemplateItem = new SourcedCompositionItemParamType();
 		ReferenceType vappTemplateVMRef = new ReferenceType();
 		vappTemplateVMRef.setHref(vmHref);
-		vappTemplateVMRef.setName("custom-vm");
+		vappTemplateVMRef.setName(vCloudOrg.getvApp().getVmName());
 		vappTemplateItem.setSource(vappTemplateVMRef);
 
 		NetworkConnectionSectionType networkConnectionSectionType = new NetworkConnectionSectionType();
@@ -186,6 +191,7 @@ public class VcdPush {
 		InstantiationParamsType vmInstantiationParamsType = new InstantiationParamsType();
 		List<JAXBElement<? extends SectionType>> vmSections = vmInstantiationParamsType.getSection();
 		vmSections.add(new ObjectFactory().createNetworkConnectionSection(networkConnectionSectionType));
+		
 		vappTemplateItem.setInstantiationParams(vmInstantiationParamsType);
 
 		items.add(vappTemplateItem);
@@ -254,6 +260,9 @@ public class VcdPush {
 			firewallRuleType.setIcmpSubType("any");
 		} else if (protocol.equalsIgnoreCase("TCP")) {
 			protocols.setTcp(true);
+			firewallRuleType.setDestinationPortRange(portRange);			
+		} else if (protocol.equalsIgnoreCase("UDP")) {
+			protocols.setUdp(true);
 			firewallRuleType.setDestinationPortRange(portRange);
 		} else if (protocol.equalsIgnoreCase("ANY")) {
 			protocols.setAny(true);
@@ -406,10 +415,12 @@ public class VcdPush {
 		firewallService.setLogDefaultAction(false);
 		
 		List <FirewallRuleType> fwRules = firewallService.getFirewallRule();
-        addFirewallRule(fwRules, "PING", "ICMP", "Any", "Any", "Any");
-        addFirewallRule(fwRules, "SSH", "TCP", "Any", "Any", "22");
-        addFirewallRule(fwRules, "RDP", "TCP", "Any", "Any", "3389");
-        addFirewallRule(fwRules, "In-Out", "ANY", "internal", "external", "Any");
+        addFirewallRule(fwRules, "PING OUT", "ICMP", "10.1.1.0/24", "Any", "Any");
+        addFirewallRule(fwRules, "DNS OUT", "UDP", "10.1.1.0/24", "Any", "53");
+        addFirewallRule(fwRules, "NTP OUT", "UDP", "10.1.1.0/24", "Any", "123");
+        addFirewallRule(fwRules, "HTTP OUT", "TCP", "10.1.1.0/24", "Any", "80");
+        addFirewallRule(fwRules, "HTTPS OUT", "TCP", "10.1.1.0/24", "Any", "443");
+        addFirewallRule(fwRules, "PING IN", "ICMP", "external", "internal", "Any");
         
 		JAXBElement<FirewallServiceType> firewall = objectFactory.createFirewallService(firewallService); 
 		gatewayFeatures.getNetworkService().add(firewall);
@@ -550,7 +561,7 @@ public class VcdPush {
 	private static void addNatRoutedOrgVdcNetwork(AdminOrganization adminOrg) throws VCloudException, TimeoutException {
 		
 		OrgVdcNetworkType OrgVdcNetworkParams = new OrgVdcNetworkType();
-		OrgVdcNetworkParams.setName("custom_orgnet_01");
+		OrgVdcNetworkParams.setName(vCloudOrg.getOrgVdcNetwork().getName());
 		OrgVdcNetworkParams.setDescription("Org vdc network of type Nat-Routed for Custom");
 
 		// Configure Internal IP Settings
@@ -827,30 +838,66 @@ public class VcdPush {
 				// Create user on the organization
 				UserUtils.addUserToOrg(vCloudOrg, admin, adminOrg);
 
-				// Create catalog on the organization
-				// addCatalog(adminOrg);
-
 				// Create org vdc networks on the organizaiton
-				// addBridgedOrgVdcNetwork(adminOrg);
 				addNatRoutedOrgVdcNetwork(adminOrg);
-				// addIsolatedOrgVdcNetwork(adminOrg);
-
+			
 				// find the vdc ref
-				Vdc vdc = findVdc("CustomAdminOrg", "custom-vdc");
+				Vdc vdc = findVdc(vCloudOrg.getName(), vCloudOrg.getVdc().getVdcParams().getName());
 
 				// find the vapp template ref
-				ReferenceType vappTemplateRef = findVappTemplateRef("CustomAdminOrg", "custom-vdc", "CENTOS7");
+				ReferenceType vappTemplateRef = findVappTemplateRef(vCloudOrg.getName(), vCloudOrg.getVdc().getVdcParams().getName(), vCloudOrg.getvApp().getTemplateType()); 
 
 				// Composed vApp. 				
-				Vapp vapp = vdc.composeVapp(createComposeParams(vappTemplateRef, vdc, "custom-vApp"));
+				Vapp vapp = vdc.composeVapp(createComposeParams(vappTemplateRef, vdc));
 				System.out.println("Composing vApp : " + vapp.getResource().getName());
 				List<Task> tasks = vapp.getTasks();
 				if (tasks.size() > 0)
 					tasks.get(0).waitForTask(0);
 
-				// refresh the vapp
-				vapp = Vapp.getVappByReference(client, vapp.getReference());
+				// fetch the instantiated vapp
+/*				vapp = Vapp.getVappByReference(client, vapp.getReference());
 				
+				NetworkConfigSectionType networkConfigSection = vapp.getNetworkConfigSection();
+				List<VAppNetworkConfigurationType> networkConfigs = networkConfigSection.getNetworkConfig();
+				
+				for(int i =0; i < networkConfigs.size(); i++){
+					networkConfigs.get(i).getConfiguration().setFenceMode(FenceModeValuesType.BRIDGED.value());
+				}
+				
+				vapp.updateSection(networkConfigSection).waitForTask(0);*/
+	
+				
+
+				// change the guest customization settings of the vm inside the vapp.
+				// for simplicity purposes guest customization is disabled. you can
+				// enable it and set the parameters accordingly.
+				VM vm1 = vapp.getChildrenVms().get(0);
+				
+				System.out.println("Setting the guest customization settings of the vm");
+				System.out.println("--------------------------------------------------");
+				GuestCustomizationSectionType guestCustomizationSection = vm1.getGuestCustomizationSection();
+				
+				guestCustomizationSection.setEnabled(false);
+				vm1.updateSection(guestCustomizationSection).waitForTask(0);
+				
+				VirtualHardwareSectionType virtualHardwareSection = vm1.getVirtualHardwareSection();
+				List <RASDType> rasdTypes = virtualHardwareSection.getItem();
+				
+				NetworkConnectionSectionType networkConnectionSection = vm1.getNetworkConnectionSection();
+				NetworkConnectionType networkConnection = networkConnectionSection.getNetworkConnection().get(0);
+
+				
+				/*
+				
+				networkConfigSectionType.getNetworkConfig().get(0).getConfiguration().setFenceMode(FenceModeValuesType.NATROUTED.value());			
+				System.out.println("Updating the NetworkConfigSection using Fence mode: NATROUTED for " + vapp.getResource().getName());
+				System.out.println("--------------------");
+				vapp.updateSection(networkConfigSectionType).waitForTask(0);
+
+				networkConfigSectionType.getNetworkConfig().get(0).getConfiguration().setFenceMode(FenceModeValuesType.BRIDGED.value());			
+				System.out.println("Updating the NetworkConfigSection using Fence mode: BRIDGED for " + vapp.getResource().getName());
+				System.out.println("--------------------");
+				vapp.updateSection(networkConfigSectionType).waitForTask(0);*/
 				/*
 				 * System.out.println("Update Organization to Disabled");
 				 * adminOrg.getResource().setIsEnabled(false);

@@ -10,6 +10,8 @@ public class VCloudOrganization {
 	private CloudResources cloudResources;
 	private Vdc vdc;
 	private EdgeGateway edgeGateway;
+	private OrgVdcNetwork orgVdcNetwork;
+	private VApp vApp;
 	
 	public VCloudOrganization() {
 		super();
@@ -17,7 +19,7 @@ public class VCloudOrganization {
 	}
 
 	public VCloudOrganization(String name, String description, String fullName, boolean enabled, User user,
-			OrgSettings orgSettings, CloudResources cloudResources, Vdc vdc, EdgeGateway edgeGateway) {
+			OrgSettings orgSettings, CloudResources cloudResources, Vdc vdc, EdgeGateway edgeGateway, OrgVdcNetwork orgVdcNetwork, VApp vApp) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -28,6 +30,8 @@ public class VCloudOrganization {
 		this.cloudResources = cloudResources;
 		this.vdc = vdc;
 		this.edgeGateway = edgeGateway;
+		this.orgVdcNetwork = orgVdcNetwork;
+		this.vApp = vApp;
 	}
 
 	public String getName() {
@@ -102,6 +106,22 @@ public class VCloudOrganization {
 
 	public void setEdgeGateway(EdgeGateway edgeGateway) {
 		this.edgeGateway = edgeGateway;
+	}
+
+	public OrgVdcNetwork getOrgVdcNetwork() {
+		return orgVdcNetwork;
+	}
+
+	public void setOrgVdcNetwork(OrgVdcNetwork orgVdcNetwork) {
+		this.orgVdcNetwork = orgVdcNetwork;
+	}
+
+	public VApp getvApp() {
+		return vApp;
+	}
+
+	public void setvApp(VApp vApp) {
+		this.vApp = vApp;
 	}
 	
 }

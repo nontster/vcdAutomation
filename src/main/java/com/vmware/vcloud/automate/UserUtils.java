@@ -13,10 +13,11 @@ import com.vmware.vcloud.sdk.admin.User;
 import com.vmware.vcloud.sdk.admin.VcloudAdmin;
 
 public class UserUtils {
+	
 	static void addUserToOrg(VCloudOrganization vCloudOrg, VcloudAdmin admin, AdminOrganization adminOrg) throws TimeoutException {
 		UserType newUserType = new UserType();
 
-		// Credentias
+		// Credential
 		newUserType.setName(vCloudOrg.getUser().getName());
 		newUserType.setPassword(vCloudOrg.getUser().getPassword());
 		newUserType.setIsEnabled(vCloudOrg.getUser().isEnabled());
@@ -25,7 +26,7 @@ public class UserUtils {
 		ReferenceType usrRoleRef = admin.getRoleRefByName(vCloudOrg.getUser().getRoleName());
 		newUserType.setRole(usrRoleRef);
 
-		// COntact Info:
+		// Contact Info:
 		newUserType.setFullName(vCloudOrg.getUser().getFullName());
 		newUserType.setEmailAddress(vCloudOrg.getUser().getEmailAddress());
 		// Use defaults for rest of the fields.
@@ -34,7 +35,7 @@ public class UserUtils {
 			User user = adminOrg.createUser(newUserType);
 
 			System.out.println("Creating admin user for organization : " + user.getResource().getName() + " : "
-					+ user.getResource().getHref());
+					+ user.getResource().getHref() + "\n");
 			List<Task> tasks = user.getTasks();
 			if (tasks.size() > 0)
 				tasks.get(0).waitForTask(0);

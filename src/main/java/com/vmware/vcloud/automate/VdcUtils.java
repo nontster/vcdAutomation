@@ -9,16 +9,18 @@ import com.vmware.vcloud.api.rest.schema.CreateVdcParamsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.VdcStorageProfileParamsType;
 import com.vmware.vcloud.model.VCloudOrganization;
+import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VcloudClient;
+import com.vmware.vcloud.sdk.Vdc;
 import com.vmware.vcloud.sdk.admin.AdminOrganization;
 import com.vmware.vcloud.sdk.admin.AdminVdc;
 import com.vmware.vcloud.sdk.admin.ProviderVdc;
 import com.vmware.vcloud.sdk.admin.VcloudAdmin;
 import com.vmware.vcloud.sdk.constants.AllocationModelType;
 
-public class VcdUtils {
+public class VdcUtils {
 	
 	/**
 	 * Adding the pay as you go vdc.
@@ -92,7 +94,7 @@ public class VcdUtils {
 		AdminVdc adminVdc = adminOrg.createAdminVdc(createVdcParams);
 
 		System.out.println("Creating Pay As You Go Vdc : " + adminVdc.getResource().getName() + " : "
-				+ adminVdc.getResource().getHref());
+				+ adminVdc.getResource().getHref() + "\n");
 		List<Task> tasks = adminVdc.getTasks();
 		if (tasks.size() > 0)
 			tasks.get(0).waitForTask(0);
@@ -100,4 +102,19 @@ public class VcdUtils {
 		return adminVdc;
 
 	}
+	
+	/**
+	 * Finding a vdc
+	 * 
+	 * @param vdcName
+	 * @param orgName
+	 * @return {@link Vdc}
+	 * @throws VCloudException
+	 */
+	public static Vdc findVdc(VcloudClient client, String orgName, String vdcName) throws VCloudException {
+		ReferenceType orgRef = client.getOrgRefsByName().get(orgName);
+		Organization org = Organization.getOrganizationByReference(client, orgRef);
+		ReferenceType vdcRef = org.getVdcRefByName(vdcName);
+		return Vdc.getVdcByReference(client, vdcRef);
+	}	
 }

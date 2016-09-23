@@ -1,6 +1,7 @@
 package com.vmware.vcloud.automate;
 
 import java.io.FileNotFoundException;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
@@ -54,7 +55,9 @@ import com.vmware.vcloud.api.rest.schema.SubnetParticipationType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
 import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
+import com.vmware.vcloud.api.rest.schema.ovf.CimUnsignedLong;
 import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
+import com.vmware.vcloud.api.rest.schema.ovf.OperatingSystemSectionType;
 import com.vmware.vcloud.api.rest.schema.ovf.RASDType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.api.rest.schema.ovf.VirtualHardwareSectionType;
@@ -71,6 +74,9 @@ import com.vmware.vcloud.sdk.Vapp;
 import com.vmware.vcloud.sdk.VappTemplate;
 import com.vmware.vcloud.sdk.VcloudClient;
 import com.vmware.vcloud.sdk.Vdc;
+import com.vmware.vcloud.sdk.VirtualCpu;
+import com.vmware.vcloud.sdk.VirtualDisk;
+import com.vmware.vcloud.sdk.VirtualMemory;
 import com.vmware.vcloud.sdk.admin.AdminOrgVdcNetwork;
 import com.vmware.vcloud.sdk.admin.AdminOrganization;
 import com.vmware.vcloud.sdk.admin.AdminVdc;
@@ -125,7 +131,7 @@ public class VcdPush {
 		}		
 		
 		// Specify the NetworkConfiguration for the vApp network
-		System.out.println("ParentNetwork: "+ vdc.getResource().getAvailableNetworks().getNetwork().get(0).getName());
+		System.out.println("Setting vApp ParantNetwork: "+ vdc.getResource().getAvailableNetworks().getNetwork().get(0).getName());
 		networkConfigurationType.setParentNetwork(vdc.getResource().getAvailableNetworks().getNetwork().get(0));
 		
 		// FIXME: use NATROUTED and change BRIDGED later to solve vCloud Director bug
@@ -158,7 +164,7 @@ public class VcdPush {
 
 		// getting the vApp Templates first vm.
 		VappTemplate vappTemplate = VappTemplate.getVappTemplateByReference(client, vappTemplateRef);
-		VappTemplate vm = null; //vappTemplate.getChildren().get(0);
+		VappTemplate vm = null; 
 		
 		for(VappTemplate child : vappTemplate.getChildren()){
 			if(child.isVm()){
@@ -191,7 +197,7 @@ public class VcdPush {
 		InstantiationParamsType vmInstantiationParamsType = new InstantiationParamsType();
 		List<JAXBElement<? extends SectionType>> vmSections = vmInstantiationParamsType.getSection();
 		vmSections.add(new ObjectFactory().createNetworkConnectionSection(networkConnectionSectionType));
-		
+
 		vappTemplateItem.setInstantiationParams(vmInstantiationParamsType);
 
 		items.add(vappTemplateItem);
@@ -209,13 +215,9 @@ public class VcdPush {
 	 * @throws VCloudException
 	 */
 	public static Vdc findVdc(String orgName, String vdcName) throws VCloudException {
-		System.out.println("Org Name: " + orgName);
-		System.out.println("--------------------");
 		ReferenceType orgRef = client.getOrgRefsByName().get(orgName);
 		Organization org = Organization.getOrganizationByReference(client, orgRef);
 		ReferenceType vdcRef = org.getVdcRefByName(vdcName);
-		System.out.println("Vdc Name: " + vdcName);
-		System.out.println("--------------------");
 		return Vdc.getVdcByReference(client, vdcRef);
 	}
 	
@@ -562,7 +564,7 @@ public class VcdPush {
 		
 		OrgVdcNetworkType OrgVdcNetworkParams = new OrgVdcNetworkType();
 		OrgVdcNetworkParams.setName(vCloudOrg.getOrgVdcNetwork().getName());
-		OrgVdcNetworkParams.setDescription("Org vdc network of type Nat-Routed for Custom");
+		OrgVdcNetworkParams.setDescription(vCloudOrg.getOrgVdcNetwork().getDescription());
 
 		// Configure Internal IP Settings
 		NetworkConfigurationType netConfig = new NetworkConfigurationType();
@@ -602,9 +604,7 @@ public class VcdPush {
 		Task createTask = returnTask(edgeGateway);
 		if (createTask != null)
 			createTask.waitForTask(0);
-		System.out.println("Edge Gateway Created");
-		System.out.println("	Edge Gateway:	" + edgeGateway.getResource().getName());
-
+		System.out.println("	Edge Gateway:	" + edgeGateway.getResource().getName() +" created - " + edgeGateway.getReference().getHref());
 
 		OrgVdcNetworkParams.setEdgeGateway(edgeGateway.getReference());
 		OrgVdcNetworkParams.setConfiguration(netConfig);
@@ -624,9 +624,6 @@ public class VcdPush {
 		}
 		 
 	}
-
-
-
 
 
 	/**
@@ -782,9 +779,8 @@ public class VcdPush {
 			CommandLine cmd = parser.parse(options, args);
 
 			if (cmd.hasOption("help"))
-				formatter.printHelp("vcdpush", options); // automatically
-															// generate the help
-															// statement
+				/* automatically generate the help statement */
+				formatter.printHelp("vcdpush", options); 
 			else {
 
 				if (cmd.hasOption("vcdurl")) {
@@ -854,61 +850,50 @@ public class VcdPush {
 				if (tasks.size() > 0)
 					tasks.get(0).waitForTask(0);
 
-				// fetch the instantiated vapp
-/*				vapp = Vapp.getVappByReference(client, vapp.getReference());
 				
-				NetworkConfigSectionType networkConfigSection = vapp.getNetworkConfigSection();
-				List<VAppNetworkConfigurationType> networkConfigs = networkConfigSection.getNetworkConfig();
+				// refresh the vapp
+				vapp = Vapp.getVappByReference(client, vapp.getReference());
 				
-				for(int i =0; i < networkConfigs.size(); i++){
-					networkConfigs.get(i).getConfiguration().setFenceMode(FenceModeValuesType.BRIDGED.value());
+				for (VM vm : vapp.getChildrenVms()) {
+					System.out.println("Reconfigure VM...");
+					System.out.println("   - " + vm.getReference().getName());
+					System.out.println("	Reconfigure OS...");		
+					
+					// Set administrator password
+					GuestCustomizationSectionType guestCustomizationSection = vm.getGuestCustomizationSection();					
+					guestCustomizationSection.setComputerName("ABC123");				
+					guestCustomizationSection.setAdminPasswordEnabled(Boolean.TRUE);
+					guestCustomizationSection.setAdminPasswordAuto(Boolean.FALSE);
+					guestCustomizationSection.setResetPasswordRequired(Boolean.TRUE);
+					guestCustomizationSection.setAdminPassword("1234567890");
+					vm.updateSection(guestCustomizationSection).waitForTask(0);
+					
+					// Configure CPU
+					System.out.println("	Updating CPU Section...");
+					VirtualCpu virtualCpuItem = vm.getCpu();
+					virtualCpuItem.setCoresPerSocket(4);
+					virtualCpuItem.setNoOfCpus(4);
+					vm.updateCpu(virtualCpuItem).waitForTask(0);
+
+					// Configure Memory
+					System.out.println("	Updating Memory Section...");
+					VirtualMemory virtualMemoryItem = vm.getMemory();
+					virtualMemoryItem.setMemorySize(BigInteger.valueOf(1024 * 8));
+					vm.updateMemory(virtualMemoryItem).waitForTask(0);
+
+					// Display summary
+					System.out.println("	Status : " + vm.getVMStatus());
+					System.out.println("	CPU : "
+							+ vm.getCpu().getNoOfCpus());
+					System.out.println("	Memory : "
+							+ vm.getMemory().getMemorySize() + " Mb");
+					for (VirtualDisk disk : vm.getDisks())
+						if (disk.isHardDisk())
+							System.out.println("	HardDisk : "
+									+ disk.getHardDiskSize() + " Mb");
+					
 				}
-				
-				vapp.updateSection(networkConfigSection).waitForTask(0);*/
-	
-				
-
-				// change the guest customization settings of the vm inside the vapp.
-				// for simplicity purposes guest customization is disabled. you can
-				// enable it and set the parameters accordingly.
-				VM vm1 = vapp.getChildrenVms().get(0);
-				
-				System.out.println("Setting the guest customization settings of the vm");
-				System.out.println("--------------------------------------------------");
-				GuestCustomizationSectionType guestCustomizationSection = vm1.getGuestCustomizationSection();
-				
-				guestCustomizationSection.setEnabled(false);
-				vm1.updateSection(guestCustomizationSection).waitForTask(0);
-				
-				VirtualHardwareSectionType virtualHardwareSection = vm1.getVirtualHardwareSection();
-				List <RASDType> rasdTypes = virtualHardwareSection.getItem();
-				
-				NetworkConnectionSectionType networkConnectionSection = vm1.getNetworkConnectionSection();
-				NetworkConnectionType networkConnection = networkConnectionSection.getNetworkConnection().get(0);
-
-				
-				/*
-				
-				networkConfigSectionType.getNetworkConfig().get(0).getConfiguration().setFenceMode(FenceModeValuesType.NATROUTED.value());			
-				System.out.println("Updating the NetworkConfigSection using Fence mode: NATROUTED for " + vapp.getResource().getName());
-				System.out.println("--------------------");
-				vapp.updateSection(networkConfigSectionType).waitForTask(0);
-
-				networkConfigSectionType.getNetworkConfig().get(0).getConfiguration().setFenceMode(FenceModeValuesType.BRIDGED.value());			
-				System.out.println("Updating the NetworkConfigSection using Fence mode: BRIDGED for " + vapp.getResource().getName());
-				System.out.println("--------------------");
-				vapp.updateSection(networkConfigSectionType).waitForTask(0);*/
-				/*
-				 * System.out.println("Update Organization to Disabled");
-				 * adminOrg.getResource().setIsEnabled(false);
-				 * adminOrg.updateAdminOrg(adminOrg.getResource()); task =
-				 * returnTask(adminOrg); if (task != null) task.waitForTask(0);
-				 * System.out.println("	Updated\n");
-				 * 
-				 * System.out.println("Delete Organization"); adminOrg.delete();
-				 * System.out.println("	Deleted\n");
-				 */
-				
+									
 				System.out.println("---------- Completed! ----------");
 			}
 		} catch (ParseException e) {

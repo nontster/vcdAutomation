@@ -90,14 +90,35 @@ public class YamlTest {
 		assertEquals("Custom edge gateway", org.getEdgeGateway().getGatewayParams().getDescription());
 		
 		// Gateway Configuration
-		assertEquals("COMPACT", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayBackingConfig().name());
+		assertEquals("COMPACT", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayBackingConfig().COMPACT.name());
 		assertEquals("Custom gateway interface", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getDisplayName());
 		assertEquals(false, org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().isHaEnabled());
 		assertEquals(false, org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().isUseDefaultRouteForDnsRelay());
-		assertEquals("10.147.74.253", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getGateway());
+		assertEquals("192.168.1.1", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getGateway());
 		assertEquals("255.255.255.0", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getNetmask());
-		assertEquals("10.147.74.238", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getIpRanges().get(0).getStartAddress());		
-		assertEquals("10.147.74.239", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getIpRanges().get(0).getEndAddress());		
-		assertEquals(true, org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).isUseForDefaultRoute());		
+		assertEquals("192.168.1.101", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getIpRanges().get(0).getStartAddress());		
+		assertEquals("192.168.1.101", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getIpRanges().get(0).getEndAddress());		
+		assertEquals(true, org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).isUseForDefaultRoute());
+		
+		// orgVdcNetwork Configuration
+		assertEquals("custom-orgnet-01", org.getOrgVdcNetwork().getName());
+		assertEquals("Custom Organization network", org.getOrgVdcNetwork().getDescription());
+		assertEquals(true, org.getOrgVdcNetwork().getConfiguration().isRetainNetInfoAcrossDeployments());
+		assertEquals("NATROUTED", org.getOrgVdcNetwork().getConfiguration().getFenceMode().NATROUTED.name());
+		assertEquals("255.255.255.0", org.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getNetmask());
+		assertEquals("10.1.1.1", org.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getGateway());
+		assertEquals(true, org.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).isEnabled());
+		assertEquals(true, org.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).isInherited());
+		assertEquals("192.168.2.1", org.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getDns1());
+		assertEquals("192.168.2.2", org.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getDns2());
+		assertEquals("10.1.1.11", org.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange().getStartAddress());
+		assertEquals("10.1.1.254", org.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange().getEndAddress());
+		
+		// vApp Configuration
+		assertEquals("vApp_system_1", org.getvApp().getName());
+		assertEquals("vApp_system_1", org.getvApp().getDescription());
+		assertEquals("CENTOS7", org.getvApp().getTemplateType());
+		assertEquals("custom-CENTOS7", org.getvApp().getVmName());
+		assertEquals("Custom VM", org.getvApp().getVmDescription());
 	}
 }

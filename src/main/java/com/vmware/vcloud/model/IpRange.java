@@ -1,15 +1,15 @@
 package com.vmware.vcloud.model;
 
-public class IPRange {
+public class IpRange {
 	private String startAddress;
 	private String endAddress;
 	
-	public IPRange() {
+	public IpRange() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public IPRange(String startAddress, String endAddress) {
+	public IpRange(String startAddress, String endAddress) {
 		super();
 		this.startAddress = startAddress;
 		this.endAddress = endAddress;

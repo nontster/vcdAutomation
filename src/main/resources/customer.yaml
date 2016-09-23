@@ -72,11 +72,32 @@ edgeGateway:
         - displayName: 'Custom gateway interface'
           interfaceType: UPLINK
           subnetParticipation:    
-            gateway: 
-            netmask: 
+            gateway: 192.168.1.1
+            netmask: 255.255.255.0
             ipRanges:
-              - startAddress: 110.49.214.101
-                endAddress: 110.49.214.101
+              - startAddress: 192.168.1.101
+                endAddress: 192.168.1.101
           useForDefaultRoute: True
-      
+orgVdcNetwork:      
+  name: custom-orgnet-01
+  description: Custom Organization network    
+  configuration:
+    retainNetInfoAcrossDeployments: true
+    fenceMode: NATROUTED
+    ipScopes:
+      - netmask: 255.255.255.0
+        gateway: 10.1.1.1
+        enabled: true
+        inherited: true
+        dns1: 192.168.2.1
+        dns2: 192.168.2.2
+        ipRange:
+          startAddress: 10.1.1.11
+          endAddress: 10.1.1.254
+vApp:
+  name: vApp_system_1
+  description: vApp_system_1
+  templateType: CENTOS7
+  vmName: custom-CENTOS7
+  vmDescription: Custom VM      
              

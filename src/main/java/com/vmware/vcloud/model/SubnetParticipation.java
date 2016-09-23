@@ -5,14 +5,14 @@ import java.util.List;
 public class SubnetParticipation {
 	private String gateway;
 	private String netmask;
-	private List<IPRange> ipRanges;
+	private List<IpRange> ipRanges;
 	
 	public SubnetParticipation() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public SubnetParticipation(String gateway, String netmask, List<IPRange> ipRanges) {
+	public SubnetParticipation(String gateway, String netmask, List<IpRange> ipRanges) {
 		super();
 		this.gateway = gateway;
 		this.netmask = netmask;
@@ -34,11 +34,11 @@ public class SubnetParticipation {
 		this.netmask = netmask;
 	}
 
-	public List<IPRange> getIpRanges() {
+	public List<IpRange> getIpRanges() {
 		return ipRanges;
 	}
 
-	public void setIpRanges(List<IPRange> ipRanges) {
+	public void setIpRanges(List<IpRange> ipRanges) {
 		this.ipRanges = ipRanges;
 	}
 	

@@ -117,8 +117,8 @@ public class YamlTest {
 		// vApp Configuration
 		assertEquals("vApp_system_1", org.getvApp().getName());
 		assertEquals("vApp_system_1", org.getvApp().getDescription());
-		assertEquals("CENTOS7", org.getvApp().getTemplateType());
-		assertEquals("custom-CENTOS7", org.getvApp().getVmName());
-		assertEquals("Custom VM", org.getvApp().getVmDescription());
+		assertEquals("CENTOS7", org.getvApp().getChildVms().get(0).getTemplateType());
+		assertEquals("custom-CENTOS7", org.getvApp().getChildVms().get(0).getName());
+		assertEquals("Custom VM", org.getvApp().getChildVms().get(0).getDescription());
 	}
 }

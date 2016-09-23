@@ -106,7 +106,7 @@ public class VAppUtils {
 		SourcedCompositionItemParamType vappTemplateItem = new SourcedCompositionItemParamType();
 		ReferenceType vappTemplateVMRef = new ReferenceType();
 		vappTemplateVMRef.setHref(vmHref);
-		vappTemplateVMRef.setName(vCloudOrg.getvApp().getVmName());
+		vappTemplateVMRef.setName(vCloudOrg.getvApp().getName());
 		vappTemplateItem.setSource(vappTemplateVMRef);
 
 		NetworkConnectionSectionType networkConnectionSectionType = new NetworkConnectionSectionType();
@@ -139,12 +139,14 @@ public class VAppUtils {
 	 * @return
 	 * @throws VCloudException
 	 */
-	public static ReferenceType findVappTemplateRef(VcloudClient client, String orgName, String vdcName, String vappTemplateName)
+	public static ReferenceType findVappTemplateRef(VcloudClient client, String catalogName, String vappTemplateName)
 			throws VCloudException {
 		ReferenceType vappTemplateRef = new ReferenceType();
 		
 		QueryParams<QueryAdminVAppTemplateField> queryParams = new QueryParams<QueryAdminVAppTemplateField>();
-		queryParams.setFilter(new Filter(new Expression(QueryAdminVAppTemplateField.CATALOGNAME, "AIS-VM-TEMPLATES-CATALOG", ExpressionType.EQUALS)));
+		
+		queryParams.setFilter(new Filter(new Expression(QueryAdminVAppTemplateField.CATALOGNAME, catalogName, ExpressionType.EQUALS)));
+		
 		RecordResult<QueryResultAdminVAppTemplateRecordType> vappTemplateResult = client.getQueryService().queryRecords(QueryRecordType.ADMINVAPPTEMPLATE, queryParams);
 		for (QueryResultAdminVAppTemplateRecordType vappTemplateRecord : vappTemplateResult.getRecords()) { 
 			if(vappTemplateRecord.getName().equals(vappTemplateName)){				

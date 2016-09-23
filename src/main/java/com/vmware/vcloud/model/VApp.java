@@ -1,24 +1,21 @@
 package com.vmware.vcloud.model;
 
+import java.util.List;
+
 public class VApp {
 	private String name;
 	private String description;
-    private String templateType;
-    private String vmName;
-    private String vmDescription;
+    private List <ChildVm> childVms;
     
 	public VApp() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public VApp(String templateType, String vmName, String vmDescription, String name, String description) {
+	public VApp(String name, String description, List <ChildVm> childVms) {
 		super();
 		this.name = name;
 		this.description = description;
-		this.templateType = templateType;
-		this.vmName = vmName;
-		this.vmDescription = vmDescription;
 	}
 
 	public String getName() {
@@ -37,28 +34,12 @@ public class VApp {
 		this.description = description;
 	}
 
-	public String getTemplateType() {
-		return templateType;
+	public List <ChildVm> getChildVms() {
+		return childVms;
 	}
 
-	public void setTemplateType(String templateType) {
-		this.templateType = templateType;
+	public void setChildVms(List <ChildVm> childVms) {
+		this.childVms = childVms;
 	}
 
-	public String getVmName() {
-		return vmName;
-	}
-
-	public void setVmName(String vmName) {
-		this.vmName = vmName;
-	}
-
-	public String getVmDescription() {
-		return vmDescription;
-	}
-
-	public void setVmDescription(String vmDescription) {
-		this.vmDescription = vmDescription;
-	}
-    
 }

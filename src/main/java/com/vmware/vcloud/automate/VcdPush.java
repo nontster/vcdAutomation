@@ -146,7 +146,7 @@ public class VcdPush {
 				Vdc vdc = VdcUtils.findVdc(client, vCloudOrg.getName(), vCloudOrg.getVdc().getVdcParams().getName());
 
 				// find the vapp template ref
-				ReferenceType vappTemplateRef = VAppUtils.findVappTemplateRef(client, vCloudOrg.getName(), vCloudOrg.getVdc().getVdcParams().getName(), vCloudOrg.getvApp().getTemplateType()); 
+				ReferenceType vappTemplateRef = VAppUtils.findVappTemplateRef(client, vCloudOrg.getCloudResources().getCatalog().getName(), vCloudOrg.getvApp().getChildVms().get(0).getTemplateType()); 
 
 				// Composed vApp. 				
 				Vapp vapp = vdc.composeVapp(VAppUtils.createComposeParams(client, vCloudOrg, vappTemplateRef, vdc));

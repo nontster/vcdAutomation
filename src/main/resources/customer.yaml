@@ -97,7 +97,7 @@ orgVdcNetwork:
 vApp:
   name: vApp_system_1
   description: vApp_system_1
-  templateType: CENTOS7
-  vmName: custom-CENTOS7
-  vmDescription: Custom VM      
-             
+  childVms:
+    - name: custom-CENTOS7
+      description: Custom VM   
+      templateType: CENTOS7

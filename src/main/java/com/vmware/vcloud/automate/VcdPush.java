@@ -1,7 +1,6 @@
 package com.vmware.vcloud.automate;
 
 import java.io.FileNotFoundException;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
@@ -15,18 +14,13 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.vmware.vcloud.api.rest.schema.GuestCustomizationSectionType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
-import com.vmware.vcloud.sdk.VM;
 import com.vmware.vcloud.sdk.Vapp;
 import com.vmware.vcloud.sdk.VcloudClient;
 import com.vmware.vcloud.sdk.Vdc;
-import com.vmware.vcloud.sdk.VirtualCpu;
-import com.vmware.vcloud.sdk.VirtualDisk;
-import com.vmware.vcloud.sdk.VirtualMemory;
 import com.vmware.vcloud.sdk.admin.AdminOrganization;
 import com.vmware.vcloud.sdk.admin.AdminVdc;
 import com.vmware.vcloud.sdk.admin.EdgeGateway;
@@ -146,10 +140,10 @@ public class VcdPush {
 				Vdc vdc = VdcUtils.findVdc(client, vCloudOrg.getName(), vCloudOrg.getVdc().getVdcParams().getName());
 
 				// find the vapp template ref
-				ReferenceType vappTemplateRef = VAppUtils.findVappTemplateRef(client, vCloudOrg.getCloudResources().getCatalog().getName(), vCloudOrg.getvApp().getChildVms().get(0).getTemplateType()); 
+				ReferenceType vappTemplateRef = VappUtils.findVappTemplateRef(client, vCloudOrg.getCloudResources().getCatalog().getName(), vCloudOrg.getvApp().getChildVms().get(0).getTemplateType()); 
 
 				// Composed vApp. 				
-				Vapp vapp = vdc.composeVapp(VAppUtils.createComposeParams(client, vCloudOrg, vappTemplateRef, vdc));
+				Vapp vapp = vdc.composeVapp(VappUtils.createComposeParams(client, vCloudOrg, vappTemplateRef, vdc));
 				System.out.println("Composing vApp : " + vapp.getResource().getName());
 				List<Task> tasks = vapp.getTasks();
 				if (tasks.size() > 0)
@@ -158,46 +152,9 @@ public class VcdPush {
 				// refresh the vapp
 				vapp = Vapp.getVappByReference(client, vapp.getReference());
 				
-				for (VM vm : vapp.getChildrenVms()) {
-					System.out.println("Reconfigure VM...");
-					System.out.println("   - " + vm.getReference().getName());
-					System.out.println("	Reconfigure OS...");		
-					
-					// Set administrator password
-					GuestCustomizationSectionType guestCustomizationSection = vm.getGuestCustomizationSection();					
-					guestCustomizationSection.setComputerName("ABC123");				
-					guestCustomizationSection.setAdminPasswordEnabled(Boolean.TRUE);
-					guestCustomizationSection.setAdminPasswordAuto(Boolean.FALSE);
-					guestCustomizationSection.setResetPasswordRequired(Boolean.TRUE);
-					guestCustomizationSection.setAdminPassword("1234567890");
-					vm.updateSection(guestCustomizationSection).waitForTask(0);
-					
-					// Configure CPU
-					System.out.println("	Updating CPU Section...");
-					VirtualCpu virtualCpuItem = vm.getCpu();
-					virtualCpuItem.setCoresPerSocket(4);
-					virtualCpuItem.setNoOfCpus(4);
-					vm.updateCpu(virtualCpuItem).waitForTask(0);
-
-					// Configure Memory
-					System.out.println("	Updating Memory Section...");
-					VirtualMemory virtualMemoryItem = vm.getMemory();
-					virtualMemoryItem.setMemorySize(BigInteger.valueOf(1024 * 8));
-					vm.updateMemory(virtualMemoryItem).waitForTask(0);
-
-					// Display summary
-					System.out.println("	Status : " + vm.getVMStatus());
-					System.out.println("	CPU : "
-							+ vm.getCpu().getNoOfCpus());
-					System.out.println("	Memory : "
-							+ vm.getMemory().getMemorySize() + " Mb");
-					for (VirtualDisk disk : vm.getDisks())
-						if (disk.isHardDisk())
-							System.out.println("	HardDisk : "
-									+ disk.getHardDiskSize() + " Mb");
-					
-				}
-									
+				// reconfigure Vms
+				VappUtils.reconfigureVms(vapp, vCloudOrg);
+										
 				System.out.println("---------- Completed! ----------");
 			}
 		} catch (ParseException e) {

@@ -137,3 +137,8 @@ vApp:
     - name: custom-CENTOS7
       description: Custom VM   
       templateType: CENTOS7
+      vCpu:
+        noOfCpus: 4 
+        coresPerSocket: 4
+      vMemory:
+        memorySize: 8

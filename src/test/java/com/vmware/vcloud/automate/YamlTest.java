@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.math.BigInteger;
 
 import org.junit.Test;
 import org.yaml.snakeyaml.TypeDescription;
@@ -137,5 +138,12 @@ public class YamlTest {
 		assertEquals("CENTOS7", org.getvApp().getChildVms().get(0).getTemplateType());
 		assertEquals("custom-CENTOS7", org.getvApp().getChildVms().get(0).getName());
 		assertEquals("Custom VM", org.getvApp().getChildVms().get(0).getDescription());
+		
+		// CPU
+		assertEquals(4, org.getvApp().getChildVms().get(0).getvCpu().getNoOfCpus());
+		assertEquals(4, org.getvApp().getChildVms().get(0).getvCpu().getCoresPerSocket());
+		// Memory
+		assertEquals(BigInteger.valueOf(8), org.getvApp().getChildVms().get(0).getvMemory().getMemorySize());
+		
 	}
 }

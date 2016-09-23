@@ -1,10 +1,13 @@
 package com.vmware.vcloud.automate;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import javax.xml.bind.JAXBElement;
 
 import com.vmware.vcloud.api.rest.schema.ComposeVAppParamsType;
+import com.vmware.vcloud.api.rest.schema.GuestCustomizationSectionType;
 import com.vmware.vcloud.api.rest.schema.InstantiationParamsType;
 import com.vmware.vcloud.api.rest.schema.NetworkConfigSectionType;
 import com.vmware.vcloud.api.rest.schema.NetworkConfigurationType;
@@ -23,16 +26,21 @@ import com.vmware.vcloud.sdk.Filter;
 import com.vmware.vcloud.sdk.QueryParams;
 import com.vmware.vcloud.sdk.RecordResult;
 import com.vmware.vcloud.sdk.VCloudException;
+import com.vmware.vcloud.sdk.VM;
+import com.vmware.vcloud.sdk.Vapp;
 import com.vmware.vcloud.sdk.VappTemplate;
 import com.vmware.vcloud.sdk.VcloudClient;
 import com.vmware.vcloud.sdk.Vdc;
+import com.vmware.vcloud.sdk.VirtualCpu;
+import com.vmware.vcloud.sdk.VirtualDisk;
+import com.vmware.vcloud.sdk.VirtualMemory;
 import com.vmware.vcloud.sdk.constants.FenceModeValuesType;
 import com.vmware.vcloud.sdk.constants.IpAddressAllocationModeType;
 import com.vmware.vcloud.sdk.constants.query.ExpressionType;
 import com.vmware.vcloud.sdk.constants.query.QueryAdminVAppTemplateField;
 import com.vmware.vcloud.sdk.constants.query.QueryRecordType;
 
-public class VAppUtils {
+public class VappUtils {
 
 	/**
 	 * Create the compose vapp params. Creating compose vapp params containing
@@ -139,7 +147,7 @@ public class VAppUtils {
 	 * @return
 	 * @throws VCloudException
 	 */
-	public static ReferenceType findVappTemplateRef(VcloudClient client, String catalogName, String vappTemplateName)
+	static ReferenceType findVappTemplateRef(VcloudClient client, String catalogName, String vappTemplateName)
 			throws VCloudException {
 		ReferenceType vappTemplateRef = new ReferenceType();
 		
@@ -159,5 +167,46 @@ public class VAppUtils {
 		return null;	
 	}
 
-	
+	static void reconfigureVms(Vapp vapp, VCloudOrganization vCloudOrg) throws VCloudException, TimeoutException {
+				
+		for (VM vm : vapp.getChildrenVms()) {
+			System.out.println("Reconfigure VM...");
+			System.out.println("   - " + vm.getReference().getName());
+			System.out.println("	Reconfigure OS...");		
+			
+			// Set administrator password
+			GuestCustomizationSectionType guestCustomizationSection = vm.getGuestCustomizationSection();					
+			guestCustomizationSection.setComputerName(vCloudOrg.getvApp().getChildVms().get(0).getComputerName());				
+			guestCustomizationSection.setAdminPasswordEnabled(Boolean.TRUE);
+			guestCustomizationSection.setAdminPasswordAuto(Boolean.FALSE);
+			guestCustomizationSection.setResetPasswordRequired(Boolean.TRUE);
+			guestCustomizationSection.setAdminPassword("1234567890");
+			vm.updateSection(guestCustomizationSection).waitForTask(0);
+			
+			// Configure CPU
+			System.out.println("	Updating CPU Section...");
+			VirtualCpu virtualCpuItem = vm.getCpu();
+			virtualCpuItem.setCoresPerSocket(vCloudOrg.getvApp().getChildVms().get(0).getvCpu().getCoresPerSocket());
+			virtualCpuItem.setNoOfCpus(vCloudOrg.getvApp().getChildVms().get(0).getvCpu().getNoOfCpus());
+			vm.updateCpu(virtualCpuItem).waitForTask(0);
+
+			// Configure Memory
+			System.out.println("	Updating Memory Section...");
+			VirtualMemory virtualMemoryItem = vm.getMemory();
+			virtualMemoryItem.setMemorySize(BigInteger.valueOf(1024).multiply(vCloudOrg.getvApp().getChildVms().get(0).getvMemory().getMemorySize()));
+			vm.updateMemory(virtualMemoryItem).waitForTask(0);
+
+			// Display summary
+			System.out.println("	Status : " + vm.getVMStatus());
+			System.out.println("	CPU : "
+					+ vm.getCpu().getNoOfCpus());
+			System.out.println("	Memory : "
+					+ vm.getMemory().getMemorySize() + " Mb");
+			for (VirtualDisk disk : vm.getDisks())
+				if (disk.isHardDisk())
+					System.out.println("	HardDisk : "
+							+ disk.getHardDiskSize() + " Mb");
+			
+		}
+	}
 }

@@ -28,6 +28,8 @@ import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.SubnetParticipationType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
+import com.vmware.vcloud.model.FirewallRule;
+import com.vmware.vcloud.model.FirewallService;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -79,11 +81,13 @@ public class NetworkUtils {
 	 * @return GatewayType
 	 * @throws VCloudException
 	 */
-	static GatewayType createEdgeGatewayParams(VcloudClient client, VCloudOrganization vCloudOrg, ReferenceType externalNetwork, String edgeGatewayName)
+	static GatewayType createEdgeGatewayParams(VcloudClient client, VCloudOrganization vCloudOrg, ReferenceType externalNetwork)
 			throws VCloudException {
 		ExternalNetwork externalNet = ExternalNetwork.getExternalNetworkByReference(client, externalNetwork);
 		IpScopeType externalNetIpScope = externalNet.getResource().getConfiguration().getIpScopes().getIpScope().get(0);
 
+		String edgeGatewayName = vCloudOrg.getEdgeGateway().getGatewayParams().getName();
+		
 		GatewayType gatewayParams = new GatewayType();
 		gatewayParams.setName(edgeGatewayName);
 		gatewayParams.setDescription(vCloudOrg.getEdgeGateway().getGatewayParams().getDescription());
@@ -190,19 +194,24 @@ public class NetworkUtils {
 		gatewayFeatures.getNetworkService().add(nat);
 
 		// Edge Gateway Firewall service configuration
-		FirewallServiceType firewallService = new FirewallServiceType(); 
-		firewallService.setIsEnabled(true);
-		firewallService.setDefaultAction(FirewallPolicyType.DROP.value());
-		firewallService.setLogDefaultAction(false);
+		FirewallService fs = vCloudOrg.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService();
 		
-		List <FirewallRuleType> fwRules = firewallService.getFirewallRule();
-        addFirewallRule(fwRules, "PING OUT", "ICMP", "10.1.1.0/24", "Any", "Any");
-        addFirewallRule(fwRules, "DNS OUT", "UDP", "10.1.1.0/24", "Any", "53");
-        addFirewallRule(fwRules, "NTP OUT", "UDP", "10.1.1.0/24", "Any", "123");
-        addFirewallRule(fwRules, "HTTP OUT", "TCP", "10.1.1.0/24", "Any", "80");
-        addFirewallRule(fwRules, "HTTPS OUT", "TCP", "10.1.1.0/24", "Any", "443");
-        addFirewallRule(fwRules, "PING IN", "ICMP", "external", "internal", "Any");
-        
+		FirewallServiceType firewallService = new FirewallServiceType(); 
+		firewallService.setIsEnabled(fs.isEnabled());
+		
+		if (fs.getDefaultAction().name().equalsIgnoreCase("DROP"))
+			firewallService.setDefaultAction(FirewallPolicyType.DROP.value());
+		else if (fs.getDefaultAction().name().equalsIgnoreCase("ALLOW"))
+			firewallService.setDefaultAction(FirewallPolicyType.ALLOW.value());
+		
+		firewallService.setLogDefaultAction(fs.isLogDefaultAction());
+		
+		List <FirewallRuleType> fwRules = firewallService.getFirewallRule();		       
+				
+		for(FirewallRule fr : fs.getFirewallRules()){			
+			addFirewallRule(fwRules, fr.getDescription(), fr.getProtocol().name(), fr.getSourceIp(), fr.getDestIp(), fr.getDestPort());
+		}
+		
 		JAXBElement<FirewallServiceType> firewall = objectFactory.createFirewallService(firewallService); 
 		gatewayFeatures.getNetworkService().add(firewall);
 
@@ -369,7 +378,7 @@ public class NetworkUtils {
 		System.out.println("External Network: " + vCloudOrg.getCloudResources().getExternalNetwork().getName() + " : " + externalNetRef.getHref() + "\n");
 		
 		System.out.println("Creating EdgeGateway: " + vCloudOrg.getEdgeGateway().getGatewayParams().getName());
-		GatewayType gateway = NetworkUtils.createEdgeGatewayParams(client, vCloudOrg, externalNetRef, vCloudOrg.getEdgeGateway().getGatewayParams().getName());
+		GatewayType gateway = NetworkUtils.createEdgeGatewayParams(client, vCloudOrg, externalNetRef);
 
 		edgeGateway = adminVdc.createEdgeGateway(gateway);
 		Task createTask = returnTask(client, edgeGateway);

@@ -4,17 +4,19 @@ public class GatewayParams {
 	private String name;
 	private String description;
 	private GatewayConfiguration gatewayConfiguration;
+	private GatewayFeatures gatewayFeatures;
 	
 	public GatewayParams() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public GatewayParams(String name, String description, GatewayConfiguration gatewayConfiguration) {
+	public GatewayParams(String name, String description, GatewayConfiguration gatewayConfiguration, GatewayFeatures gatewayFeatures) {
 		super();
 		this.name = name;
 		this.description = description;
 		this.gatewayConfiguration = gatewayConfiguration;
+		this.setGatewayFeatures(gatewayFeatures);
 	}
 
 	public String getName() {
@@ -39,6 +41,14 @@ public class GatewayParams {
 
 	public void setGatewayConfiguration(GatewayConfiguration gatewayConfiguration) {
 		this.gatewayConfiguration = gatewayConfiguration;
+	}
+
+	public GatewayFeatures getGatewayFeatures() {
+		return gatewayFeatures;
+	}
+
+	public void setGatewayFeatures(GatewayFeatures gatewayFeatures) {
+		this.gatewayFeatures = gatewayFeatures;
 	}
 	
 }

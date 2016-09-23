@@ -10,6 +10,8 @@ import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import com.vmware.vcloud.model.FirewallRule;
+import com.vmware.vcloud.model.Protocol;
 import com.vmware.vcloud.model.VCloudOrganization;
 
 public class YamlTest {
@@ -88,6 +90,21 @@ public class YamlTest {
 		// Edge Gateway
 		assertEquals("custom-edgege-01", org.getEdgeGateway().getGatewayParams().getName());
 		assertEquals("Custom edge gateway", org.getEdgeGateway().getGatewayParams().getDescription());
+		assertTrue(org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().isEnabled());
+		assertFalse(org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().isLogDefaultAction());
+			
+		assertEquals("PING OUT", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDescription());
+		assertEquals(Protocol.ICMP, org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getProtocol());
+		assertEquals("10.1.1.0/24", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getSourceIp());
+		assertEquals("Any", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDestIp());
+		assertEquals("Any", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDestPort());	
+
+		assertEquals("DNS OUT", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDescription());
+		assertEquals(Protocol.UDP, org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getProtocol());
+		assertEquals("10.1.1.0/24", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getSourceIp());
+		assertEquals("Any", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDestIp());
+		assertEquals("53", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDestPort());
+		
 		
 		// Gateway Configuration
 		assertEquals("COMPACT", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayBackingConfig().COMPACT.name());

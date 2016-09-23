@@ -2,17 +2,17 @@
 name: CustomAdminOrg
 description: Custom Admin Org Desc
 fullName: Custom Admin Org Full Name
-enabled: True
+enabled: true
 user:
   name: sampleuser
   password: samplepassword
-  enabled: True
+  enabled: true
   roleName: 'Customer Managed Service'
   fullName: 'User Full Name'
   emailAddress: 'user@company.com'
 orgSettings:
   orgLeaseSettings:
-    deleteOnStorageLeaseExpiration: False
+    deleteOnStorageLeaseExpiration: false
     deploymentLeaseSeconds: 0
     storageLeaseSeconds: 0
   orgGeneralSettings:
@@ -20,7 +20,7 @@ orgSettings:
     deployedVMQuota: 0
     canPublishCatalogs: False
   orgVAppTemplateLeaseSettings:
-    deleteOnStorageLeaseExpiration: False
+    deleteOnStorageLeaseExpiration: false
     storageLeaseSeconds: 0
   orgPasswordPolicySettings:
     accountLockoutEnabled: True
@@ -78,6 +78,42 @@ edgeGateway:
               - startAddress: 192.168.1.101
                 endAddress: 192.168.1.101
           useForDefaultRoute: True
+    gatewayFeatures:
+      firewallService:
+        enabled: true
+        defaultAction: DROP
+        logDefaultAction: false
+        firewallRules:
+          - description: PING OUT
+            protocol: ICMP                
+            sourceIp: "10.1.1.0/24"
+            destIp: Any
+            destPort: Any
+          - description: DNS OUT
+            protocol: UDP                
+            sourceIp: "10.1.1.0/24"
+            destIp: Any
+            destPort: 53
+          - description: NTP OUT
+            protocol: UDP                
+            sourceIp: "10.1.1.0/24"
+            destIp: Any
+            destPort: 123
+          - description: HTTP OUT
+            protocol: TCP                
+            sourceIp: "10.1.1.0/24"
+            destIp: Any
+            destPort: 80
+          - description: HTTPS OUT
+            protocol: TCP                
+            sourceIp: "10.1.1.0/24"
+            destIp: Any
+            destPort: 443
+          - description: PING IN
+            protocol: ICMP                
+            sourceIp: external
+            destIp: internal
+            destPort: Any            
 orgVdcNetwork:      
   name: custom-orgnet-01
   description: Custom Organization network    

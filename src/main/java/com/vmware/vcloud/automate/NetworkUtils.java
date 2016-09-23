@@ -366,7 +366,7 @@ public class NetworkUtils {
 			
 		ReferenceType externalNetRef = NetworkUtils.getExternalNetworkRef(client, vCloudOrg.getCloudResources().getExternalNetwork().getName());
 		
-		System.out.println("External Network: " + vCloudOrg.getCloudResources().getExternalNetwork().getName() + " : " + externalNetRef + "\n");
+		System.out.println("External Network: " + vCloudOrg.getCloudResources().getExternalNetwork().getName() + " : " + externalNetRef.getHref() + "\n");
 		
 		System.out.println("Creating EdgeGateway: " + vCloudOrg.getEdgeGateway().getGatewayParams().getName());
 		GatewayType gateway = NetworkUtils.createEdgeGatewayParams(client, vCloudOrg, externalNetRef, vCloudOrg.getEdgeGateway().getGatewayParams().getName());

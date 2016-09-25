@@ -18,6 +18,8 @@ import com.vmware.vcloud.api.rest.schema.QueryResultAdminVAppTemplateRecordType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.SourcedCompositionItemParamType;
 import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
+import com.vmware.vcloud.api.rest.schema.VAppType;
+import com.vmware.vcloud.api.rest.schema.VmType;
 import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.model.VCloudOrganization;
@@ -64,7 +66,7 @@ public class VappUtils {
 		}		
 		
 		// Specify the NetworkConfiguration for the vApp network
-		System.out.println("Setting vApp ParantNetwork: "+ vdc.getResource().getAvailableNetworks().getNetwork().get(0).getName());
+		System.out.println("	Setting vApp ParantNetwork: "+ vdc.getResource().getAvailableNetworks().getNetwork().get(0).getName());
 		networkConfigurationType.setParentNetwork(vdc.getResource().getAvailableNetworks().getNetwork().get(0));
 		
 		// FIXME: use NATROUTED and change BRIDGED later to solve vCloud Director bug
@@ -105,16 +107,16 @@ public class VappUtils {
 		}
 		
 		if (vm == null) {
-			System.out.println("Could not find template VM");
+			System.out.println("	Could not find template VM");
 			System.exit(1);
 		}
-		
+
 		String vmHref = vm.getReference().getHref();
 
 		SourcedCompositionItemParamType vappTemplateItem = new SourcedCompositionItemParamType();
 		ReferenceType vappTemplateVMRef = new ReferenceType();
 		vappTemplateVMRef.setHref(vmHref);
-		vappTemplateVMRef.setName(vCloudOrg.getvApp().getName());
+		vappTemplateVMRef.setName(vCloudOrg.getvApp().getChildVms().get(0).getName());
 		vappTemplateItem.setSource(vappTemplateVMRef);
 
 		NetworkConnectionSectionType networkConnectionSectionType = new NetworkConnectionSectionType();
@@ -168,10 +170,15 @@ public class VappUtils {
 	}
 
 	static void reconfigureVms(Vapp vapp, VCloudOrganization vCloudOrg) throws VCloudException, TimeoutException {
+						
+/*		VAppType vAppType =  vapp.getResource();
+		List <VmType> vmType =  vAppType.getChildren().getVm();		
+		vmType.get(0).setDescription(vCloudOrg.getvApp().getChildVms().get(0).getDescription());
+		vmType.get(0).setName(vCloudOrg.getvApp().getChildVms().get(0).getName());
+		vapp.updateVapp(vAppType).waitForTask(0);*/
 				
 		for (VM vm : vapp.getChildrenVms()) {
-			System.out.println("Reconfigure VM...");
-			System.out.println("   - " + vm.getReference().getName());
+			System.out.println("	Reconfigure VM: " + vm.getReference().getName());
 			System.out.println("	Reconfigure OS...");		
 			
 			// Set administrator password

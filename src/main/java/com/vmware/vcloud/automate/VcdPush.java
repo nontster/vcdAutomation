@@ -142,9 +142,10 @@ public class VcdPush {
 				// find the vapp template ref
 				ReferenceType vappTemplateRef = VappUtils.findVappTemplateRef(client, vCloudOrg.getCloudResources().getCatalog().getName(), vCloudOrg.getvApp().getChildVms().get(0).getTemplateType()); 
 
-				// Composed vApp. 				
+				// Composed vApp. 
+				System.out.println("vApp: " + vCloudOrg.getvApp().getName());
 				Vapp vapp = vdc.composeVapp(VappUtils.createComposeParams(client, vCloudOrg, vappTemplateRef, vdc));
-				System.out.println("Composing vApp : " + vapp.getResource().getName());
+				System.out.println("	Composing vApp : " + vapp.getResource().getName());
 				List<Task> tasks = vapp.getTasks();
 				if (tasks.size() > 0)
 					tasks.get(0).waitForTask(0);

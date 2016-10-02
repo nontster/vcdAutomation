@@ -2,7 +2,12 @@
 name: CustomAdminOrg
 description: Custom Admin Org Desc
 fullName: Custom Admin Org Full Name
-enabled: true
+enabled: True
+caNumber: 7650000123
+nonMobileNo: 9000012345
+trial: True
+startDate: 2016-10-01
+endDate: 2016-10-31
 user:
   name: sampleuser
   password: samplepassword
@@ -34,7 +39,7 @@ cloudResources:
   externalNetwork:
     name: Tenant-External-Internet02
   catalog:
-    name: GLOBAL-VM-TEMPLATES-CATALOG  
+    name: GLOBAL-VM-TEMPLATES-CATALOG
 vdc:
   vdcParams:
     name: customer-vdc

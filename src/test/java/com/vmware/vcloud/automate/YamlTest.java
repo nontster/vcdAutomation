@@ -5,6 +5,11 @@ import static org.junit.Assert.*;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import org.junit.Test;
 import org.yaml.snakeyaml.TypeDescription;
@@ -24,9 +29,16 @@ public class YamlTest {
 		VCloudOrganization org = cParser.getOrg();
 		
 		assertEquals("CustomAdminOrg", org.getName());
-		assertEquals("Custom Admin Org Desc",org.getDescription());
-		assertEquals("Custom Admin Org Full Name",org.getFullName());
+		assertEquals("Custom Admin Org Desc", org.getDescription());
+		assertEquals("Custom Admin Org Full Name", org.getFullName());
 		assertEquals(true, org.isEnabled());
+		assertEquals("7650000123", org.getCaNumber());
+		assertEquals("9000012345", org.getNonMobileNo());
+		assertEquals(true, org.isTrial());
+		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		assertEquals("2016-10-01", df.format(org.getStartDate()));
+		assertEquals("2016-10-31", df.format(org.getEndDate()));
 		
 		// User
 		assertEquals("sampleuser", org.getUser().getName());

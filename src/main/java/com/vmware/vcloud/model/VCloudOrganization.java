@@ -1,10 +1,17 @@
 package com.vmware.vcloud.model;
 
+import java.util.Date;
+
 public class VCloudOrganization {
 	private String name;
 	private String description;
 	private String fullName;
 	private boolean enabled;
+	private boolean trial;
+	private String caNumber;
+	private String nonMobileNo;
+	private Date startDate;
+	private Date endDate;
 	private User user;
 	private OrgSettings orgSettings;
 	private CloudResources cloudResources;
@@ -18,13 +25,19 @@ public class VCloudOrganization {
 		// TODO Auto-generated constructor stub
 	}
 
-	public VCloudOrganization(String name, String description, String fullName, boolean enabled, User user,
-			OrgSettings orgSettings, CloudResources cloudResources, Vdc vdc, EdgeGateway edgeGateway, OrgVdcNetwork orgVdcNetwork, VApp vApp) {
+	public VCloudOrganization(String name, String description, String fullName, boolean enabled, boolean trial,
+			String caNumber, String nonMobileNo, Date startDate, Date endDate, User user, OrgSettings orgSettings,
+			CloudResources cloudResources, Vdc vdc, EdgeGateway edgeGateway, OrgVdcNetwork orgVdcNetwork, VApp vApp) {
 		super();
 		this.name = name;
 		this.description = description;
 		this.fullName = fullName;
 		this.enabled = enabled;
+		this.setTrial(trial);
+		this.setCaNumber(caNumber);
+		this.setNonMobileNo(nonMobileNo);
+		this.setStartDate(startDate);
+		this.setEndDate(endDate);
 		this.user = user;
 		this.orgSettings = orgSettings;
 		this.cloudResources = cloudResources;
@@ -60,6 +73,46 @@ public class VCloudOrganization {
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	public boolean isTrial() {
+		return trial;
+	}
+
+	public String getCaNumber() {
+		return caNumber;
+	}
+
+	public void setCaNumber(String caNumber) {
+		this.caNumber = caNumber;
+	}
+
+	public String getNonMobileNo() {
+		return nonMobileNo;
+	}
+
+	public void setNonMobileNo(String nonMobileNo) {
+		this.nonMobileNo = nonMobileNo;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public void setTrial(boolean trial) {
+		this.trial = trial;
 	}
 
 	public void setEnabled(boolean enabled) {

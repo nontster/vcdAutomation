@@ -33,6 +33,8 @@ cloudResources:
     name: TLS1-ALLOC-PVDC01-VXLAN-NP
   externalNetwork:
     name: Tenant-External-Internet02
+  catalog:
+    name: GLOBAL-VM-TEMPLATES-CATALOG  
 vdc:
   vdcParams:
     name: customer-vdc
@@ -51,7 +53,7 @@ vdc:
       memory:
         allocated: 0
         overhead: 0
-        units: MB 
+        units: MB
         used: 0
         limit: 0
     networkQuota: 1
@@ -68,10 +70,10 @@ edgeGateway:
       gatewayBackingConfig: COMPACT
       haEnabled: False
       useDefaultRouteForDnsRelay: False
-      gatewayInterfaces:  
+      gatewayInterfaces:
         - displayName: 'Custom gateway interface'
           interfaceType: UPLINK
-          subnetParticipation:    
+          subnetParticipation:
             gateway: 192.168.1.1
             netmask: 255.255.255.0
             ipRanges:
@@ -85,38 +87,38 @@ edgeGateway:
         logDefaultAction: false
         firewallRules:
           - description: PING OUT
-            protocol: ICMP                
+            protocol: ICMP
             sourceIp: "10.1.1.0/24"
             destIp: Any
             destPort: Any
           - description: DNS OUT
-            protocol: UDP                
+            protocol: UDP
             sourceIp: "10.1.1.0/24"
             destIp: Any
             destPort: 53
           - description: NTP OUT
-            protocol: UDP                
+            protocol: UDP
             sourceIp: "10.1.1.0/24"
             destIp: Any
             destPort: 123
           - description: HTTP OUT
-            protocol: TCP                
+            protocol: TCP
             sourceIp: "10.1.1.0/24"
             destIp: Any
             destPort: 80
           - description: HTTPS OUT
-            protocol: TCP                
+            protocol: TCP
             sourceIp: "10.1.1.0/24"
             destIp: Any
             destPort: 443
           - description: PING IN
-            protocol: ICMP                
+            protocol: ICMP
             sourceIp: external
             destIp: internal
-            destPort: Any            
-orgVdcNetwork:      
+            destPort: Any
+orgVdcNetwork:
   name: custom-orgnet-01
-  description: Custom Organization network    
+  description: Custom Organization network
   configuration:
     retainNetInfoAcrossDeployments: true
     fenceMode: NATROUTED
@@ -135,10 +137,10 @@ vApp:
   description: vApp_system_1
   childVms:
     - name: custom-CENTOS7
-      description: Custom VM   
+      description: Custom VM
       templateType: CENTOS7
       vCpu:
-        noOfCpus: 4 
+        noOfCpus: 4
         coresPerSocket: 4
       vMemory:
         memorySize: 8

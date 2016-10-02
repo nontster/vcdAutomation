@@ -56,6 +56,7 @@ public class YamlTest {
 		assertEquals("TLS1-ALLOC-PVDC01", org.getCloudResources().getProviderVdc().getName());
 		assertEquals("TLS1-ALLOC-PVDC01-VXLAN-NP", org.getCloudResources().getNetworkPool().getName());
 		assertEquals("Tenant-External-Internet02", org.getCloudResources().getExternalNetwork().getName());
+		assertEquals("GLOBAL-VM-TEMPLATES-CATALOG", org.getCloudResources().getCatalog().getName());
 		
 		// Vdc
 		assertEquals("customer-vdc", org.getVdc().getVdcParams().getName());

@@ -1,10 +1,13 @@
 package com.vmware.vcloud.automate;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import javax.xml.bind.JAXBElement;
+
+import org.apache.commons.lang3.RandomStringUtils;
 
 import com.vmware.vcloud.api.rest.schema.ComposeVAppParamsType;
 import com.vmware.vcloud.api.rest.schema.GuestCustomizationSectionType;
@@ -21,6 +24,7 @@ import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
 import com.vmware.vcloud.api.rest.schema.VAppType;
 import com.vmware.vcloud.api.rest.schema.VmType;
 import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
+import com.vmware.vcloud.api.rest.schema.ovf.OperatingSystemSectionType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Expression;
@@ -87,7 +91,7 @@ public class VappUtils {
 		InstantiationParamsType vappOrvAppTemplateInstantiationParamsType = new InstantiationParamsType(); 
 		List<JAXBElement<? extends SectionType>> vappSections = vappOrvAppTemplateInstantiationParamsType.getSection();
 		vappSections.add(new ObjectFactory().createNetworkConfigSection(networkConfigSectionType));
-
+		
 		ComposeVAppParamsType composeVAppParamsType = new ComposeVAppParamsType(); 
 		composeVAppParamsType.setDeploy(false);
 		composeVAppParamsType.setInstantiationParams(vappOrvAppTemplateInstantiationParamsType);
@@ -141,6 +145,13 @@ public class VappUtils {
 	}
 	
 
+	/* Generate a random password */
+	static String genPassword(){
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
+		String pwd = RandomStringUtils.random( 8, 0, 0, false, false, characters.toCharArray(), new SecureRandom() );
+		return pwd;
+	}	
+	
 	/**
 	 * Search the vapp template reference. Since the vapptemplate is not unique
 	 * under a vdc. This method returns the first occurance of the vapptemplate
@@ -170,24 +181,27 @@ public class VappUtils {
 	}
 
 	static void reconfigureVms(Vapp vapp, VCloudOrganization vCloudOrg) throws VCloudException, TimeoutException {
-						
-/*		VAppType vAppType =  vapp.getResource();
-		List <VmType> vmType =  vAppType.getChildren().getVm();		
-		vmType.get(0).setDescription(vCloudOrg.getvApp().getChildVms().get(0).getDescription());
-		vmType.get(0).setName(vCloudOrg.getvApp().getChildVms().get(0).getName());
-		vapp.updateVapp(vAppType).waitForTask(0);*/
-				
+								
 		for (VM vm : vapp.getChildrenVms()) {
 			System.out.println("	Reconfigure VM: " + vm.getReference().getName());
-			System.out.println("	Reconfigure OS...");		
+			System.out.println("	Reconfigure GuestOS...");
 			
+			// Set VM description 
+			VmType vmType = vm.getResource();
+			vmType.setDescription(vCloudOrg.getvApp().getChildVms().get(0).getDescription());
+			vm.updateVM(vmType).waitForTask(0);
+			 			
 			// Set administrator password
 			GuestCustomizationSectionType guestCustomizationSection = vm.getGuestCustomizationSection();					
 			guestCustomizationSection.setComputerName(vCloudOrg.getvApp().getChildVms().get(0).getComputerName());				
 			guestCustomizationSection.setAdminPasswordEnabled(Boolean.TRUE);
 			guestCustomizationSection.setAdminPasswordAuto(Boolean.FALSE);
 			guestCustomizationSection.setResetPasswordRequired(Boolean.TRUE);
-			guestCustomizationSection.setAdminPassword("1234567890");
+			
+			String adminPass = VappUtils.genPassword();			
+			guestCustomizationSection.setAdminPassword(adminPass);
+			System.out.println("		Administrator password: "+ adminPass);
+			
 			vm.updateSection(guestCustomizationSection).waitForTask(0);
 			
 			// Configure CPU

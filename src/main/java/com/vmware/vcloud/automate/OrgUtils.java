@@ -1,5 +1,8 @@
 package com.vmware.vcloud.automate;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import com.vmware.vcloud.api.rest.schema.AdminOrgType;
 import com.vmware.vcloud.api.rest.schema.OrgGeneralSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgLeaseSettingsType;
@@ -74,7 +77,29 @@ public class OrgUtils {
 
 		AdminOrgType adminOrgType = new AdminOrgType();
 		adminOrgType.setName(vCloudOrg.getName());
-		adminOrgType.setDescription(vCloudOrg.getDescription());
+		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		StringBuffer descBuff = new StringBuffer();
+		
+		descBuff.append("CA Number :").append(vCloudOrg.getCaNumber()).append("\n");
+				
+		if(vCloudOrg.getStartDate() != null && !df.format(vCloudOrg.getStartDate()).isEmpty()){
+			
+			descBuff.append("Start Date :").append(df.format(vCloudOrg.getStartDate()));
+			
+			if(vCloudOrg.getEndDate() != null && !df.format(vCloudOrg.getEndDate()).isEmpty() && vCloudOrg.isTrial()){
+				descBuff.append(" - ").append(df.format(vCloudOrg.getEndDate()));
+			}
+			
+			descBuff.append("\n");
+		}
+		
+		descBuff.append("Customer Contract :").append("\n");
+		descBuff.append("   Name: ").append(vCloudOrg.getUser().getFullName()).append("\n");
+		descBuff.append("   Email: ").append(vCloudOrg.getUser().getEmailAddress()).append("\n");
+		descBuff.append("   Tel.: ").append(vCloudOrg.getUser().getPhone()).append("\n");
+				
+		adminOrgType.setDescription(descBuff.toString());
 		adminOrgType.setFullName(vCloudOrg.getFullName());
 		adminOrgType.setSettings(orgSettings);
 		adminOrgType.setIsEnabled(vCloudOrg.isEnabled());

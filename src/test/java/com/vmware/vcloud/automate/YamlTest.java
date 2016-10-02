@@ -47,6 +47,7 @@ public class YamlTest {
 		assertEquals("Customer Managed Service", org.getUser().getRoleName());
 		assertEquals("User Full Name", org.getUser().getFullName());
 		assertEquals("user@company.com", org.getUser().getEmailAddress());
+		assertEquals("1175", org.getUser().getPhone());
 		
 		// OrgSettings
 		assertEquals(false, org.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration());

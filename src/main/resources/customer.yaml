@@ -11,13 +11,14 @@ endDate: 2016-10-31
 user:
   name: sampleuser
   password: samplepassword
-  enabled: true
+  enabled: True
   roleName: 'Customer Managed Service'
   fullName: 'User Full Name'
   emailAddress: 'user@company.com'
+  phone: 1175
 orgSettings:
   orgLeaseSettings:
-    deleteOnStorageLeaseExpiration: false
+    deleteOnStorageLeaseExpiration: False
     deploymentLeaseSeconds: 0
     storageLeaseSeconds: 0
   orgGeneralSettings:
@@ -25,7 +26,7 @@ orgSettings:
     deployedVMQuota: 0
     canPublishCatalogs: False
   orgVAppTemplateLeaseSettings:
-    deleteOnStorageLeaseExpiration: false
+    deleteOnStorageLeaseExpiration: False
     storageLeaseSeconds: 0
   orgPasswordPolicySettings:
     accountLockoutEnabled: True
@@ -87,9 +88,9 @@ edgeGateway:
           useForDefaultRoute: True
     gatewayFeatures:
       firewallService:
-        enabled: true
+        enabled: True
         defaultAction: DROP
-        logDefaultAction: false
+        logDefaultAction: False
         firewallRules:
           - description: PING OUT
             protocol: ICMP
@@ -125,13 +126,13 @@ orgVdcNetwork:
   name: custom-orgnet-01
   description: Custom Organization network
   configuration:
-    retainNetInfoAcrossDeployments: true
+    retainNetInfoAcrossDeployments: True
     fenceMode: NATROUTED
     ipScopes:
       - netmask: 255.255.255.0
         gateway: 10.1.1.1
-        enabled: true
-        inherited: true
+        enabled: True
+        inherited: True
         dns1: 192.168.2.1
         dns2: 192.168.2.2
         ipRange:

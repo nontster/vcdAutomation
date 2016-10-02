@@ -21,10 +21,8 @@ import com.vmware.vcloud.api.rest.schema.QueryResultAdminVAppTemplateRecordType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.SourcedCompositionItemParamType;
 import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
-import com.vmware.vcloud.api.rest.schema.VAppType;
 import com.vmware.vcloud.api.rest.schema.VmType;
 import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
-import com.vmware.vcloud.api.rest.schema.ovf.OperatingSystemSectionType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Expression;
@@ -188,7 +186,7 @@ public class VappUtils {
 			
 			// Set VM description 
 			VmType vmType = vm.getResource();
-			vmType.setDescription(vCloudOrg.getvApp().getChildVms().get(0).getDescription());
+			vmType.setDescription("Non-Mobile :"+ vCloudOrg.getNonMobileNo());
 			vm.updateVM(vmType).waitForTask(0);
 			 			
 			// Set administrator password

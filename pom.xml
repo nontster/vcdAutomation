@@ -22,6 +22,7 @@
 			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>1.7.12</version>
 				<executions>
 					<execution>
 						<id>l4j-clui</id>
@@ -32,27 +33,28 @@
 						<configuration>
 							<headerType>console</headerType>
 							<outfile>target/bee.exe</outfile>
-							<jar>target/vcdAutomation-0.0.1-SNAPSHOT.jar</jar>
+							<jar>target/vcdAutomation-0.0.1-SNAPSHOT-jar-with-dependencies.jar</jar>
 							<errTitle>bee</errTitle>
 							<classPath>
 								<mainClass>com.vmware.vcloud.automate.VcdPush</mainClass>
-								<addDependencies>false</addDependencies>
-								<preCp>anything</preCp>
+								<addDependencies>true</addDependencies>
+								<jarLocation>lib/</jarLocation>
+								<!-- <preCp>anything</preCp> -->
 							</classPath>
 							<jre>
-								<minVersion>1.5.0</minVersion>
+								<minVersion>1.6.0</minVersion>
 								<opts>
 									<opt>-Djava.endorsed.dirs=./endorsed</opt>
 								</opts>
 							</jre>
 							<versionInfo>
 								<fileVersion>1.0.0.0</fileVersion>
-								<txtFileVersion>txt file version?</txtFileVersion>
+								<txtFileVersion>1.0.0.0</txtFileVersion>
 								<fileDescription>VMware vCloud Director Automation Tool</fileDescription>
 								<copyright>Advanced Wireless Network Co., Ltd.</copyright>
 								<productVersion>1.0.0.0</productVersion>
-								<txtProductVersion>txt product version</txtProductVersion>
-								<productName>bee</productName>
+								<txtProductVersion>1.0.0.0</txtProductVersion>
+								<productName>Bee</productName>
 								<internalName>bee</internalName>
 								<originalFilename>bee.exe</originalFilename>
 							</versionInfo>
@@ -60,20 +62,31 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Maven Assembly Plugin -->
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<!-- get all project dependencies -->
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<!-- MainClass in mainfest make a executable jar -->
+					<archive>
+						<manifest>
+							<mainClass>com.vmware.vcloud.automate.VcdPush</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
 				<executions>
 					<execution>
-						<id>assembly</id>
+						<id>make-assembly</id>
+						<!-- bind to the packaging phase -->
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>assembly.xml</descriptor>
-							</descriptors>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -126,21 +139,17 @@
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-			<version>1.17</version>
+			<version>1.16</version>
 		</dependency>
 		<dependency>
-			<groupId>rest-api-schemas</groupId>
+			<groupId>com.vmware</groupId>
 			<artifactId>rest-api-schemas</artifactId>
-			<scope>system</scope>
-			<version>5.5.0</version>
-			<systemPath>${basedir}/src/lib/rest-api-schemas-5.5.0.jar</systemPath>
+			<version>5.5</version>
 		</dependency>
 		<dependency>
-			<groupId>vcloud-java-sdk</groupId>
+			<groupId>com.vmware</groupId>
 			<artifactId>vcloud-java-sdk</artifactId>
-			<scope>system</scope>
-			<version>5.5.0</version>
-			<systemPath>${basedir}/src/lib/vcloud-java-sdk-5.5.0.jar</systemPath>
+			<version>5.5</version>
 		</dependency>
 	</dependencies>
 </project>

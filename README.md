@@ -32,11 +32,6 @@ $ mvn install:install-file -Dfile=rest-api-schemas-5.5.0.jar -DgroupId=com.vmwar
 ```
 
 # Building and packaging MS Windows executable file
-
-```
-$ mvn compile
-```
-
 ```
 $ mvn package
 ```

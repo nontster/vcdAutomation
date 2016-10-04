@@ -20,6 +20,29 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.7.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<shadedArtifactAttached>true</shadedArtifactAttached>
+					<shadedClassifierName>shaded</shadedClassifierName>
+					<transformers>
+						<transformer
+							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+							<mainClass>com.vmware.vcloud.automate.VcdPush</mainClass>
+						</transformer>
+					</transformers>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
 				<version>1.7.12</version>
@@ -33,13 +56,13 @@
 						<configuration>
 							<headerType>console</headerType>
 							<outfile>target/bee.exe</outfile>
-							<jar>target/vcdAutomation-0.0.1-SNAPSHOT-jar-with-dependencies.jar</jar>
+							<jar>target/vcdAutomation-0.0.1-SNAPSHOT-shaded.jar</jar>
 							<errTitle>bee</errTitle>
 							<classPath>
 								<mainClass>com.vmware.vcloud.automate.VcdPush</mainClass>
 								<addDependencies>true</addDependencies>
 								<jarLocation>lib/</jarLocation>
-								<!-- <preCp>anything</preCp> -->
+								<preCp>anything</preCp>
 							</classPath>
 							<jre>
 								<minVersion>1.6.0</minVersion>
@@ -59,34 +82,6 @@
 								<originalFilename>bee.exe</originalFilename>
 							</versionInfo>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Maven Assembly Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<!-- get all project dependencies -->
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<!-- MainClass in mainfest make a executable jar -->
-					<archive>
-						<manifest>
-							<mainClass>com.vmware.vcloud.automate.VcdPush</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<!-- bind to the packaging phase -->
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>

@@ -137,7 +137,7 @@ public class VcdPush {
 				NetworkUtils.addNatRoutedOrgVdcNetwork(client, vCloudOrg, edgeGateway, adminVdc, adminOrg);
 			
 				// find the vdc ref
-				Vdc vdc = VdcUtils.findVdc(client, vCloudOrg.getName(), vCloudOrg.getVdc().getVdcParams().getName());
+				Vdc vdc = VdcUtils.findVdc(client, vCloudOrg.getName(), vCloudOrg.getVdc().getName());
 
 				// find the vapp template ref
 				ReferenceType vappTemplateRef = VappUtils.findVappTemplateRef(client, vCloudOrg.getCloudResources().getCatalog().getName(), vCloudOrg.getvApp().getChildVms().get(0).getTemplateType()); 

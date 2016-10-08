@@ -43,27 +43,27 @@ public class VdcUtils {
 		createVdcParams.setAllocationModel(AllocationModelType.ALLOCATIONVAPP.value());
 
 		// guaranteed 20% CPU/Memory resources
-		createVdcParams.setResourceGuaranteedCpu(Double.parseDouble(new Float(org.getVdc().getVdcParams().getResourceGuaranteedCpu()).toString())); 																											 																											
-		createVdcParams.setResourceGuaranteedMemory(Double.parseDouble(new Float(org.getVdc().getVdcParams().getResourceGuaranteedMemory()).toString())); 
+		createVdcParams.setResourceGuaranteedCpu(Double.parseDouble(new Float(org.getVdc().getResourceGuaranteedCpu()).toString())); 																											 																											
+		createVdcParams.setResourceGuaranteedMemory(Double.parseDouble(new Float(org.getVdc().getResourceGuaranteedMemory()).toString())); 
 
 		// Rest all Defaults for the 'Pay As You Go Model' configuration.
 		// Compute Capacity -- this is needed. UI Uses defaults.
 		ComputeCapacityType computeCapacity = new ComputeCapacityType();
 		CapacityWithUsageType cpu = new CapacityWithUsageType();
-		cpu.setAllocated(new Long(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getAllocated()));
-		cpu.setOverhead(new Long(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getOverhead()));
-		cpu.setUnits(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getUnits());
-		cpu.setUsed(new Long(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getUsed()));
-		cpu.setLimit(org.getVdc().getVdcParams().getComputeCapacity().getCpu().getLimit());
+		cpu.setAllocated(new Long(org.getVdc().getComputeCapacity().getCpu().getAllocated()));
+		cpu.setOverhead(new Long(org.getVdc().getComputeCapacity().getCpu().getOverhead()));
+		cpu.setUnits(org.getVdc().getComputeCapacity().getCpu().getUnits());
+		cpu.setUsed(new Long(org.getVdc().getComputeCapacity().getCpu().getUsed()));
+		cpu.setLimit(org.getVdc().getComputeCapacity().getCpu().getLimit());
 
 		computeCapacity.setCpu(cpu);
 
 		CapacityWithUsageType mem = new CapacityWithUsageType();
-		mem.setAllocated(new Long(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getAllocated()));
-		mem.setOverhead(new Long(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getOverhead()));
-		mem.setUnits(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getUnits());
-		mem.setUsed(new Long(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getUsed()));
-		mem.setLimit(org.getVdc().getVdcParams().getComputeCapacity().getMemory().getLimit());
+		mem.setAllocated(new Long(org.getVdc().getComputeCapacity().getMemory().getAllocated()));
+		mem.setOverhead(new Long(org.getVdc().getComputeCapacity().getMemory().getOverhead()));
+		mem.setUnits(org.getVdc().getComputeCapacity().getMemory().getUnits());
+		mem.setUsed(new Long(org.getVdc().getComputeCapacity().getMemory().getUsed()));
+		mem.setLimit(org.getVdc().getComputeCapacity().getMemory().getLimit());
 
 		computeCapacity.setMemory(mem);
 
@@ -72,18 +72,18 @@ public class VdcUtils {
 		// Select Network Pool
 		ReferenceType netPoolRef = pvdc.getVMWNetworkPoolRefByName(org.getCloudResources().getNetworkPool().getName());
 		createVdcParams.setNetworkPoolReference(netPoolRef);
-		createVdcParams.setNetworkQuota(org.getVdc().getVdcParams().getNetworkQuota());
+		createVdcParams.setNetworkQuota(org.getVdc().getNetworkQuota());
 
 		// Name this Organization vDC
-		createVdcParams.setName(org.getVdc().getVdcParams().getName());
-		createVdcParams.setDescription(org.getVdc().getVdcParams().getDescription());
-		createVdcParams.setIsEnabled(org.getVdc().getVdcParams().isEnabled());
+		createVdcParams.setName(org.getVdc().getName());
+		createVdcParams.setDescription(org.getVdc().getDescription());
+		createVdcParams.setIsEnabled(org.getVdc().isEnabled());
 
 		VdcStorageProfileParamsType vdcStorageProfile = new VdcStorageProfileParamsType();
-		vdcStorageProfile.setEnabled(org.getVdc().getVdcParams().getVdcStorageProfile().isEnabled());
-		vdcStorageProfile.setDefault(org.getVdc().getVdcParams().getVdcStorageProfile().isDef());
-		vdcStorageProfile.setLimit(org.getVdc().getVdcParams().getVdcStorageProfile().getLimit());
-		vdcStorageProfile.setUnits(org.getVdc().getVdcParams().getVdcStorageProfile().getUnits());
+		vdcStorageProfile.setEnabled(org.getVdc().getVdcStorageProfile().isEnabled());
+		vdcStorageProfile.setDefault(org.getVdc().getVdcStorageProfile().isDef());
+		vdcStorageProfile.setLimit(org.getVdc().getVdcStorageProfile().getLimit());
+		vdcStorageProfile.setUnits(org.getVdc().getVdcStorageProfile().getUnits());
 
 		ReferenceType providerVdcStorageProfileRef = pvdc.getProviderVdcStorageProfileRefs().iterator().next();
 		vdcStorageProfile.setProviderVdcStorageProfile(providerVdcStorageProfileRef);

@@ -3,6 +3,7 @@ package com.vmware.vcloud.model;
 import java.util.List;
 
 public class GatewayConfiguration {
+	
 	private GatewayBackingConfigEnums gatewayBackingConfig;
 	private boolean haEnabled;
 	private boolean useDefaultRouteForDnsRelay;

@@ -42,86 +42,84 @@ cloudResources:
   catalog:
     name: GLOBAL-VM-TEMPLATES-CATALOG
 vdc:
-  vdcParams:
-    name: customer-vdc
-    enabled: True
-    resourceGuaranteedCpu: 0.2
-    resourceGuaranteedMemory: 0.2
-    vmQuota: 0
-    description: 'VDC for Customer'
-    computeCapacity:
-      cpu:
-        allocated: 0
-        overhead: 0
-        units: MHz
-        used: 0
-        limit: 0
-      memory:
-        allocated: 0
-        overhead: 0
-        units: MB
-        used: 0
-        limit: 0
-    networkQuota: 1
-    vdcStorageProfile:
-      enabled: True
-      def: True
+  name: customer-vdc
+  enabled: True
+  resourceGuaranteedCpu: 0.2
+  resourceGuaranteedMemory: 0.2
+  vmQuota: 0
+  description: 'VDC for Customer'
+  computeCapacity:
+    cpu:
+      allocated: 0
+      overhead: 0
+      units: MHz
+      used: 0
       limit: 0
+    memory:
+      allocated: 0
+      overhead: 0
       units: MB
+      used: 0
+      limit: 0
+  networkQuota: 1
+  vdcStorageProfile:
+    enabled: True
+    def: True
+    limit: 0
+    units: MB
 edgeGateway:
-  gatewayParams:
-    name: custom-edgege-01
-    description: 'Custom edge gateway'
-    gatewayConfiguration:
-      gatewayBackingConfig: COMPACT
-      haEnabled: False
-      useDefaultRouteForDnsRelay: False
-      gatewayInterfaces:
-        - displayName: 'Custom gateway interface'
-          interfaceType: UPLINK
-          subnetParticipation:
-            gateway: 192.168.1.1
-            netmask: 255.255.255.0
-            ipRanges:
-              - startAddress: 192.168.1.101
-                endAddress: 192.168.1.101
-          useForDefaultRoute: True
-    gatewayFeatures:
-      firewallService:
-        enabled: True
-        defaultAction: DROP
-        logDefaultAction: False
-        firewallRules:
-          - description: PING OUT
-            protocol: ICMP
-            sourceIp: "10.1.1.0/24"
-            destIp: Any
-            destPort: Any
-          - description: DNS OUT
-            protocol: UDP
-            sourceIp: "10.1.1.0/24"
-            destIp: Any
-            destPort: 53
-          - description: NTP OUT
-            protocol: UDP
-            sourceIp: "10.1.1.0/24"
-            destIp: Any
-            destPort: 123
-          - description: HTTP OUT
-            protocol: TCP
-            sourceIp: "10.1.1.0/24"
-            destIp: Any
-            destPort: 80
-          - description: HTTPS OUT
-            protocol: TCP
-            sourceIp: "10.1.1.0/24"
-            destIp: Any
-            destPort: 443
-          - description: PING IN
-            protocol: ICMP
-            sourceIp: external
-            destIp: internal
-            destPort: Any
+  name: custom-edgege-01
+  description: 'Custom edge gateway'
+  gatewayConfiguration:
+    gatewayBackingConfig: COMPACT
+    haEnabled: False
+    useDefaultRouteForDnsRelay: False
+    gatewayInterfaces:
+      - displayName: 'Custom gateway interface'
+        interfaceType: UPLINK
+        subnetParticipation:
+          gateway: 192.168.1.1
+          netmask: 255.255.255.0
+          ipRanges:
+            - startAddress: 192.168.1.101
+              endAddress: 192.168.1.101
+        useForDefaultRoute: True
+  gatewayFeatures:
+    firewallService:
+      enabled: True
+      defaultAction: DROP
+      logDefaultAction: False
+      firewallRules:
+        - description: PING OUT
+          protocol: ICMP
+          sourceIp: "10.1.1.0/24"
+          destIp: Any
+          destPort: Any
+        - description: DNS OUT
+          protocol: UDP
+          sourceIp: "10.1.1.0/24"
+          destIp: Any
+          destPort: 53
+        - description: NTP OUT
+          protocol: UDP
+          sourceIp: "10.1.1.0/24"
+          destIp: Any
+          destPort: 123
+        - description: HTTP OUT
+          protocol: TCP
+          sourceIp: "10.1.1.0/24"
+          destIp: Any
+          destPort: 80
+        - description: HTTPS OUT
+          protocol: TCP
+          sourceIp: "10.1.1.0/24"
+          destIp: Any
+          destPort: 443
+        - description: PING IN
+          protocol: ICMP
+          sourceIp: external
+          destIp: internal
+          destPort: Any
 orgVdcNetwork:
   name: custom-orgnet-01
   description: Custom Organization network

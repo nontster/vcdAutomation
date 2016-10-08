@@ -72,65 +72,65 @@ public class YamlTest {
 		assertEquals("GLOBAL-VM-TEMPLATES-CATALOG", org.getCloudResources().getCatalog().getName());
 		
 		// Vdc
-		assertEquals("customer-vdc", org.getVdc().getVdcParams().getName());
-		assertEquals(true, org.getVdc().getVdcParams().isEnabled());
-		assertEquals(0.2, org.getVdc().getVdcParams().getResourceGuaranteedCpu(), 0.01);
-		assertEquals(0.2, org.getVdc().getVdcParams().getResourceGuaranteedMemory(),0.01);
-		assertEquals(0, org.getVdc().getVdcParams().getVmQuota());
-		assertEquals("VDC for Customer", org.getVdc().getVdcParams().getDescription());
+		assertEquals("customer-vdc", org.getVdc().getName());
+		assertEquals(true, org.getVdc().isEnabled());
+		assertEquals(0.2, org.getVdc().getResourceGuaranteedCpu(), 0.01);
+		assertEquals(0.2, org.getVdc().getResourceGuaranteedMemory(),0.01);
+		assertEquals(0, org.getVdc().getVmQuota());
+		assertEquals("VDC for Customer", org.getVdc().getDescription());
 		
 		// Cpu
-		assertEquals(0, org.getVdc().getVdcParams().getComputeCapacity().getCpu().getAllocated());
-		assertEquals(0, org.getVdc().getVdcParams().getComputeCapacity().getCpu().getOverhead());
-		assertEquals("MHz", org.getVdc().getVdcParams().getComputeCapacity().getCpu().getUnits());
-		assertEquals(0, org.getVdc().getVdcParams().getComputeCapacity().getCpu().getUsed());
-		assertEquals(0, org.getVdc().getVdcParams().getComputeCapacity().getCpu().getLimit());
+		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getAllocated());
+		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getOverhead());
+		assertEquals("MHz", org.getVdc().getComputeCapacity().getCpu().getUnits());
+		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getUsed());
+		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getLimit());
 
 		// Memory
-		assertEquals(0, org.getVdc().getVdcParams().getComputeCapacity().getMemory().getAllocated());
-		assertEquals(0, org.getVdc().getVdcParams().getComputeCapacity().getMemory().getOverhead());
-		assertEquals("MB", org.getVdc().getVdcParams().getComputeCapacity().getMemory().getUnits());
-		assertEquals(0, org.getVdc().getVdcParams().getComputeCapacity().getMemory().getUsed());
-		assertEquals(0, org.getVdc().getVdcParams().getComputeCapacity().getMemory().getLimit());
+		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getAllocated());
+		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getOverhead());
+		assertEquals("MB", org.getVdc().getComputeCapacity().getMemory().getUnits());
+		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getUsed());
+		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getLimit());
 		
 		// Network quota
-		assertEquals(1, org.getVdc().getVdcParams().getNetworkQuota());
+		assertEquals(1, org.getVdc().getNetworkQuota());
 		
 		// Vdc Storage Profile
-		assertEquals(true, org.getVdc().getVdcParams().getVdcStorageProfile().isEnabled());
-		assertEquals(true, org.getVdc().getVdcParams().getVdcStorageProfile().isDef());
-		assertEquals(0, org.getVdc().getVdcParams().getVdcStorageProfile().getLimit());
-		assertEquals("MB", org.getVdc().getVdcParams().getVdcStorageProfile().getUnits());
+		assertEquals(true, org.getVdc().getVdcStorageProfile().isEnabled());
+		assertEquals(true, org.getVdc().getVdcStorageProfile().isDef());
+		assertEquals(0, org.getVdc().getVdcStorageProfile().getLimit());
+		assertEquals("MB", org.getVdc().getVdcStorageProfile().getUnits());
 		
 		// Edge Gateway
-		assertEquals("custom-edgege-01", org.getEdgeGateway().getGatewayParams().getName());
-		assertEquals("Custom edge gateway", org.getEdgeGateway().getGatewayParams().getDescription());
-		assertTrue(org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().isEnabled());
-		assertFalse(org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().isLogDefaultAction());
+		assertEquals("custom-edgege-01", org.getEdgeGateway().getName());
+		assertEquals("Custom edge gateway", org.getEdgeGateway().getDescription());
+		assertTrue(org.getEdgeGateway().getGatewayFeatures().getFirewallService().isEnabled());
+		assertFalse(org.getEdgeGateway().getGatewayFeatures().getFirewallService().isLogDefaultAction());
 			
-		assertEquals("PING OUT", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDescription());
-		assertEquals(Protocol.ICMP, org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getProtocol());
-		assertEquals("10.1.1.0/24", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getSourceIp());
-		assertEquals("Any", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDestIp());
-		assertEquals("Any", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDestPort());	
+		assertEquals("PING OUT", org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDescription());
+		assertEquals(Protocol.ICMP, org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getProtocol());
+		assertEquals("10.1.1.0/24", org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getSourceIp());
+		assertEquals("Any", org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDestIp());
+		assertEquals("Any", org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(0).getDestPort());	
 
-		assertEquals("DNS OUT", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDescription());
-		assertEquals(Protocol.UDP, org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getProtocol());
-		assertEquals("10.1.1.0/24", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getSourceIp());
-		assertEquals("Any", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDestIp());
-		assertEquals("53", org.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDestPort());
+		assertEquals("DNS OUT", org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDescription());
+		assertEquals(Protocol.UDP, org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getProtocol());
+		assertEquals("10.1.1.0/24", org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getSourceIp());
+		assertEquals("Any", org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDestIp());
+		assertEquals("53", org.getEdgeGateway().getGatewayFeatures().getFirewallService().getFirewallRules().get(1).getDestPort());
 		
 		
 		// Gateway Configuration
-		assertEquals("COMPACT", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayBackingConfig().COMPACT.name());
-		assertEquals("Custom gateway interface", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getDisplayName());
-		assertEquals(false, org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().isHaEnabled());
-		assertEquals(false, org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().isUseDefaultRouteForDnsRelay());
-		assertEquals("192.168.1.1", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getGateway());
-		assertEquals("255.255.255.0", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getNetmask());
-		assertEquals("192.168.1.101", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getIpRanges().get(0).getStartAddress());		
-		assertEquals("192.168.1.101", org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getIpRanges().get(0).getEndAddress());		
-		assertEquals(true, org.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces().get(0).isUseForDefaultRoute());
+		assertEquals("COMPACT", org.getEdgeGateway().getGatewayConfiguration().getGatewayBackingConfig().COMPACT.name());
+		assertEquals("Custom gateway interface", org.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces().get(0).getDisplayName());
+		assertEquals(false, org.getEdgeGateway().getGatewayConfiguration().isHaEnabled());
+		assertEquals(false, org.getEdgeGateway().getGatewayConfiguration().isUseDefaultRouteForDnsRelay());
+		assertEquals("192.168.1.1", org.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getGateway());
+		assertEquals("255.255.255.0", org.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getNetmask());
+		assertEquals("192.168.1.101", org.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getIpRanges().get(0).getStartAddress());		
+		assertEquals("192.168.1.101", org.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces().get(0).getSubnetParticipation().getIpRanges().get(0).getEndAddress());		
+		assertEquals(true, org.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces().get(0).isUseForDefaultRoute());
 		
 		// orgVdcNetwork Configuration
 		assertEquals("custom-orgnet-01", org.getOrgVdcNetwork().getName());

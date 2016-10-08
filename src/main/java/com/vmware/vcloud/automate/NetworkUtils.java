@@ -86,15 +86,15 @@ public class NetworkUtils {
 		ExternalNetwork externalNet = ExternalNetwork.getExternalNetworkByReference(client, externalNetwork);
 		IpScopeType externalNetIpScope = externalNet.getResource().getConfiguration().getIpScopes().getIpScope().get(0);
 
-		String edgeGatewayName = vCloudOrg.getEdgeGateway().getGatewayParams().getName();
+		String edgeGatewayName = vCloudOrg.getEdgeGateway().getName();
 		
 		GatewayType gatewayParams = new GatewayType();
 		gatewayParams.setName(edgeGatewayName);
-		gatewayParams.setDescription(vCloudOrg.getEdgeGateway().getGatewayParams().getDescription());
+		gatewayParams.setDescription(vCloudOrg.getEdgeGateway().getDescription());
 		GatewayConfigurationType gatewayConfig = new GatewayConfigurationType();
 		gatewayConfig.setGatewayBackingConfig(GatewayBackingConfigValuesType.COMPACT.value());
 		GatewayInterfaceType gatewayInterface = new GatewayInterfaceType();
-		gatewayInterface.setDisplayName(vCloudOrg.getEdgeGateway().getGatewayParams().getGatewayConfiguration()
+		gatewayInterface.setDisplayName(vCloudOrg.getEdgeGateway().getGatewayConfiguration()
 				.getGatewayInterfaces().get(0).getDisplayName());
 		gatewayInterface.setNetwork(externalNetwork);
 		gatewayInterface.setInterfaceType(GatewayEnums.UPLINK.value());
@@ -106,10 +106,10 @@ public class NetworkUtils {
 		IpRangesType ipRanges = new IpRangesType();
 		IpRangeType ipRange = new IpRangeType();
 
-		String startAddress = vCloudOrg.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces()
+		String startAddress = vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces()
 				.get(0).getSubnetParticipation().getIpRanges().get(0).getStartAddress();
 		
-		String endAddress = vCloudOrg.getEdgeGateway().getGatewayParams().getGatewayConfiguration().getGatewayInterfaces()
+		String endAddress = vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces()
 				.get(0).getSubnetParticipation().getIpRanges().get(0).getEndAddress();
 		
 		// Specify IP range
@@ -121,7 +121,7 @@ public class NetworkUtils {
 		gatewayInterface.getSubnetParticipation().add(subnetParticipationType);
 		
 		// Is use for default route
-		gatewayInterface.setUseForDefaultRoute(vCloudOrg.getEdgeGateway().getGatewayParams().getGatewayConfiguration()
+		gatewayInterface.setUseForDefaultRoute(vCloudOrg.getEdgeGateway().getGatewayConfiguration()
 				.getGatewayInterfaces().get(0).isUseForDefaultRoute());
 		
 		GatewayInterfacesType interfaces = new GatewayInterfacesType();
@@ -194,7 +194,7 @@ public class NetworkUtils {
 		gatewayFeatures.getNetworkService().add(nat);
 
 		// Edge Gateway Firewall service configuration
-		FirewallService fs = vCloudOrg.getEdgeGateway().getGatewayParams().getGatewayFeatures().getFirewallService();
+		FirewallService fs = vCloudOrg.getEdgeGateway().getGatewayFeatures().getFirewallService();
 		
 		FirewallServiceType firewallService = new FirewallServiceType(); 
 		firewallService.setIsEnabled(fs.isEnabled());
@@ -377,7 +377,7 @@ public class NetworkUtils {
 		
 		System.out.println("External Network: " + vCloudOrg.getCloudResources().getExternalNetwork().getName() + " : " + externalNetRef.getHref() + "\n");
 		
-		System.out.println("Creating EdgeGateway: " + vCloudOrg.getEdgeGateway().getGatewayParams().getName());
+		System.out.println("Creating EdgeGateway: " + vCloudOrg.getEdgeGateway().getName());
 		GatewayType gateway = NetworkUtils.createEdgeGatewayParams(client, vCloudOrg, externalNetRef);
 
 		edgeGateway = adminVdc.createEdgeGateway(gateway);

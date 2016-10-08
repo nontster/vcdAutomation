@@ -1,24 +1,55 @@
 package com.vmware.vcloud.model;
 
 public class EdgeGateway {
-	private GatewayParams gatewayParams;
-
+	private String name;
+	private String description;
+	private GatewayConfiguration gatewayConfiguration;
+	private GatewayFeatures gatewayFeatures;
+	
 	public EdgeGateway() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public EdgeGateway(GatewayParams gatewayParams) {
+	public EdgeGateway(String name, String description, GatewayConfiguration gatewayConfiguration,
+			GatewayFeatures gatewayFeatures) {
 		super();
-		this.gatewayParams = gatewayParams;
+		this.name = name;
+		this.description = description;
+		this.gatewayConfiguration = gatewayConfiguration;
+		this.gatewayFeatures = gatewayFeatures;
 	}
 
-	public GatewayParams getGatewayParams() {
-		return gatewayParams;
+	public String getName() {
+		return name;
 	}
 
-	public void setGatewayParams(GatewayParams gatewayParams) {
-		this.gatewayParams = gatewayParams;
+	public void setName(String name) {
+		this.name = name;
 	}
-	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public GatewayConfiguration getGatewayConfiguration() {
+		return gatewayConfiguration;
+	}
+
+	public void setGatewayConfiguration(GatewayConfiguration gatewayConfiguration) {
+		this.gatewayConfiguration = gatewayConfiguration;
+	}
+
+	public GatewayFeatures getGatewayFeatures() {
+		return gatewayFeatures;
+	}
+
+	public void setGatewayFeatures(GatewayFeatures gatewayFeatures) {
+		this.gatewayFeatures = gatewayFeatures;
+	}
+		
 }

@@ -28,6 +28,9 @@ public class YamlTest {
 		ConfigParser cParser = ConfigParser.getParser("");
 		VCloudOrganization org = cParser.getOrg();
 		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		
+		assertEquals("2016-10-01", org.getTemplate_version());
 		assertEquals("CustomOrg", org.getName());
 		assertEquals("Custom Org Desc", org.getDescription());
 		assertEquals("Custom Org Full Name", org.getFullName());
@@ -36,7 +39,7 @@ public class YamlTest {
 		assertEquals("9000012345", org.getNonMobileNo());
 		assertEquals(true, org.isTrial());
 		
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
 		assertEquals("2016-10-01", df.format(org.getStartDate()));
 		assertEquals("2016-10-31", df.format(org.getEndDate()));
 		

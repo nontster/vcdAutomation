@@ -2,7 +2,6 @@ package com.vmware.vcloud.automate;
 
 import java.io.Console;
 import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -73,7 +72,7 @@ public class VcdPush {
 		options.addOption(optDebug);
 
 		if (args.length < 5) {
-			formatter.printHelp("vcdpush", options);
+			formatter.printHelp("bee", options);
 			System.exit(1);
 		}
 
@@ -82,7 +81,7 @@ public class VcdPush {
 
 			if (cmd.hasOption("help"))
 				/* automatically generate the help statement */
-				formatter.printHelp("vcdpush", options); 
+				formatter.printHelp("bee", options); 
 			else {
 
 				if (cmd.hasOption("vcdurl")) {
@@ -121,6 +120,12 @@ public class VcdPush {
 				ConfigParser cParser = ConfigParser.getParser(template);
 				vCloudOrg = cParser.getOrg();
 
+				// Check template version
+				if(!vCloudOrg.getTemplate_version().equalsIgnoreCase("2016-10-01")){
+					System.err.println("Invalid template version!");
+					System.exit(1);
+				}
+									
 				VcloudClient.setLogLevel(Level.OFF);
 				System.out.println("Vcloud Login");
 				client = new VcloudClient(vcdurl, Version.V5_5);

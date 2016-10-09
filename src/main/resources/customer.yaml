@@ -1,4 +1,5 @@
 !organization
+template_version: 2016-10-01
 name: CustomOrg
 description: Custom Org Desc
 fullName: Custom Org Full Name

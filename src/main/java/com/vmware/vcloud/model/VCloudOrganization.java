@@ -3,6 +3,7 @@ package com.vmware.vcloud.model;
 import java.util.Date;
 
 public class VCloudOrganization {
+	private String template_version;
 	private String name;
 	private String description;
 	private String fullName;
@@ -25,10 +26,11 @@ public class VCloudOrganization {
 		// TODO Auto-generated constructor stub
 	}
 
-	public VCloudOrganization(String name, String description, String fullName, boolean enabled, boolean trial,
+	public VCloudOrganization(String template_version, String name, String description, String fullName, boolean enabled, boolean trial,
 			String caNumber, String nonMobileNo, Date startDate, Date endDate, User user, OrgSettings orgSettings,
 			CloudResources cloudResources, Vdc vdc, EdgeGateway edgeGateway, OrgVdcNetwork orgVdcNetwork, VApp vApp) {
 		super();
+		this.setTemplate_version(template_version);
 		this.name = name;
 		this.description = description;
 		this.fullName = fullName;
@@ -45,6 +47,14 @@ public class VCloudOrganization {
 		this.edgeGateway = edgeGateway;
 		this.orgVdcNetwork = orgVdcNetwork;
 		this.vApp = vApp;
+	}
+
+	public String getTemplate_version() {
+		return template_version;
+	}
+
+	public void setTemplate_version(String template_version) {
+		this.template_version = template_version;
 	}
 
 	public String getName() {

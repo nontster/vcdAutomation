@@ -1,8 +1,9 @@
 package com.vmware.vcloud.automate;
 
+import java.io.Console;
 import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
@@ -38,19 +39,21 @@ public class VcdPush {
 	private static String vcdurl;
 	private static String username;
 	private static String password;
-	private static String blueprint;	
+	private static String template;	
 
-	public static void main(String[] args) throws VCloudException, TimeoutException, FileNotFoundException {
+
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		// create Options object
 		Options options = new Options();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLineParser parser = new DefaultParser();
+		Console cnsl = null;
 
 		Option optHelp = new Option("help", "print this message");
 		Option optDebug = new Option("debug", "print debugging information");
 
-		Option optBlueprint = Option.builder("b").longOpt("blueprint").desc("blueprint file").hasArg(true)
+		Option optBlueprint = Option.builder("t").longOpt("template").desc("template file").hasArg(true)
 				.required(true).argName("file").build();
 
 		Option optVcdurl = Option.builder("l").longOpt("vcdurl").desc("vCloud Director public URL").hasArg(true)
@@ -88,24 +91,34 @@ public class VcdPush {
 
 				if (cmd.hasOption("user")) {
 					username = cmd.getOptionValue("user");
+					
+					int index = username.indexOf('@');
+					
+					if(index < 0)
+						username += "@System"; 
 				}
 
 				if (cmd.hasOption("password")) {
 					password = cmd.getOptionValue("password");
 				}
 
-				if (cmd.hasOption("blueprint")) {
-					blueprint = cmd.getOptionValue("blueprint");
+				if (cmd.hasOption("template")) {
+					template = cmd.getOptionValue("template");
 				}
 
-				if (password == null) {
-					System.out.println("Enter your password: ");
-					Scanner scanner = new Scanner(System.in);
-					password = scanner.nextLine().trim();
-					scanner.close();
+				if (password == null) {					
+					// creates a console object
+			         cnsl = System.console();
+
+			         // if console is not null
+			         if (cnsl != null) {
+			        	// read password into the char array
+			             char[] pwd = cnsl.readPassword("Enter your password: ");
+			             password = new String(pwd);
+			         }				
 				}
 
-				ConfigParser cParser = ConfigParser.getParser(blueprint);
+				ConfigParser cParser = ConfigParser.getParser(template);
 				vCloudOrg = cParser.getOrg();
 
 				VcloudClient.setLogLevel(Level.OFF);
@@ -161,7 +174,19 @@ public class VcdPush {
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			System.err.println("Parsing failed.  Reason: " + e.getMessage());
-		}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.err.println("BOT template not found: " + e.getMessage());
+		} catch (VCloudException e) {
+			// TODO Auto-generated catch block
+			if(e.getMessage().equalsIgnoreCase("Unauthorized"))
+				System.err.println("Invalid username or password");
+			else
+				System.err.println("vCloud exception: \n" + e.getMessage());
+		} catch (TimeoutException e) {
+			// TODO Auto-generated catch block
+			System.err.println("Time out on connecting to: "+ vcdurl +"\n"+ e.getMessage());
+		} 
 
 	}
 

@@ -28,9 +28,9 @@ public class YamlTest {
 		ConfigParser cParser = ConfigParser.getParser("");
 		VCloudOrganization org = cParser.getOrg();
 		
-		assertEquals("CustomAdminOrg", org.getName());
-		assertEquals("Custom Admin Org Desc", org.getDescription());
-		assertEquals("Custom Admin Org Full Name", org.getFullName());
+		assertEquals("CustomOrg", org.getName());
+		assertEquals("Custom Org Desc", org.getDescription());
+		assertEquals("Custom Org Full Name", org.getFullName());
 		assertEquals(true, org.isEnabled());
 		assertEquals("7650000123", org.getCaNumber());
 		assertEquals("9000012345", org.getNonMobileNo());
@@ -104,7 +104,7 @@ public class YamlTest {
 		
 		// Edge Gateway
 		assertEquals("custom-edgege-01", org.getEdgeGateway().getName());
-		assertEquals("Custom edge gateway", org.getEdgeGateway().getDescription());
+		assertEquals("Custom Edge Gateway", org.getEdgeGateway().getDescription());
 		assertTrue(org.getEdgeGateway().getGatewayFeatures().getFirewallService().isEnabled());
 		assertFalse(org.getEdgeGateway().getGatewayFeatures().getFirewallService().isLogDefaultAction());
 			
@@ -152,6 +152,7 @@ public class YamlTest {
 		assertEquals("CENTOS7", org.getvApp().getChildVms().get(0).getTemplateType());
 		assertEquals("custom-CENTOS7", org.getvApp().getChildVms().get(0).getName());
 		assertEquals("Custom VM", org.getvApp().getChildVms().get(0).getDescription());
+		assertEquals("CustomServer-1", org.getvApp().getChildVms().get(0).getComputerName());
 		
 		// CPU
 		assertEquals(4, org.getvApp().getChildVms().get(0).getvCpu().getNoOfCpus());

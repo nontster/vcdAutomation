@@ -1,7 +1,7 @@
 !organization
-name: CustomAdminOrg
-description: Custom Admin Org Desc
-fullName: Custom Admin Org Full Name
+name: CustomOrg
+description: Custom Org Desc
+fullName: Custom Org Full Name
 enabled: True
 caNumber: 7650000123
 nonMobileNo: 9000012345
@@ -12,35 +12,10 @@ user:
   name: sampleuser
   password: samplepassword
   enabled: True
-  roleName: 'Customer Managed Service'
-  fullName: 'User Full Name'
-  emailAddress: 'user@company.com'
+  roleName: Customer Managed Service
+  fullName: User Full Name
+  emailAddress: user@company.com
   phone: 1175
-orgSettings:
-  orgLeaseSettings:
-    deleteOnStorageLeaseExpiration: False
-    deploymentLeaseSeconds: 0
-    storageLeaseSeconds: 0
-  orgGeneralSettings:
-    storedVmQuota: 0
-    deployedVMQuota: 0
-    canPublishCatalogs: False
-  orgVAppTemplateLeaseSettings:
-    deleteOnStorageLeaseExpiration: False
-    storageLeaseSeconds: 0
-  orgPasswordPolicySettings:
-    accountLockoutEnabled: True
-    accountLockoutIntervalMinutes: 15
-    invalidLoginsBeforeLockout: 15
-cloudResources:
-  providerVdc:
-    name: TLS1-ALLOC-PVDC01
-  networkPool:
-    name: TLS1-ALLOC-PVDC01-VXLAN-NP
-  externalNetwork:
-    name: Tenant-External-Internet02
-  catalog:
-    name: GLOBAL-VM-TEMPLATES-CATALOG
 vdc:
   name: customer-vdc
   enabled: True
@@ -67,9 +42,25 @@ vdc:
     def: True
     limit: 0
     units: MB
+orgVdcNetwork:
+  name: custom-orgnet-01
+  description: Custom Organization network
+  configuration:
+    retainNetInfoAcrossDeployments: True
+    fenceMode: NATROUTED
+    ipScopes:
+      - netmask: 255.255.255.0
+        gateway: 10.1.1.1
+        enabled: True
+        inherited: True
+        dns1: 192.168.2.1
+        dns2: 192.168.2.2
+        ipRange:
+          startAddress: 10.1.1.11
+          endAddress: 10.1.1.254    
 edgeGateway:
   name: custom-edgege-01
-  description: 'Custom edge gateway'
+  description: Custom Edge Gateway
   gatewayConfiguration:
     gatewayBackingConfig: COMPACT
     haEnabled: False
@@ -120,22 +111,6 @@ edgeGateway:
           sourceIp: external
           destIp: internal
           destPort: Any
-orgVdcNetwork:
-  name: custom-orgnet-01
-  description: Custom Organization network
-  configuration:
-    retainNetInfoAcrossDeployments: True
-    fenceMode: NATROUTED
-    ipScopes:
-      - netmask: 255.255.255.0
-        gateway: 10.1.1.1
-        enabled: True
-        inherited: True
-        dns1: 192.168.2.1
-        dns2: 192.168.2.2
-        ipRange:
-          startAddress: 10.1.1.11
-          endAddress: 10.1.1.254
 vApp:
   name: vApp_system_1
   description: vApp_system_1
@@ -143,8 +118,34 @@ vApp:
     - name: custom-CENTOS7
       description: Custom VM
       templateType: CENTOS7
+      computerName: CustomServer-1
       vCpu:
         noOfCpus: 4
         coresPerSocket: 4
       vMemory:
         memorySize: 8
+orgSettings:
+  orgLeaseSettings:
+    deleteOnStorageLeaseExpiration: False
+    deploymentLeaseSeconds: 0
+    storageLeaseSeconds: 0
+  orgGeneralSettings:
+    storedVmQuota: 0
+    deployedVMQuota: 0
+    canPublishCatalogs: False
+  orgVAppTemplateLeaseSettings:
+    deleteOnStorageLeaseExpiration: False
+    storageLeaseSeconds: 0
+  orgPasswordPolicySettings:
+    accountLockoutEnabled: True
+    accountLockoutIntervalMinutes: 15
+    invalidLoginsBeforeLockout: 15
+cloudResources:
+  providerVdc:
+    name: TLS1-ALLOC-PVDC01
+  networkPool:
+    name: TLS1-ALLOC-PVDC01-VXLAN-NP
+  externalNetwork:
+    name: Tenant-External-Internet02
+  catalog:
+    name: GLOBAL-VM-TEMPLATES-CATALOG

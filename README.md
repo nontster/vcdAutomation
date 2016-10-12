@@ -12,7 +12,8 @@ Download [vCloud SDK for Java for vCloud Suite 5.5] (https://developercenter.vmw
 
 ```
 $ mvn install:install-file -Dfile=vcloud-java-sdk-5.5.0.jar -DgroupId=com.vmware -DartifactId=vcloud-java-sdk -Dversion=5.5 -Dpackaging=jar -DgeneratePom=true
-
+```
+```
 $ mvn install:install-file -Dfile=rest-api-schemas-5.5.0.jar -DgroupId=com.vmware -DartifactId=rest-api-schemas -Dversion=5.5 -Dpackaging=jar -DgeneratePom=true
 ```
 
@@ -34,4 +35,10 @@ $ mvn install:install-file -Dfile=rest-api-schemas-5.5.0.jar -DgroupId=com.vmwar
 ## Building and packaging MS Windows executable file
 ```
 $ mvn package
+```
+
+## Usage
+
+```
+bee -l <vCloud Director URL> –u <username> -t <template file>
 ```

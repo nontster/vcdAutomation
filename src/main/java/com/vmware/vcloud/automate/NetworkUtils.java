@@ -1,6 +1,9 @@
 package com.vmware.vcloud.automate;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.TimeoutException;
 
 import javax.xml.bind.JAXBElement;
@@ -25,6 +28,8 @@ import com.vmware.vcloud.api.rest.schema.NetworkServiceType;
 import com.vmware.vcloud.api.rest.schema.ObjectFactory;
 import com.vmware.vcloud.api.rest.schema.OrgVdcNetworkType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
+import com.vmware.vcloud.api.rest.schema.SubAllocationType;
+import com.vmware.vcloud.api.rest.schema.SubAllocationsType;
 import com.vmware.vcloud.api.rest.schema.SubnetParticipationType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
@@ -46,6 +51,109 @@ import com.vmware.vcloud.sdk.constants.GatewayEnums;
 
 public class NetworkUtils {
 
+	/**
+	 * Convert an IP address to a hex string
+	 *
+	 * @param ipAddress
+	 *            Input IP address
+	 *
+	 * @return The IP address in hex form
+	 */
+	public static String toHex(String ipAddress) {
+		return Long.toHexString(ipToLong(ipAddress));
+	}
+
+	/**
+	 * Convert an IP address to a number
+	 *
+	 * @param ipAddress
+	 *            Input IP address
+	 *
+	 * @return The IP address as a number
+	 */
+	static Long ipToLong(String ipAddress) {
+		long result = 0;
+		String[] atoms = ipAddress.split("\\.");
+
+		for (int i = 3; i >= 0; i--) {
+			result |= (Long.parseLong(atoms[3 - i]) << (i * 8));
+		}
+
+		return result & 0xFFFFFFFF;
+	}
+
+	public static String longToIp(long ip) {
+		StringBuilder sb = new StringBuilder(15);
+
+		for (int i = 0; i < 4; i++) {
+			sb.insert(0, Long.toString(ip & 0xff));
+
+			if (i < 3) {
+				sb.insert(0, '.');
+			}
+
+			ip >>= 8;
+		}
+
+		return sb.toString();
+	}	
+	
+	
+	static SortedSet<String> getAvailableAggresses(VcloudClient client, ReferenceType externalNetRef) throws VCloudException {
+
+		Comparator<String> ipComparator = new Comparator<String>() {
+			@Override
+			public int compare(String ip1, String ip2) {
+				return ipToLong(ip1).compareTo(ipToLong(ip2));
+			}
+		};
+
+		SortedSet<String> ips = new TreeSet<String>(ipComparator);
+		SortedSet<String> ipsAll = new TreeSet<String>(ipComparator);
+
+		//ReferenceType externalNetRef = getExternalNetworkRef(client, externalNetwork);
+
+		ExternalNetwork externalNet = ExternalNetwork.getExternalNetworkByReference(client, externalNetRef);
+
+		IpScopesType externalNetIpScopes = externalNet.getResource().getConfiguration().getIpScopes();
+
+		for (IpScopeType ipScope : externalNetIpScopes.getIpScope()) {
+			
+			for (IpRangeType ipRangeType : ipScope.getIpRanges().getIpRange()) {
+
+				long start = ipToLong(ipRangeType.getStartAddress());
+				long end = ipToLong(ipRangeType.getEndAddress());
+
+				for (long i = start; i <= end; i++) {
+					ipsAll.add(longToIp(i));
+				}
+			}
+
+			SubAllocationsType subAllocationsType = ipScope.getSubAllocations();
+
+			for (SubAllocationType subAllocationType : subAllocationsType.getSubAllocation()) {
+				for (IpRangeType ipRangeType1 : subAllocationType.getIpRanges().getIpRange()) {
+
+					long start = ipToLong(ipRangeType1.getStartAddress());
+					long end = ipToLong(ipRangeType1.getEndAddress());
+
+					for (long i = start; i <= end; i++) {
+						ips.add(longToIp(i));
+					}
+
+				}
+			}
+
+			for (String ipAddress : ipScope.getAllocatedIpAddresses().getIpAddress()) {
+				ips.add(ipAddress);
+			}
+
+			ipsAll.removeAll(ips);
+		}
+
+		return ipsAll;
+	}
+	
 	private static void addFirewallRule(List<FirewallRuleType> fwRules, String name, String protocol, String srcIp,
 			String dstIp, String portRange) {
 
@@ -106,12 +214,10 @@ public class NetworkUtils {
 		IpRangesType ipRanges = new IpRangesType();
 		IpRangeType ipRange = new IpRangeType();
 
-		String startAddress = vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces()
-				.get(0).getSubnetParticipation().getIpRanges().get(0).getStartAddress();
-		
-		String endAddress = vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces()
-				.get(0).getSubnetParticipation().getIpRanges().get(0).getEndAddress();
-		
+		SortedSet<String> ips = getAvailableAggresses(client, externalNetwork);
+		String startAddress = ips.last();
+		String endAddress = ips.last();
+				
 		// Specify IP range
 		ipRange.setStartAddress(startAddress);
 		ipRange.setEndAddress(endAddress);
@@ -367,6 +473,7 @@ public class NetworkUtils {
 		
 		netConfig.setIpScopes(ipScopes);
 		
+		// Set Fence Mode
 		if(vCloudOrg.getOrgVdcNetwork().getConfiguration().getFenceMode().name().equalsIgnoreCase("NATROUTED"))
 			netConfig.setFenceMode(FenceModeValuesType.NATROUTED.value()); 
 		else if(vCloudOrg.getOrgVdcNetwork().getConfiguration().getFenceMode().name().equalsIgnoreCase("BRIDGED"))

@@ -196,6 +196,8 @@ public class VappUtils {
 			guestCustomizationSection.setAdminPasswordAuto(Boolean.FALSE);
 			guestCustomizationSection.setResetPasswordRequired(Boolean.TRUE);
 			
+			guestCustomizationSection.setChangeSid(Boolean.TRUE);
+			
 			String adminPass = VappUtils.genPassword();			
 			guestCustomizationSection.setAdminPassword(adminPass);
 			System.out.println("		Administrator password: "+ adminPass);

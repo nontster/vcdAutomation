@@ -109,7 +109,7 @@ edgeGateway:
         - description: PING IN
           protocol: ICMP
           sourceIp: Any
-          destIp: external
+          destIp: internal
           destPort: Any
 vApp:
   name: vApp_system_1

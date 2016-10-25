@@ -261,7 +261,7 @@ public class NetworkUtils {
         // Setting Original IP/Port
         dgatewayNat.setOriginalIp(startAddress);
         dgatewayNat.setOriginalPort("any");
-        dgatewayNat.setTranslatedIp("10.1.1.0/24");
+        dgatewayNat.setTranslatedIp("10.1.1.11");
 
         // To allow all ports and all protocols
 		dgatewayNat.setTranslatedPort("any");
@@ -288,7 +288,7 @@ public class NetworkUtils {
         sgatewayNat.setTranslatedPort("any");
         
         // Setting Original IP/Port
-        sgatewayNat.setOriginalIp("10.1.1.0/24");
+        sgatewayNat.setOriginalIp("10.1.1.11");
         sgatewayNat.setOriginalPort("any");
         sgatewayNat.setTranslatedIp(startAddress);
       

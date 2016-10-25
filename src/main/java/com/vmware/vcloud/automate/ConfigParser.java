@@ -9,6 +9,7 @@ import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import com.vmware.vcloud.exception.InvalidTemplateException;
 import com.vmware.vcloud.model.VCloudOrganization;
 
 
@@ -40,4 +41,13 @@ public class ConfigParser {
 		return org;
 	}
 	
+	boolean validate() throws InvalidTemplateException {
+		
+		VCloudOrganization vcdOrg = this.org;
+		
+		if(vcdOrg.getName() == null || vcdOrg.getName().length() == 0)
+			throw new InvalidTemplateException("Missing organization name");
+		
+		return true;
+	}
 }

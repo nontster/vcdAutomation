@@ -16,6 +16,7 @@ import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import com.vmware.vcloud.exception.InvalidTemplateException;
 import com.vmware.vcloud.model.FirewallRule;
 import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.Protocol;
@@ -24,9 +25,10 @@ import com.vmware.vcloud.model.VCloudOrganization;
 public class YamlTest {
 
 	@Test
-	public void YamlUnmarshallingTest() throws FileNotFoundException{
+	public void YamlUnmarshallingTest() throws FileNotFoundException, InvalidTemplateException{
 		
 		ConfigParser cParser = ConfigParser.getParser("");
+		cParser.validate();
 		VCloudOrganization org = cParser.getOrg();
 		
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");

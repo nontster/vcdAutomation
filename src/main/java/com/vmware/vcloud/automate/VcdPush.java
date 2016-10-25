@@ -15,6 +15,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
+import com.vmware.vcloud.exception.InvalidTemplateException;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -118,6 +119,7 @@ public class VcdPush {
 				}
 
 				ConfigParser cParser = ConfigParser.getParser(template);
+				cParser.validate();
 				vCloudOrg = cParser.getOrg();
 
 				// Check template version
@@ -191,6 +193,9 @@ public class VcdPush {
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
 			System.err.println("Time out on connecting to: "+ vcdurl +"\n"+ e.getMessage());
+		} catch (InvalidTemplateException e) {
+			// TODO Auto-generated catch block
+			System.err.println("Template exception: \n" + e.getMessage());
 		} 
 
 	}

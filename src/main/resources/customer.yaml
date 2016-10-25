@@ -108,8 +108,8 @@ edgeGateway:
           destPort: 443
         - description: PING IN
           protocol: ICMP
-          sourceIp: external
-          destIp: internal
+          sourceIp: Any
+          destIp: external
           destPort: Any
 vApp:
   name: vApp_system_1

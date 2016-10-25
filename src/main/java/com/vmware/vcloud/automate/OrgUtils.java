@@ -28,21 +28,6 @@ public class OrgUtils {
 	 */
 	static AdminOrgType createNewAdminOrgType(VCloudOrganization vCloudOrg) throws VCloudException {
 
-		/*
-		 * SmtpServerSettingsType smtpServerSettings = new
-		 * SmtpServerSettingsType(); smtpServerSettings.setHost("custom");
-		 * smtpServerSettings.setIsUseAuthentication(true);
-		 * smtpServerSettings.setPassword("custom");
-		 * smtpServerSettings.setUsername("custom");
-		 * 
-		 * OrgEmailSettingsType orgEmailSettings = new OrgEmailSettingsType();
-		 * orgEmailSettings.setIsDefaultOrgEmail(true);
-		 * orgEmailSettings.setIsDefaultSmtpServer(true);
-		 * orgEmailSettings.setFromEmailAddress("custom@custom.com");
-		 * orgEmailSettings.setDefaultSubjectPrefix("");
-		 * orgEmailSettings.setSmtpServerSettings(smtpServerSettings);
-		 */
-
 		OrgLeaseSettingsType orgLeaseSettings = new OrgLeaseSettingsType();
 		orgLeaseSettings.setDeleteOnStorageLeaseExpiration(
 				vCloudOrg.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration());

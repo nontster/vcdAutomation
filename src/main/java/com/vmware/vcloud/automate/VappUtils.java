@@ -2,6 +2,7 @@ package com.vmware.vcloud.automate;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -217,6 +218,20 @@ public class VappUtils {
 			virtualMemoryItem.setMemorySize(BigInteger.valueOf(1024).multiply(vCloudOrg.getvApp().getChildVms().get(0).getvMemory().getMemorySize()));
 			vm.updateMemory(virtualMemoryItem).waitForTask(0);
 
+			// Configure Disks
+/*			System.out.println("	Updating Disks Section...");
+			List <VirtualDisk> disks = vm.getDisks();
+			
+			for(VirtualDisk disk: disks){				
+				if (disk.isHardDisk()){
+					System.out.println("		Disk size: "+ disk.getHardDiskSize());
+					BigInteger newDiskSize = disk.getHardDiskSize().multiply(BigInteger.valueOf(2));
+					disk.updateHardDiskSize(newDiskSize);
+				}				
+			}
+			
+			vm.updateDisks(disks).waitForTask(0);*/
+			
 			// Display summary
 			System.out.println("	Status : " + vm.getVMStatus());
 			System.out.println("	CPU : "

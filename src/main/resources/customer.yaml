@@ -1,12 +1,11 @@
 !organization
-template_version: 2016-10-01
+template_version: 2016-10-25
 name: CustomOrg
 description: Custom Org Desc
 fullName: Custom Org Full Name
 enabled: True
 caNumber: 7650000123
-nonMobileNo: 9000012345
-trial: True
+orderType: TRIAL
 startDate: 2016-10-01
 endDate: 2016-10-31
 user:
@@ -120,6 +119,7 @@ vApp:
       description: Custom VM
       templateType: CENTOS7
       computerName: CustomServer-1
+      nonMobileNo: 9000012345
       vCpu:
         noOfCpus: 4
         coresPerSocket: 4

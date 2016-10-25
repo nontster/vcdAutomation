@@ -187,7 +187,7 @@ public class VappUtils {
 			
 			// Set VM description 
 			VmType vmType = vm.getResource();
-			vmType.setDescription("Non-Mobile :"+ vCloudOrg.getNonMobileNo());
+			vmType.setDescription("Non-Mobile :"+ vCloudOrg.getvApp().getChildVms().get(0).getNonMobileNo());
 			vm.updateVM(vmType).waitForTask(0);
 			 			
 			// Set administrator password

@@ -1,6 +1,7 @@
 package com.vmware.vcloud.model;
 
 public class ChildVm {
+	private String nonMobileNo;
     private String name;
     private String description;
     private String templateType;
@@ -8,6 +9,20 @@ public class ChildVm {
     private VCpu vCpu;
     private VMemory vMemory;
     
+	/**
+	 * @return the nonMobileNo
+	 */
+	public String getNonMobileNo() {
+		return nonMobileNo;
+	}
+
+	/**
+	 * @param nonMobileNo the nonMobileNo to set
+	 */
+	public void setNonMobileNo(String nonMobileNo) {
+		this.nonMobileNo = nonMobileNo;
+	}
+
 	public ChildVm() {
 		super();
 		// TODO Auto-generated constructor stub

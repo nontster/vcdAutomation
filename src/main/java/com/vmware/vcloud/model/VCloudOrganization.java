@@ -8,9 +8,9 @@ public class VCloudOrganization {
 	private String description;
 	private String fullName;
 	private boolean enabled;
-	private boolean trial;
+	private OrderType orderType;
 	private String caNumber;
-	private String nonMobileNo;
+
 	private Date startDate;
 	private Date endDate;
 	private User user;
@@ -26,8 +26,8 @@ public class VCloudOrganization {
 		// TODO Auto-generated constructor stub
 	}
 
-	public VCloudOrganization(String template_version, String name, String description, String fullName, boolean enabled, boolean trial,
-			String caNumber, String nonMobileNo, Date startDate, Date endDate, User user, OrgSettings orgSettings,
+	public VCloudOrganization(String template_version, String name, String description, String fullName, boolean enabled, OrderType orderType,
+			String caNumber, Date startDate, Date endDate, User user, OrgSettings orgSettings,
 			CloudResources cloudResources, Vdc vdc, EdgeGateway edgeGateway, OrgVdcNetwork orgVdcNetwork, VApp vApp) {
 		super();
 		this.setTemplate_version(template_version);
@@ -35,9 +35,8 @@ public class VCloudOrganization {
 		this.description = description;
 		this.fullName = fullName;
 		this.enabled = enabled;
-		this.setTrial(trial);
+		this.setOrderType(orderType);
 		this.setCaNumber(caNumber);
-		this.setNonMobileNo(nonMobileNo);
 		this.setStartDate(startDate);
 		this.setEndDate(endDate);
 		this.user = user;
@@ -65,6 +64,20 @@ public class VCloudOrganization {
 		this.name = name;
 	}
 
+	/**
+	 * @return the orderType
+	 */
+	public OrderType getOrderType() {
+		return orderType;
+	}
+
+	/**
+	 * @param orderType the orderType to set
+	 */
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -85,24 +98,12 @@ public class VCloudOrganization {
 		return enabled;
 	}
 
-	public boolean isTrial() {
-		return trial;
-	}
-
 	public String getCaNumber() {
 		return caNumber;
 	}
 
 	public void setCaNumber(String caNumber) {
 		this.caNumber = caNumber;
-	}
-
-	public String getNonMobileNo() {
-		return nonMobileNo;
-	}
-
-	public void setNonMobileNo(String nonMobileNo) {
-		this.nonMobileNo = nonMobileNo;
 	}
 
 	public Date getStartDate() {
@@ -119,10 +120,6 @@ public class VCloudOrganization {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}
-
-	public void setTrial(boolean trial) {
-		this.trial = trial;
 	}
 
 	public void setEnabled(boolean enabled) {

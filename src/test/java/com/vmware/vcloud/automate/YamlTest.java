@@ -17,6 +17,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import com.vmware.vcloud.model.FirewallRule;
+import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.Protocol;
 import com.vmware.vcloud.model.VCloudOrganization;
 
@@ -30,14 +31,13 @@ public class YamlTest {
 		
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		
-		assertEquals("2016-10-01", org.getTemplate_version());
+		assertEquals("2016-10-25", org.getTemplate_version());
 		assertEquals("CustomOrg", org.getName());
 		assertEquals("Custom Org Desc", org.getDescription());
 		assertEquals("Custom Org Full Name", org.getFullName());
 		assertEquals(true, org.isEnabled());
 		assertEquals("7650000123", org.getCaNumber());
-		assertEquals("9000012345", org.getNonMobileNo());
-		assertEquals(true, org.isTrial());
+		assertEquals(OrderType.TRIAL, org.getOrderType());
 		
 
 		assertEquals("2016-10-01", df.format(org.getStartDate()));
@@ -156,6 +156,7 @@ public class YamlTest {
 		assertEquals("custom-CENTOS7", org.getvApp().getChildVms().get(0).getName());
 		assertEquals("Custom VM", org.getvApp().getChildVms().get(0).getDescription());
 		assertEquals("CustomServer-1", org.getvApp().getChildVms().get(0).getComputerName());
+		assertEquals("9000012345", org.getvApp().getChildVms().get(0).getNonMobileNo());
 		
 		// CPU
 		assertEquals(4, org.getvApp().getChildVms().get(0).getvCpu().getNoOfCpus());

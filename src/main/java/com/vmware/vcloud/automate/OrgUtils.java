@@ -11,6 +11,7 @@ import com.vmware.vcloud.api.rest.schema.OrgSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgVAppTemplateLeaseSettingsType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
+import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -87,7 +88,7 @@ public class OrgUtils {
 			
 			descBuff.append("Start Date :").append(df.format(vCloudOrg.getStartDate()));
 			
-			if(vCloudOrg.getEndDate() != null && !df.format(vCloudOrg.getEndDate()).isEmpty() && vCloudOrg.isTrial()){
+			if(vCloudOrg.getEndDate() != null && !df.format(vCloudOrg.getEndDate()).isEmpty() && vCloudOrg.getOrderType().name().equalsIgnoreCase(OrderType.TRIAL.name())){
 				descBuff.append(" - ").append(df.format(vCloudOrg.getEndDate()));
 			}
 			

@@ -56,19 +56,19 @@ public class YamlTest {
 		
 		// OrgSettings
 		assertEquals(false, org.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration());
-		assertEquals(0, org.getOrgSettings().getOrgLeaseSettings().getDeploymentLeaseSeconds());
-		assertEquals(0, org.getOrgSettings().getOrgLeaseSettings().getStorageLeaseSeconds());
+		assertEquals(0, org.getOrgSettings().getOrgLeaseSettings().getDeploymentLeaseSeconds().intValue());
+		assertEquals(0, org.getOrgSettings().getOrgLeaseSettings().getStorageLeaseSeconds().intValue());
 		
-		assertEquals(0, org.getOrgSettings().getOrgGeneralSettings().getStoredVmQuota());
-		assertEquals(0, org.getOrgSettings().getOrgGeneralSettings().getDeployedVMQuota());
+		assertEquals(0, org.getOrgSettings().getOrgGeneralSettings().getStoredVmQuota().intValue());
+		assertEquals(0, org.getOrgSettings().getOrgGeneralSettings().getDeployedVMQuota().intValue());
 		assertEquals(false, org.getOrgSettings().getOrgGeneralSettings().isCanPublishCatalogs());
 		
 		assertEquals( false, org.getOrgSettings().getOrgVAppTemplateLeaseSettings().isDeleteOnStorageLeaseExpiration());
-		assertEquals(0, org.getOrgSettings().getOrgVAppTemplateLeaseSettings().getStorageLeaseSeconds());
+		assertEquals(0, org.getOrgSettings().getOrgVAppTemplateLeaseSettings().getStorageLeaseSeconds().intValue());
 		
 		assertEquals(true, org.getOrgSettings().getOrgPasswordPolicySettings().isAccountLockoutEnabled());
-		assertEquals( 15, org.getOrgSettings().getOrgPasswordPolicySettings().getAccountLockoutIntervalMinutes());
-		assertEquals(15, org.getOrgSettings().getOrgPasswordPolicySettings().getInvalidLoginsBeforeLockout());
+		assertEquals( 15, org.getOrgSettings().getOrgPasswordPolicySettings().getAccountLockoutIntervalMinutes().intValue());
+		assertEquals(15, org.getOrgSettings().getOrgPasswordPolicySettings().getInvalidLoginsBeforeLockout().intValue());
 		
 		// CloudResources
 		assertEquals("TLS1-ALLOC-PVDC01", org.getCloudResources().getProviderVdc().getName());
@@ -81,25 +81,25 @@ public class YamlTest {
 		assertEquals(true, org.getVdc().isEnabled());
 		assertEquals(0.2, org.getVdc().getResourceGuaranteedCpu(), 0.01);
 		assertEquals(0.2, org.getVdc().getResourceGuaranteedMemory(),0.01);
-		assertEquals(0, org.getVdc().getVmQuota());
+		assertEquals(0, org.getVdc().getVmQuota().intValue());
 		assertEquals("VDC for Customer", org.getVdc().getDescription());
 		
 		// Cpu
-		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getAllocated());
-		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getOverhead());
+		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getAllocated().intValue());
+		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getOverhead().intValue());
 		assertEquals("MHz", org.getVdc().getComputeCapacity().getCpu().getUnits());
-		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getUsed());
-		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getLimit());
+		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getUsed().intValue());
+		assertEquals(0, org.getVdc().getComputeCapacity().getCpu().getLimit().intValue());
 
 		// Memory
-		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getAllocated());
-		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getOverhead());
+		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getAllocated().intValue());
+		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getOverhead().intValue());
 		assertEquals("MB", org.getVdc().getComputeCapacity().getMemory().getUnits());
-		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getUsed());
-		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getLimit());
+		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getUsed().intValue());
+		assertEquals(0, org.getVdc().getComputeCapacity().getMemory().getLimit().intValue());
 		
 		// Network quota
-		assertEquals(1, org.getVdc().getNetworkQuota());
+		assertEquals(1, org.getVdc().getNetworkQuota().intValue());
 		
 		// Vdc Storage Profile
 		assertEquals(true, org.getVdc().getVdcStorageProfile().isEnabled());
@@ -161,8 +161,8 @@ public class YamlTest {
 		assertEquals("9000012345", org.getvApp().getChildVms().get(0).getNonMobileNo());
 		
 		// CPU
-		assertEquals(4, org.getvApp().getChildVms().get(0).getvCpu().getNoOfCpus());
-		assertEquals(4, org.getvApp().getChildVms().get(0).getvCpu().getCoresPerSocket());
+		assertEquals(4, org.getvApp().getChildVms().get(0).getvCpu().getNoOfCpus().intValue());
+		assertEquals(4, org.getvApp().getChildVms().get(0).getvCpu().getCoresPerSocket().intValue());
 		// Memory
 		assertEquals(BigInteger.valueOf(8), org.getvApp().getChildVms().get(0).getvMemory().getMemorySize());
 		

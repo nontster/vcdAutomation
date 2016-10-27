@@ -1,33 +1,33 @@
 package com.vmware.vcloud.model;
 
 public class OrgVAppTemplateLeaseSettings {
-	private boolean deleteOnStorageLeaseExpiration;
-	private int storageLeaseSeconds;
+	private Boolean deleteOnStorageLeaseExpiration;
+	private Integer storageLeaseSeconds;
 	
 	public OrgVAppTemplateLeaseSettings() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public OrgVAppTemplateLeaseSettings(boolean deleteOnStorageLeaseExpiration, int storageLeaseSeconds) {
+	public OrgVAppTemplateLeaseSettings(Boolean deleteOnStorageLeaseExpiration, Integer storageLeaseSeconds) {
 		super();
 		this.deleteOnStorageLeaseExpiration = deleteOnStorageLeaseExpiration;
 		this.storageLeaseSeconds = storageLeaseSeconds;
 	}
 
-	public boolean isDeleteOnStorageLeaseExpiration() {
+	public Boolean isDeleteOnStorageLeaseExpiration() {
 		return deleteOnStorageLeaseExpiration;
 	}
 
-	public void setDeleteOnStorageLeaseExpiration(boolean deleteOnStorageLeaseExpiration) {
+	public void setDeleteOnStorageLeaseExpiration(Boolean deleteOnStorageLeaseExpiration) {
 		this.deleteOnStorageLeaseExpiration = deleteOnStorageLeaseExpiration;
 	}
 
-	public int getStorageLeaseSeconds() {
+	public Integer getStorageLeaseSeconds() {
 		return storageLeaseSeconds;
 	}
 
-	public void setStorageLeaseSeconds(int storageLeaseSeconds) {
+	public void setStorageLeaseSeconds(Integer storageLeaseSeconds) {
 		this.storageLeaseSeconds = storageLeaseSeconds;
 	}
 	

@@ -1,44 +1,44 @@
 package com.vmware.vcloud.model;
 
 public class OrgPasswordPolicySettings {
-	private boolean accountLockoutEnabled;
-	private int accountLockoutIntervalMinutes;
-	private int invalidLoginsBeforeLockout;
+	private Boolean accountLockoutEnabled;
+	private Integer accountLockoutIntervalMinutes;
+	private Integer invalidLoginsBeforeLockout;
 	
 	public OrgPasswordPolicySettings() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
-	public OrgPasswordPolicySettings(boolean accountLockoutEnabled, int accountLockoutIntervalMinutes,
-			int invalidLoginsBeforeLockout) {
+	public OrgPasswordPolicySettings(Boolean accountLockoutEnabled, Integer accountLockoutIntervalMinutes,
+			Integer invalidLoginsBeforeLockout) {
 		super();
 		this.accountLockoutEnabled = accountLockoutEnabled;
 		this.accountLockoutIntervalMinutes = accountLockoutIntervalMinutes;
 		this.invalidLoginsBeforeLockout = invalidLoginsBeforeLockout;
 	}
 
-	public boolean isAccountLockoutEnabled() {
+	public Boolean isAccountLockoutEnabled() {
 		return accountLockoutEnabled;
 	}
 
-	public void setAccountLockoutEnabled(boolean accountLockoutEnabled) {
+	public void setAccountLockoutEnabled(Boolean accountLockoutEnabled) {
 		this.accountLockoutEnabled = accountLockoutEnabled;
 	}
 
-	public int getAccountLockoutIntervalMinutes() {
+	public Integer getAccountLockoutIntervalMinutes() {
 		return accountLockoutIntervalMinutes;
 	}
 
-	public void setAccountLockoutIntervalMinutes(int accountLockoutIntervalMinutes) {
+	public void setAccountLockoutIntervalMinutes(Integer accountLockoutIntervalMinutes) {
 		this.accountLockoutIntervalMinutes = accountLockoutIntervalMinutes;
 	}
 
-	public int getInvalidLoginsBeforeLockout() {
+	public Integer getInvalidLoginsBeforeLockout() {
 		return invalidLoginsBeforeLockout;
 	}
 
-	public void setInvalidLoginsBeforeLockout(int invalidLoginsBeforeLockout) {
+	public void setInvalidLoginsBeforeLockout(Integer invalidLoginsBeforeLockout) {
 		this.invalidLoginsBeforeLockout = invalidLoginsBeforeLockout;
 	}
 	

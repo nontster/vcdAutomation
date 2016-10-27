@@ -1,18 +1,18 @@
 package com.vmware.vcloud.model;
 
 public class Memory {
-    private int allocated;
-    private int overhead;
+    private Integer allocated;
+    private Integer overhead;
     private String units;
-    private int used;
-    private int limit;
+    private Integer used;
+    private Integer limit;
     
 	public Memory() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Memory(int allocated, int overhead, String units, int used, int limit) {
+	public Memory(Integer allocated, Integer overhead, String units, Integer used, Integer limit) {
 		super();
 		this.allocated = allocated;
 		this.overhead = overhead;
@@ -21,19 +21,19 @@ public class Memory {
 		this.limit = limit;
 	}
 
-	public int getAllocated() {
+	public Integer getAllocated() {
 		return allocated;
 	}
 
-	public void setAllocated(int allocated) {
+	public void setAllocated(Integer allocated) {
 		this.allocated = allocated;
 	}
 
-	public int getOverhead() {
+	public Integer getOverhead() {
 		return overhead;
 	}
 
-	public void setOverhead(int overhead) {
+	public void setOverhead(Integer overhead) {
 		this.overhead = overhead;
 	}
 
@@ -45,19 +45,19 @@ public class Memory {
 		this.units = units;
 	}
 
-	public int getUsed() {
+	public Integer getUsed() {
 		return used;
 	}
 
-	public void setUsed(int used) {
+	public void setUsed(Integer used) {
 		this.used = used;
 	}
 
-	public int getLimit() {
+	public Integer getLimit() {
 		return limit;
 	}
 
-	public void setLimit(int limit) {
+	public void setLimit(Integer limit) {
 		this.limit = limit;
 	}
     

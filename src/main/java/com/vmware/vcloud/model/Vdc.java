@@ -2,13 +2,13 @@ package com.vmware.vcloud.model;
 
 public class Vdc {
     private String name;
-    private boolean enabled;
-    private float resourceGuaranteedCpu;
-    private float resourceGuaranteedMemory;
-    private int vmQuota;
+    private Boolean enabled;
+    private Float resourceGuaranteedCpu;
+    private Float resourceGuaranteedMemory;
+    private Integer vmQuota;
     private String description;
     private ComputeCapacity computeCapacity;
-    private int networkQuota;
+    private Integer networkQuota;
     private VdcStorageProfile vdcStorageProfile;
     
 	public Vdc() {
@@ -16,8 +16,8 @@ public class Vdc {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Vdc(ComputeCapacity computeCapacity, String description, int networkQuota, int vmQuota, boolean enabled,
-			float resourceGuaranteedCpu, String name, float resourceGuaranteedMemory,
+	public Vdc(ComputeCapacity computeCapacity, String description, Integer networkQuota, Integer vmQuota, Boolean enabled,
+			Float resourceGuaranteedCpu, String name, Float resourceGuaranteedMemory,
 			VdcStorageProfile vdcStorageProfile) {
 		super();
 		this.computeCapacity = computeCapacity;
@@ -41,35 +41,35 @@ public class Vdc {
 		this.name = name;
 	}
 
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public float getResourceGuaranteedCpu() {
+	public Float getResourceGuaranteedCpu() {
 		return resourceGuaranteedCpu;
 	}
 
-	public void setResourceGuaranteedCpu(float resourceGuaranteedCpu) {
+	public void setResourceGuaranteedCpu(Float resourceGuaranteedCpu) {
 		this.resourceGuaranteedCpu = resourceGuaranteedCpu;
 	}
 
-	public float getResourceGuaranteedMemory() {
+	public Float getResourceGuaranteedMemory() {
 		return resourceGuaranteedMemory;
 	}
 
-	public void setResourceGuaranteedMemory(float resourceGuaranteedMemory) {
+	public void setResourceGuaranteedMemory(Float resourceGuaranteedMemory) {
 		this.resourceGuaranteedMemory = resourceGuaranteedMemory;
 	}
 
-	public int getVmQuota() {
+	public Integer getVmQuota() {
 		return vmQuota;
 	}
 
-	public void setVmQuota(int vmQuota) {
+	public void setVmQuota(Integer vmQuota) {
 		this.vmQuota = vmQuota;
 	}
 
@@ -89,11 +89,11 @@ public class Vdc {
 		this.computeCapacity = computeCapacity;
 	}
 
-	public int getNetworkQuota() {
+	public Integer getNetworkQuota() {
 		return networkQuota;
 	}
 
-	public void setNetworkQuota(int networkQuota) {
+	public void setNetworkQuota(Integer networkQuota) {
 		this.networkQuota = networkQuota;
 	}
 

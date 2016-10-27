@@ -3,8 +3,8 @@ package com.vmware.vcloud.model;
 public class IpScope {
 	private String netmask;
 	private String gateway;
-	private boolean enabled;
-	private boolean inherited;	
+	private Boolean enabled;
+	private Boolean inherited;	
 	private String dns1;
 	private String dns2;
 	private IpRange ipRange;
@@ -14,7 +14,7 @@ public class IpScope {
 		// TODO Auto-generated constructor stub
 	}
 
-	public IpScope(String netmask, String gateway, boolean enabled, boolean inherited, String dns1, String dns2,
+	public IpScope(String netmask, String gateway, Boolean enabled, Boolean inherited, String dns1, String dns2,
 			IpRange ipRange) {
 		super();
 		this.netmask = netmask;
@@ -42,19 +42,19 @@ public class IpScope {
 		this.gateway = gateway;
 	}
 
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public boolean isInherited() {
+	public Boolean isInherited() {
 		return inherited;
 	}
 
-	public void setInherited(boolean inherited) {
+	public void setInherited(Boolean inherited) {
 		this.inherited = inherited;
 	}
 

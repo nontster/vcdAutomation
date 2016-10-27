@@ -3,7 +3,7 @@ package com.vmware.vcloud.model;
 import java.util.List;
 
 public class Configuration {
-	private boolean retainNetInfoAcrossDeployments;
+	private Boolean retainNetInfoAcrossDeployments;
 	private FenceMode fenceMode;
 	private List<IpScope> ipScopes;
 	
@@ -12,18 +12,18 @@ public class Configuration {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Configuration(boolean retainNetInfoAcrossDeployments, FenceMode fenceMode, List<IpScope> ipScopes) {
+	public Configuration(Boolean retainNetInfoAcrossDeployments, FenceMode fenceMode, List<IpScope> ipScopes) {
 		super();
 		this.retainNetInfoAcrossDeployments = retainNetInfoAcrossDeployments;
 		this.fenceMode = fenceMode;
 		this.ipScopes = ipScopes;
 	}
 
-	public boolean isRetainNetInfoAcrossDeployments() {
+	public Boolean isRetainNetInfoAcrossDeployments() {
 		return retainNetInfoAcrossDeployments;
 	}
 
-	public void setRetainNetInfoAcrossDeployments(boolean retainNetInfoAcrossDeployments) {
+	public void setRetainNetInfoAcrossDeployments(Boolean retainNetInfoAcrossDeployments) {
 		this.retainNetInfoAcrossDeployments = retainNetInfoAcrossDeployments;
 	}
 

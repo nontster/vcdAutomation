@@ -7,7 +7,7 @@ public class VCloudOrganization {
 	private String name;
 	private String description;
 	private String fullName;
-	private boolean enabled;
+	private Boolean enabled;
 	private OrderType orderType;
 	private String caNumber;
 
@@ -26,7 +26,7 @@ public class VCloudOrganization {
 		// TODO Auto-generated constructor stub
 	}
 
-	public VCloudOrganization(String template_version, String name, String description, String fullName, boolean enabled, OrderType orderType,
+	public VCloudOrganization(String template_version, String name, String description, String fullName, Boolean enabled, OrderType orderType,
 			String caNumber, Date startDate, Date endDate, User user, OrgSettings orgSettings,
 			CloudResources cloudResources, Vdc vdc, EdgeGateway edgeGateway, OrgVdcNetwork orgVdcNetwork, VApp vApp) {
 		super();
@@ -94,7 +94,7 @@ public class VCloudOrganization {
 		this.fullName = fullName;
 	}
 
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 
@@ -122,7 +122,7 @@ public class VCloudOrganization {
 		this.endDate = endDate;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 

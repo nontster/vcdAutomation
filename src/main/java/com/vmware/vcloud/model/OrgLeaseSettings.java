@@ -1,44 +1,44 @@
 package com.vmware.vcloud.model;
 
 public class OrgLeaseSettings {
-	private boolean deleteOnStorageLeaseExpiration;
-	private int deploymentLeaseSeconds;
-	private int storageLeaseSeconds;
+	private Boolean deleteOnStorageLeaseExpiration;
+	private Integer deploymentLeaseSeconds;
+	private Integer storageLeaseSeconds;
 	
 	public OrgLeaseSettings() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public OrgLeaseSettings(boolean deleteOnStorageLeaseExpiration, int deploymentLeaseSeconds,
-			int storageLeaseSeconds) {
+	public OrgLeaseSettings(Boolean deleteOnStorageLeaseExpiration, Integer deploymentLeaseSeconds,
+			Integer storageLeaseSeconds) {
 		super();
 		this.deleteOnStorageLeaseExpiration = deleteOnStorageLeaseExpiration;
 		this.deploymentLeaseSeconds = deploymentLeaseSeconds;
 		this.storageLeaseSeconds = storageLeaseSeconds;
 	}
 
-	public boolean isDeleteOnStorageLeaseExpiration() {
+	public Boolean isDeleteOnStorageLeaseExpiration() {
 		return deleteOnStorageLeaseExpiration;
 	}
 
-	public void setDeleteOnStorageLeaseExpiration(boolean deleteOnStorageLeaseExpiration) {
+	public void setDeleteOnStorageLeaseExpiration(Boolean deleteOnStorageLeaseExpiration) {
 		this.deleteOnStorageLeaseExpiration = deleteOnStorageLeaseExpiration;
 	}
 
-	public int getDeploymentLeaseSeconds() {
+	public Integer getDeploymentLeaseSeconds() {
 		return deploymentLeaseSeconds;
 	}
 
-	public void setDeploymentLeaseSeconds(int deploymentLeaseSeconds) {
+	public void setDeploymentLeaseSeconds(Integer deploymentLeaseSeconds) {
 		this.deploymentLeaseSeconds = deploymentLeaseSeconds;
 	}
 
-	public int getStorageLeaseSeconds() {
+	public Integer getStorageLeaseSeconds() {
 		return storageLeaseSeconds;
 	}
 
-	public void setStorageLeaseSeconds(int storageLeaseSeconds) {
+	public void setStorageLeaseSeconds(Integer storageLeaseSeconds) {
 		this.storageLeaseSeconds = storageLeaseSeconds;
 	}
 

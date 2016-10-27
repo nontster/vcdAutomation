@@ -3,7 +3,7 @@ package com.vmware.vcloud.model;
 public class User {
 	private String name;
 	private String password;
-	private boolean enabled;
+	private Boolean enabled;
 	private String roleName;
 	private String fullName;
 	private String emailAddress;
@@ -14,7 +14,7 @@ public class User {
 		// TODO Auto-generated constructor stub
 	}
 
-	public User(String name, String password, boolean enabled, String roleName, String fullName, String emailAddress,
+	public User(String name, String password, Boolean enabled, String roleName, String fullName, String emailAddress,
 			String phone) {
 		super();
 		this.name = name;
@@ -42,11 +42,11 @@ public class User {
 		this.password = password;
 	}
 
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 

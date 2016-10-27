@@ -5,8 +5,8 @@ import java.util.List;
 public class GatewayConfiguration {
 	
 	private GatewayBackingConfigEnums gatewayBackingConfig;
-	private boolean haEnabled;
-	private boolean useDefaultRouteForDnsRelay;
+	private Boolean haEnabled;
+	private Boolean useDefaultRouteForDnsRelay;
 	private List<GatewayInterface> gatewayInterfaces;
 	
 	public GatewayConfiguration() {
@@ -14,8 +14,8 @@ public class GatewayConfiguration {
 		// TODO Auto-generated constructor stub
 	}
 
-	public GatewayConfiguration(GatewayBackingConfigEnums gatewayBackingConfig, boolean haEnabled,
-			boolean useDefaultRouteForDnsRelay, List<GatewayInterface> gatewayInterfaces) {
+	public GatewayConfiguration(GatewayBackingConfigEnums gatewayBackingConfig, Boolean haEnabled,
+			Boolean useDefaultRouteForDnsRelay, List<GatewayInterface> gatewayInterfaces) {
 		super();
 		this.gatewayBackingConfig = gatewayBackingConfig;
 		this.haEnabled = haEnabled;
@@ -32,19 +32,19 @@ public class GatewayConfiguration {
 	}
 
 	
-	public boolean isHaEnabled() {
+	public Boolean isHaEnabled() {
 		return haEnabled;
 	}
 
-	public void setHaEnabled(boolean haEnabled) {
+	public void setHaEnabled(Boolean haEnabled) {
 		this.haEnabled = haEnabled;
 	}
 
-	public boolean isUseDefaultRouteForDnsRelay() {
+	public Boolean isUseDefaultRouteForDnsRelay() {
 		return useDefaultRouteForDnsRelay;
 	}
 
-	public void setUseDefaultRouteForDnsRelay(boolean useDefaultRouteForDnsRelay) {
+	public void setUseDefaultRouteForDnsRelay(Boolean useDefaultRouteForDnsRelay) {
 		this.useDefaultRouteForDnsRelay = useDefaultRouteForDnsRelay;
 	}
 

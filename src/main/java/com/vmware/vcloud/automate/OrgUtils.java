@@ -29,10 +29,13 @@ public class OrgUtils {
 	static AdminOrgType createNewAdminOrgType(VCloudOrganization vCloudOrg) throws VCloudException {
 
 		OrgLeaseSettingsType orgLeaseSettings = new OrgLeaseSettingsType();
-		orgLeaseSettings.setDeleteOnStorageLeaseExpiration(
-				vCloudOrg.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration());
-		orgLeaseSettings
-				.setDeploymentLeaseSeconds(vCloudOrg.getOrgSettings().getOrgLeaseSettings().getDeploymentLeaseSeconds());
+		
+		if(vCloudOrg.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration() != null)
+			orgLeaseSettings.setDeleteOnStorageLeaseExpiration(vCloudOrg.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration());
+		else
+			orgLeaseSettings.setDeleteOnStorageLeaseExpiration(Boolean.FALSE);
+		
+		orgLeaseSettings.setDeploymentLeaseSeconds(vCloudOrg.getOrgSettings().getOrgLeaseSettings().getDeploymentLeaseSeconds());
 		orgLeaseSettings.setStorageLeaseSeconds(vCloudOrg.getOrgSettings().getOrgLeaseSettings().getStorageLeaseSeconds());
 
 		OrgGeneralSettingsType orgGeneralSettings = new OrgGeneralSettingsType();
@@ -57,7 +60,6 @@ public class OrgUtils {
 		OrgSettingsType orgSettings = new OrgSettingsType();
 		orgSettings.setOrgGeneralSettings(orgGeneralSettings);
 		orgSettings.setVAppLeaseSettings(orgLeaseSettings);
-		// orgSettings.setOrgEmailSettings(orgEmailSettings);
 		orgSettings.setVAppTemplateLeaseSettings(orgVAppTemplateLeaseSettings);
 		orgSettings.setOrgPasswordPolicySettings(orgPasswordPolicySettings);
 

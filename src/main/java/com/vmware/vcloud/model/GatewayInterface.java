@@ -4,7 +4,7 @@ public class GatewayInterface {
 	private String displayName;
 	private InterfaceTypeEnums interfaceType;
 	private SubnetParticipation subnetParticipation;
-	private boolean useForDefaultRoute;
+	private Boolean useForDefaultRoute;
 	
 	public GatewayInterface() {
 		super();
@@ -12,7 +12,7 @@ public class GatewayInterface {
 	}
 
 	public GatewayInterface(String displayName, InterfaceTypeEnums interfaceType,
-			SubnetParticipation subnetParticipation, boolean useForDefaultRoute) {
+			SubnetParticipation subnetParticipation, Boolean useForDefaultRoute) {
 		super();
 		this.displayName = displayName;
 		this.interfaceType = interfaceType;
@@ -44,11 +44,11 @@ public class GatewayInterface {
 		this.subnetParticipation = subnetParticipation;
 	}
 
-	public boolean isUseForDefaultRoute() {
+	public Boolean isUseForDefaultRoute() {
 		return useForDefaultRoute;
 	}
 
-	public void setUseForDefaultRoute(boolean useForDefaultRoute) {
+	public void setUseForDefaultRoute(Boolean useForDefaultRoute) {
 		this.useForDefaultRoute = useForDefaultRoute;
 	}
 

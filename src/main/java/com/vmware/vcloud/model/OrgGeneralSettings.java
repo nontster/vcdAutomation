@@ -1,43 +1,43 @@
 package com.vmware.vcloud.model;
 
 public class OrgGeneralSettings {
-	private int storedVmQuota;
-	private int deployedVMQuota;
-	private boolean canPublishCatalogs;
+	private Integer storedVmQuota;
+	private Integer deployedVMQuota;
+	private Boolean canPublishCatalogs;
 	
 	public OrgGeneralSettings() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public OrgGeneralSettings(int storedVmQuota, int deployedVMQuota, boolean canPublishCatalogs) {
+	public OrgGeneralSettings(Integer storedVmQuota, Integer deployedVMQuota, Boolean canPublishCatalogs) {
 		super();
 		this.storedVmQuota = storedVmQuota;
 		this.deployedVMQuota = deployedVMQuota;
 		this.canPublishCatalogs = canPublishCatalogs;
 	}
 
-	public int getStoredVmQuota() {
+	public Integer getStoredVmQuota() {
 		return storedVmQuota;
 	}
 
-	public void setStoredVmQuota(int storedVmQuota) {
+	public void setStoredVmQuota(Integer storedVmQuota) {
 		this.storedVmQuota = storedVmQuota;
 	}
 
-	public int getDeployedVMQuota() {
+	public Integer getDeployedVMQuota() {
 		return deployedVMQuota;
 	}
 
-	public void setDeployedVMQuota(int deployedVMQuota) {
+	public void setDeployedVMQuota(Integer deployedVMQuota) {
 		this.deployedVMQuota = deployedVMQuota;
 	}
 
-	public boolean isCanPublishCatalogs() {
+	public Boolean isCanPublishCatalogs() {
 		return canPublishCatalogs;
 	}
 
-	public void setCanPublishCatalogs(boolean canPublishCatalogs) {
+	public void setCanPublishCatalogs(Boolean canPublishCatalogs) {
 		this.canPublishCatalogs = canPublishCatalogs;
 	}
 	

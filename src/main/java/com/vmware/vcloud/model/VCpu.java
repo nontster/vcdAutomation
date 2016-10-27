@@ -1,33 +1,33 @@
 package com.vmware.vcloud.model;
 
 public class VCpu {
-    private int noOfCpus; 
-    private int coresPerSocket;
+    private Integer noOfCpus; 
+    private Integer coresPerSocket;
     
 	public VCpu() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public VCpu(int noOfCpus, int coresPerSocket) {
+	public VCpu(Integer noOfCpus, Integer coresPerSocket) {
 		super();
 		this.noOfCpus = noOfCpus;
 		this.coresPerSocket = coresPerSocket;
 	}
 
-	public int getNoOfCpus() {
+	public Integer getNoOfCpus() {
 		return noOfCpus;
 	}
 
-	public void setNoOfCpus(int noOfCpus) {
+	public void setNoOfCpus(Integer noOfCpus) {
 		this.noOfCpus = noOfCpus;
 	}
 
-	public int getCoresPerSocket() {
+	public Integer getCoresPerSocket() {
 		return coresPerSocket;
 	}
 
-	public void setCoresPerSocket(int coresPerSocket) {
+	public void setCoresPerSocket(Integer coresPerSocket) {
 		this.coresPerSocket = coresPerSocket;
 	}
     

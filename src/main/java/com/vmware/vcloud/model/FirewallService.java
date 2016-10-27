@@ -3,9 +3,9 @@ package com.vmware.vcloud.model;
 import java.util.List;
 
 public class FirewallService {
-	private boolean enabled;
+	private Boolean enabled;
 	private FirewallAction defaultAction;
-	private boolean logDefaultAction;	
+	private Boolean logDefaultAction;	
 	private List <FirewallRule> firewallRules;
 	
 	public FirewallService() {
@@ -13,7 +13,7 @@ public class FirewallService {
 		// TODO Auto-generated constructor stub
 	}
 
-	public FirewallService(boolean enabled, FirewallAction defaultAction, boolean logDefaultAction,
+	public FirewallService(Boolean enabled, FirewallAction defaultAction, Boolean logDefaultAction,
 			List<FirewallRule> firewallRules) {
 		super();
 		this.enabled = enabled;
@@ -22,11 +22,11 @@ public class FirewallService {
 		this.firewallRules = firewallRules;
 	}
 
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -38,11 +38,11 @@ public class FirewallService {
 		this.defaultAction = defaultAction;
 	}
 
-	public boolean isLogDefaultAction() {
+	public Boolean isLogDefaultAction() {
 		return logDefaultAction;
 	}
 
-	public void setLogDefaultAction(boolean logDefaultAction) {
+	public void setLogDefaultAction(Boolean logDefaultAction) {
 		this.logDefaultAction = logDefaultAction;
 	}
 

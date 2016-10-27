@@ -11,6 +11,7 @@ import com.vmware.vcloud.api.rest.schema.OrgSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgVAppTemplateLeaseSettingsType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
+import com.vmware.vcloud.exception.InvalidTemplateException;
 import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
@@ -28,35 +29,73 @@ public class OrgUtils {
 	 */
 	static AdminOrgType createNewAdminOrgType(VCloudOrganization vCloudOrg) throws VCloudException {
 
+		// Setting orgLeaseSettings
 		OrgLeaseSettingsType orgLeaseSettings = new OrgLeaseSettingsType();
-		
-		if(vCloudOrg.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration() != null)
+				
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgLeaseSettings() != null && vCloudOrg.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration() != null)
 			orgLeaseSettings.setDeleteOnStorageLeaseExpiration(vCloudOrg.getOrgSettings().getOrgLeaseSettings().isDeleteOnStorageLeaseExpiration());
 		else
 			orgLeaseSettings.setDeleteOnStorageLeaseExpiration(Boolean.FALSE);
 		
-		orgLeaseSettings.setDeploymentLeaseSeconds(vCloudOrg.getOrgSettings().getOrgLeaseSettings().getDeploymentLeaseSeconds());
-		orgLeaseSettings.setStorageLeaseSeconds(vCloudOrg.getOrgSettings().getOrgLeaseSettings().getStorageLeaseSeconds());
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgLeaseSettings() != null && vCloudOrg.getOrgSettings().getOrgLeaseSettings().getDeploymentLeaseSeconds() != null)
+			orgLeaseSettings.setDeploymentLeaseSeconds(vCloudOrg.getOrgSettings().getOrgLeaseSettings().getDeploymentLeaseSeconds());
+		else
+			orgLeaseSettings.setDeploymentLeaseSeconds(0);
+			
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgLeaseSettings() != null && vCloudOrg.getOrgSettings().getOrgLeaseSettings().getStorageLeaseSeconds() != null)	
+			orgLeaseSettings.setStorageLeaseSeconds(vCloudOrg.getOrgSettings().getOrgLeaseSettings().getStorageLeaseSeconds());
+		else
+			orgLeaseSettings.setStorageLeaseSeconds(0);
 
+		// Setting orgGeneralSettings
 		OrgGeneralSettingsType orgGeneralSettings = new OrgGeneralSettingsType();
-		orgGeneralSettings.setStoredVmQuota(vCloudOrg.getOrgSettings().getOrgGeneralSettings().getStoredVmQuota());
-		orgGeneralSettings.setDeployedVMQuota(vCloudOrg.getOrgSettings().getOrgGeneralSettings().getDeployedVMQuota());
-		orgGeneralSettings.setCanPublishCatalogs(vCloudOrg.getOrgSettings().getOrgGeneralSettings().isCanPublishCatalogs());
-
+		
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgLeaseSettings() != null && vCloudOrg.getOrgSettings().getOrgGeneralSettings().getStoredVmQuota() != null)		
+			orgGeneralSettings.setStoredVmQuota(vCloudOrg.getOrgSettings().getOrgGeneralSettings().getStoredVmQuota());
+		else
+			orgGeneralSettings.setStoredVmQuota(0);
+		
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgLeaseSettings() != null && vCloudOrg.getOrgSettings().getOrgGeneralSettings().getDeployedVMQuota() != null)
+			orgGeneralSettings.setDeployedVMQuota(vCloudOrg.getOrgSettings().getOrgGeneralSettings().getDeployedVMQuota());
+		else
+			orgGeneralSettings.setDeployedVMQuota(0);
+			
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgLeaseSettings() != null && vCloudOrg.getOrgSettings().getOrgGeneralSettings().isCanPublishCatalogs() != null)	
+			orgGeneralSettings.setCanPublishCatalogs(vCloudOrg.getOrgSettings().getOrgGeneralSettings().isCanPublishCatalogs());
+		else
+			orgGeneralSettings.setCanPublishCatalogs(Boolean.FALSE);
+		
+		// Setting orgVAppTemplateLeaseSettings
 		OrgVAppTemplateLeaseSettingsType orgVAppTemplateLeaseSettings = new OrgVAppTemplateLeaseSettingsType();
-		orgVAppTemplateLeaseSettings.setDeleteOnStorageLeaseExpiration(
-				vCloudOrg.getOrgSettings().getOrgVAppTemplateLeaseSettings().isDeleteOnStorageLeaseExpiration());
-		orgVAppTemplateLeaseSettings.setStorageLeaseSeconds(
-				vCloudOrg.getOrgSettings().getOrgVAppTemplateLeaseSettings().getStorageLeaseSeconds());
-
+		
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgVAppTemplateLeaseSettings() != null && vCloudOrg.getOrgSettings().getOrgVAppTemplateLeaseSettings().isDeleteOnStorageLeaseExpiration() != null)
+			orgVAppTemplateLeaseSettings.setDeleteOnStorageLeaseExpiration(vCloudOrg.getOrgSettings().getOrgVAppTemplateLeaseSettings().isDeleteOnStorageLeaseExpiration());
+		else
+			orgVAppTemplateLeaseSettings.setDeleteOnStorageLeaseExpiration(Boolean.FALSE);
+		
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgVAppTemplateLeaseSettings() != null && vCloudOrg.getOrgSettings().getOrgVAppTemplateLeaseSettings().getStorageLeaseSeconds() != null)
+			orgVAppTemplateLeaseSettings.setStorageLeaseSeconds(vCloudOrg.getOrgSettings().getOrgVAppTemplateLeaseSettings().getStorageLeaseSeconds());
+		else
+			orgVAppTemplateLeaseSettings.setStorageLeaseSeconds(0);
+		
+		// Setting orgPasswordPolicySettings
 		OrgPasswordPolicySettingsType orgPasswordPolicySettings = new OrgPasswordPolicySettingsType();
-		orgPasswordPolicySettings.setAccountLockoutEnabled(
-				vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().isAccountLockoutEnabled());
-		orgPasswordPolicySettings.setAccountLockoutIntervalMinutes(
-				vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().getAccountLockoutIntervalMinutes());
-		orgPasswordPolicySettings.setInvalidLoginsBeforeLockout(
-				vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().getInvalidLoginsBeforeLockout());
-
+		
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings() != null && vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().isAccountLockoutEnabled() != null)
+			orgPasswordPolicySettings.setAccountLockoutEnabled(vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().isAccountLockoutEnabled());		
+		else 
+			orgPasswordPolicySettings.setAccountLockoutEnabled(Boolean.TRUE);
+			
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings() != null && vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().getAccountLockoutIntervalMinutes() != null)
+			orgPasswordPolicySettings.setAccountLockoutIntervalMinutes(vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().getAccountLockoutIntervalMinutes());
+		else
+			orgPasswordPolicySettings.setAccountLockoutIntervalMinutes(15);
+		
+		if(vCloudOrg.getOrgSettings()!= null && vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings() != null && vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().getInvalidLoginsBeforeLockout() != null)
+			orgPasswordPolicySettings.setInvalidLoginsBeforeLockout(vCloudOrg.getOrgSettings().getOrgPasswordPolicySettings().getInvalidLoginsBeforeLockout());
+		else
+			orgPasswordPolicySettings.setInvalidLoginsBeforeLockout(15);
+				
 		OrgSettingsType orgSettings = new OrgSettingsType();
 		orgSettings.setOrgGeneralSettings(orgGeneralSettings);
 		orgSettings.setVAppLeaseSettings(orgLeaseSettings);
@@ -83,14 +122,29 @@ public class OrgUtils {
 		}
 		
 		descBuff.append("Customer Contract :").append("\n");
-		descBuff.append("   Name: ").append(vCloudOrg.getUser().getFullName()).append("\n");
-		descBuff.append("   Email: ").append(vCloudOrg.getUser().getEmailAddress()).append("\n");
-		descBuff.append("   Tel.: ").append(vCloudOrg.getUser().getPhone()).append("\n");
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getFullName() != null)
+			descBuff.append("   Name: ").append(vCloudOrg.getUser().getFullName()).append("\n");
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getEmailAddress() != null)
+			descBuff.append("   Email: ").append(vCloudOrg.getUser().getEmailAddress()).append("\n");
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getPhone() != null)
+			descBuff.append("   Tel.: ").append(vCloudOrg.getUser().getPhone()).append("\n");
 				
-		adminOrgType.setDescription(descBuff.toString());
-		adminOrgType.setFullName(vCloudOrg.getFullName());
+		if(vCloudOrg.getDescription() != null && !vCloudOrg.getDescription().isEmpty())
+			adminOrgType.setDescription(vCloudOrg.getDescription());
+		else
+			adminOrgType.setDescription(descBuff.toString());
+		
+		if(vCloudOrg.getFullName() != null)
+			adminOrgType.setFullName(vCloudOrg.getFullName());
+		else
+			throw new NullPointerException("Customer full name cannot be NULL");
+			
 		adminOrgType.setSettings(orgSettings);
-		adminOrgType.setIsEnabled(vCloudOrg.isEnabled());
+		
+		if(vCloudOrg.isEnabled() != null)
+			adminOrgType.setIsEnabled(vCloudOrg.isEnabled());
+		else
+			adminOrgType.setIsEnabled(Boolean.TRUE);
 
 		return adminOrgType;
 	}

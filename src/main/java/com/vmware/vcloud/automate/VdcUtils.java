@@ -181,8 +181,7 @@ public class VdcUtils {
 			createVdcParams.setNetworkQuota(org.getVdc().getNetworkQuota());
 		else
 			createVdcParams.setNetworkQuota(1);
-			
-			
+						
 		// Name this Organization vDC		
 		if(org.getVdc() != null && org.getVdc().getName() != null)
 			createVdcParams.setName(org.getVdc().getName());
@@ -191,8 +190,12 @@ public class VdcUtils {
 
 			createVdcParams.setName(orgName);
 			
-			com.vmware.vcloud.model.Vdc vdc = new com.vmware.vcloud.model.Vdc();
-			org.setVdc(vdc);
+			// org.getVdc().getName() will be later used in main()
+			if (org.getVdc() == null) {
+				com.vmware.vcloud.model.Vdc vdc = new com.vmware.vcloud.model.Vdc();
+				org.setVdc(vdc);
+			}
+
 			org.getVdc().setName(orgName);
 		}
 		

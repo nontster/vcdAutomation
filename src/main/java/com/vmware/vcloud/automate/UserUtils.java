@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.UserType;
+import com.vmware.vcloud.exception.UserRoleNotFoundException;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -14,35 +15,59 @@ import com.vmware.vcloud.sdk.admin.VcloudAdmin;
 
 public class UserUtils {
 	
-	static void addUserToOrg(VCloudOrganization vCloudOrg, VcloudAdmin admin, AdminOrganization adminOrg) throws TimeoutException {
+	static void addUserToOrg(VCloudOrganization vCloudOrg, VcloudAdmin admin, AdminOrganization adminOrg) throws TimeoutException, UserRoleNotFoundException, VCloudException {
 		UserType newUserType = new UserType();
 
 		// Credential
-		newUserType.setName(vCloudOrg.getUser().getName());
-		newUserType.setPassword(vCloudOrg.getUser().getPassword());
-		newUserType.setIsEnabled(vCloudOrg.getUser().isEnabled());
+		
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getName() != null)
+			newUserType.setName(vCloudOrg.getUser().getName());
+		else
+			newUserType.setName(vCloudOrg.getShortName() + "_admin");
+			
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getPassword() != null)
+			newUserType.setPassword(vCloudOrg.getUser().getPassword());
+		else{
+			String newPassword = VappUtils.genPassword();
+			newUserType.setPassword(newPassword);
+			vCloudOrg.getUser().setPassword(newPassword);
+		}
+			
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().isEnabled() != null)
+			newUserType.setIsEnabled(vCloudOrg.getUser().isEnabled());
+		else
+			newUserType.setIsEnabled(Boolean.TRUE);
 
 		// Role : 'Customer Managed Service'
-		ReferenceType usrRoleRef = admin.getRoleRefByName(vCloudOrg.getUser().getRoleName());
+		ReferenceType usrRoleRef = null;
+		
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getRoleName() != null)
+			usrRoleRef = admin.getRoleRefByName(vCloudOrg.getUser().getRoleName());
+		else
+			usrRoleRef = admin.getRoleRefByName("Customer Managed Service");
+		
+		if(usrRoleRef == null)
+			throw new UserRoleNotFoundException("User role not found");
+		
 		newUserType.setRole(usrRoleRef);
 
 		// Contact Info:
-		newUserType.setFullName(vCloudOrg.getUser().getFullName());
-		newUserType.setEmailAddress(vCloudOrg.getUser().getEmailAddress());
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getFullName() != null)
+			newUserType.setFullName(vCloudOrg.getUser().getFullName());
+		
+		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getEmailAddress() != null)
+			newUserType.setEmailAddress(vCloudOrg.getUser().getEmailAddress());
 		// Use defaults for rest of the fields.
 
-		try {
-			User user = adminOrg.createUser(newUserType);
+		User user = adminOrg.createUser(newUserType);
 
-			System.out.println("Creating admin user for organization : " + user.getResource().getName() + " : "
-					+ user.getResource().getHref() + "\n");
-			List<Task> tasks = user.getTasks();
-			if (tasks.size() > 0)
-				tasks.get(0).waitForTask(0);
-
-		} catch (VCloudException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println("Creating admin user for organization : " 
+				+ user.getResource().getName() + "/"
+				+ vCloudOrg.getUser().getPassword() + " : "
+				+ user.getResource().getHref() + "\n");
+		List<Task> tasks = user.getTasks();
+		if (tasks.size() > 0)
+			tasks.get(0).waitForTask(0);
+		
 	}
 }

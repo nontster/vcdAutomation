@@ -108,7 +108,8 @@ public class OrgUtils {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		StringBuffer descBuff = new StringBuffer();
 		
-		descBuff.append("CA Number :").append(vCloudOrg.getCaNumber()).append("\n");
+		if(vCloudOrg.getCaNumber() != null)
+			descBuff.append("CA Number :").append(vCloudOrg.getCaNumber()).append("\n");
 				
 		if(vCloudOrg.getStartDate() != null && !df.format(vCloudOrg.getStartDate()).isEmpty()){
 			

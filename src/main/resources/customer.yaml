@@ -3,6 +3,7 @@ template_version: 2016-10-25
 name: CustomOrg
 description: Custom Org Desc
 fullName: Custom Org Full Name
+shortName: cusOrg
 enabled: True
 caNumber: 7650000123
 orderType: TRIAL

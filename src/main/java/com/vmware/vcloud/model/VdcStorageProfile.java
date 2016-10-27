@@ -3,7 +3,7 @@ package com.vmware.vcloud.model;
 public class VdcStorageProfile {
     private Boolean enabled;
     private Boolean def;
-    private int limit;
+    private Integer limit;
     private String units;
     
 	public VdcStorageProfile() {
@@ -11,7 +11,7 @@ public class VdcStorageProfile {
 		// TODO Auto-generated constructor stub
 	}
 
-	public VdcStorageProfile(Boolean enabled, Boolean def, int limit, String units) {
+	public VdcStorageProfile(Boolean enabled, Boolean def, Integer limit, String units) {
 		super();
 		this.enabled = enabled;
 		this.def = def;
@@ -35,11 +35,11 @@ public class VdcStorageProfile {
 		this.def = def;
 	}
 
-	public int getLimit() {
+	public Integer getLimit() {
 		return limit;
 	}
 
-	public void setLimit(int limit) {
+	public void setLimit(Integer limit) {
 		this.limit = limit;
 	}
 

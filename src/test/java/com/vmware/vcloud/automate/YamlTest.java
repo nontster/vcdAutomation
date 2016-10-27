@@ -37,6 +37,7 @@ public class YamlTest {
 		assertEquals("CustomOrg", org.getName());
 		assertEquals("Custom Org Desc", org.getDescription());
 		assertEquals("Custom Org Full Name", org.getFullName());
+		assertEquals("cusOrg", org.getShortName());
 		assertEquals(true, org.isEnabled());
 		assertEquals("7650000123", org.getCaNumber());
 		assertEquals(OrderType.TRIAL, org.getOrderType());
@@ -104,7 +105,7 @@ public class YamlTest {
 		// Vdc Storage Profile
 		assertEquals(true, org.getVdc().getVdcStorageProfile().isEnabled());
 		assertEquals(true, org.getVdc().getVdcStorageProfile().isDef());
-		assertEquals(0, org.getVdc().getVdcStorageProfile().getLimit());
+		assertEquals(0, org.getVdc().getVdcStorageProfile().getLimit().intValue());
 		assertEquals("MB", org.getVdc().getVdcStorageProfile().getUnits());
 		
 		// Edge Gateway

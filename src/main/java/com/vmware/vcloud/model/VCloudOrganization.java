@@ -7,6 +7,7 @@ public class VCloudOrganization {
 	private String name;
 	private String description;
 	private String fullName;
+	private String shortName;
 	private Boolean enabled;
 	private OrderType orderType;
 	private String caNumber;
@@ -92,6 +93,20 @@ public class VCloudOrganization {
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	/**
+	 * @return the shortName
+	 */
+	public String getShortName() {
+		return shortName;
+	}
+
+	/**
+	 * @param shortName the shortName to set
+	 */
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 
 	public Boolean isEnabled() {

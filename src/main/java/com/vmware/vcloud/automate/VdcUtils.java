@@ -279,9 +279,9 @@ public class VdcUtils {
 		StringBuffer vdcName = new StringBuffer();
 		
 		if(org.getOrderType().name().equalsIgnoreCase("trial"))
-			vdcName.append("trial");
+			vdcName.append("trial-");
 		if(org.getShortName() != null && !org.getShortName().isEmpty())
-			vdcName.append("-").append(org.getShortName());
+			vdcName.append(org.getShortName());
 		else
 			vdcName.append(RandomStringUtils.random( 6, characters ));
 		

@@ -443,7 +443,12 @@ public class NetworkUtils {
 	static void addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, EdgeGateway edgeGateway, AdminVdc adminVdc, AdminOrganization adminOrg) throws VCloudException, TimeoutException {
 		
 		OrgVdcNetworkType OrgVdcNetworkParams = new OrgVdcNetworkType();
-		OrgVdcNetworkParams.setName(vCloudOrg.getOrgVdcNetwork().getName());
+		
+		if(vCloudOrg.getOrgVdcNetwork() != null && vCloudOrg.getOrgVdcNetwork().getName() != null)
+			OrgVdcNetworkParams.setName(vCloudOrg.getOrgVdcNetwork().getName());
+		else
+			OrgVdcNetworkParams.setName(vCloudOrg.getShortName()+"-orgnet-01");
+			
 		OrgVdcNetworkParams.setDescription(vCloudOrg.getOrgVdcNetwork().getDescription());
 
 		// Configure Internal IP Settings

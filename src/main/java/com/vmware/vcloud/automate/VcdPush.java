@@ -15,6 +15,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
+import com.vmware.vcloud.exception.ExternalNetworkNotFoundException;
 import com.vmware.vcloud.exception.InvalidTemplateException;
 import com.vmware.vcloud.exception.UserRoleNotFoundException;
 import com.vmware.vcloud.model.VCloudOrganization;
@@ -158,10 +159,19 @@ public class VcdPush {
 				NetworkUtils.addNatRoutedOrgVdcNetwork(client, vCloudOrg, edgeGateway, adminVdc, adminOrg);
 			
 				// find the vdc ref
-				Vdc vdc = VdcUtils.findVdc(client, vCloudOrg.getName(), vCloudOrg.getVdc().getName());
-
+				Vdc vdc = Vdc.getVdcByReference(client, adminVdc.getVdcReference());
+				
 				// find the vapp template ref
-				ReferenceType vappTemplateRef = VappUtils.findVappTemplateRef(client, vCloudOrg.getCloudResources().getCatalog().getName(), vCloudOrg.getvApp().getChildVms().get(0).getTemplateType()); 
+				String catalogName = null;
+				
+				if (vCloudOrg.getCloudResources() != null 
+						&& vCloudOrg.getCloudResources().getCatalog() != null
+						&& vCloudOrg.getCloudResources().getCatalog().getName() != null)
+					catalogName = vCloudOrg.getCloudResources().getCatalog().getName();
+				else
+					catalogName = "AIS-VM-TEMPLATES-CATALOG";
+								
+				ReferenceType vappTemplateRef = VappUtils.findVappTemplateRef(client, catalogName, vCloudOrg.getvApp().getChildVms().get(0).getTemplateType()); 
 
 				// Composed vApp. 
 				System.out.println("vApp: " + vCloudOrg.getvApp().getName());
@@ -200,6 +210,9 @@ public class VcdPush {
 		} catch (UserRoleNotFoundException e) {
 			// TODO Auto-generated catch block
 			System.err.println("UserRoleNotFound exception: \n" + e.getMessage());
+		} catch (ExternalNetworkNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.err.println("ExternalNetworkNotFound exception: \n" + e.getMessage());
 		} 
 
 	}

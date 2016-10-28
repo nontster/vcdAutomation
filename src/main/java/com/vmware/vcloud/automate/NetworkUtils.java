@@ -33,6 +33,7 @@ import com.vmware.vcloud.api.rest.schema.SubAllocationsType;
 import com.vmware.vcloud.api.rest.schema.SubnetParticipationType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
+import com.vmware.vcloud.exception.ExternalNetworkNotFoundException;
 import com.vmware.vcloud.model.FirewallRule;
 import com.vmware.vcloud.model.FirewallService;
 import com.vmware.vcloud.model.VCloudOrganization;
@@ -439,37 +440,67 @@ public class NetworkUtils {
 	 *            {@link AdminOrganization}
 	 * @throws VCloudException
 	 * @throws TimeoutException
+	 * @throws ExternalNetworkNotFoundException 
 	 */
-	static void addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, EdgeGateway edgeGateway, AdminVdc adminVdc, AdminOrganization adminOrg) throws VCloudException, TimeoutException {
+	static void addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, EdgeGateway edgeGateway, AdminVdc adminVdc, AdminOrganization adminOrg) throws VCloudException, TimeoutException, ExternalNetworkNotFoundException {
 		
 		OrgVdcNetworkType OrgVdcNetworkParams = new OrgVdcNetworkType();
 		
+		// If Organization VDC network name defined in template use those one, if omitted use short name combination with fixed string
 		if(vCloudOrg.getOrgVdcNetwork() != null && vCloudOrg.getOrgVdcNetwork().getName() != null)
 			OrgVdcNetworkParams.setName(vCloudOrg.getOrgVdcNetwork().getName());
 		else
 			OrgVdcNetworkParams.setName(vCloudOrg.getShortName()+"-orgnet-01");
 			
-		OrgVdcNetworkParams.setDescription(vCloudOrg.getOrgVdcNetwork().getDescription());
-
+		if (vCloudOrg.getOrgVdcNetwork() != null && vCloudOrg.getOrgVdcNetwork().getDescription() != null)
+			OrgVdcNetworkParams.setDescription(vCloudOrg.getOrgVdcNetwork().getDescription());
+		else
+			OrgVdcNetworkParams.setDescription("Organization network for " + vCloudOrg.getFullName());		
+		
 		// Configure Internal IP Settings
 		NetworkConfigurationType netConfig = new NetworkConfigurationType();
 		netConfig.setRetainNetInfoAcrossDeployments(true);
 		IpScopesType ipScopes = new IpScopesType();
 		
-		for (int i = 0; i < vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().size(); i++) {
+		if (vCloudOrg.getOrgVdcNetwork() != null 
+				&& vCloudOrg.getOrgVdcNetwork().getConfiguration() != null
+				&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes() != null) {
+			
+			for (int i = 0; i < vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().size(); i++) {
+				IpScopeType ipScope = new IpScopeType();
+				ipScope.setNetmask(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getNetmask());
+				ipScope.setGateway(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getGateway());
+				ipScope.setIsEnabled(true);
+				ipScope.setIsInherited(true);
+				ipScope.setDns1(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getDns1());
+				ipScope.setDns2(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getDns2());
+
+				// IP Ranges
+				IpRangesType ipRangesType = new IpRangesType();
+				IpRangeType ipRangeType = new IpRangeType();
+				ipRangeType.setStartAddress(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i)
+						.getIpRange().getStartAddress());
+				ipRangeType.setEndAddress(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i)
+						.getIpRange().getEndAddress());
+
+				ipRangesType.getIpRange().add(ipRangeType);
+				ipScope.setIpRanges(ipRangesType);
+				ipScopes.getIpScope().add(ipScope);
+			}
+		} else {
 			IpScopeType ipScope = new IpScopeType();
-			ipScope.setNetmask(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getNetmask());
-			ipScope.setGateway(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getGateway());
-			ipScope.setIsEnabled(true);
-			ipScope.setIsInherited(true);
-			ipScope.setDns1(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getDns1());
-			ipScope.setDns2(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getDns2());
+			ipScope.setNetmask("255.255.255.0");
+			ipScope.setGateway("10.1.1.1");
+			ipScope.setIsEnabled(Boolean.TRUE);
+			ipScope.setIsInherited(Boolean.TRUE);
+			ipScope.setDns1("115.178.58.10");
+			ipScope.setDns2("115.178.58.26");
 
 			// IP Ranges
 			IpRangesType ipRangesType = new IpRangesType();
 			IpRangeType ipRangeType = new IpRangeType();
-			ipRangeType.setStartAddress(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getIpRange().getStartAddress());
-			ipRangeType.setEndAddress(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(i).getIpRange().getEndAddress());
+			ipRangeType.setStartAddress("10.1.1.11");
+			ipRangeType.setEndAddress("10.1.1.254");
 
 			ipRangesType.getIpRange().add(ipRangeType);
 			ipScope.setIpRanges(ipRangesType);
@@ -478,17 +509,36 @@ public class NetworkUtils {
 		
 		netConfig.setIpScopes(ipScopes);
 		
-		// Set Fence Mode
-		if(vCloudOrg.getOrgVdcNetwork().getConfiguration().getFenceMode().name().equalsIgnoreCase("NATROUTED"))
-			netConfig.setFenceMode(FenceModeValuesType.NATROUTED.value()); 
-		else if(vCloudOrg.getOrgVdcNetwork().getConfiguration().getFenceMode().name().equalsIgnoreCase("BRIDGED"))
-			netConfig.setFenceMode(FenceModeValuesType.BRIDGED.value()); 
-		
+		// Set Fence Mode, if not specified in template then use NATROUTED
+		if (vCloudOrg.getOrgVdcNetwork() != null 
+				&& vCloudOrg.getOrgVdcNetwork().getConfiguration() != null
+				&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getFenceMode() != null) {
+			if (vCloudOrg.getOrgVdcNetwork().getConfiguration().getFenceMode().name().equalsIgnoreCase("NATROUTED"))
+				netConfig.setFenceMode(FenceModeValuesType.NATROUTED.value());
+			else if (vCloudOrg.getOrgVdcNetwork().getConfiguration().getFenceMode().name().equalsIgnoreCase("BRIDGED"))
+				netConfig.setFenceMode(FenceModeValuesType.BRIDGED.value());
+		} else {
+			netConfig.setFenceMode(FenceModeValuesType.NATROUTED.value());
+		}
 			
-		ReferenceType externalNetRef = NetworkUtils.getExternalNetworkRef(client, vCloudOrg.getCloudResources().getExternalNetwork().getName());
+		// FIXME: need the better way to handle external network pool. 
+		// This code imply that only one external network pool, Tenant-External-Internet02
+		ReferenceType externalNetRef = null;
+		String externalNetName = null;
 		
-		System.out.println("External Network: " + vCloudOrg.getCloudResources().getExternalNetwork().getName() + " : " + externalNetRef.getHref() + "\n");
+		if (vCloudOrg.getCloudResources() != null 
+				&& vCloudOrg.getCloudResources().getExternalNetwork() != null
+				&& vCloudOrg.getCloudResources().getExternalNetwork().getName() != null)
+			externalNetName = vCloudOrg.getCloudResources().getExternalNetwork().getName();
+		else
+			externalNetName = "Tenant-External-Internet02";
 		
+		if((externalNetRef = NetworkUtils.getExternalNetworkRef(client, externalNetName)) == null)
+			throw new ExternalNetworkNotFoundException("External network: " + externalNetName + " not found");
+				
+		System.out.println("External Network: " + externalNetName + " : " + externalNetRef.getHref() + "\n");
+		
+		// Create edge gateway
 		System.out.println("Creating EdgeGateway: " + vCloudOrg.getEdgeGateway().getName());
 		GatewayType gateway = NetworkUtils.createEdgeGatewayParams(client, vCloudOrg, externalNetRef);
 
@@ -509,13 +559,13 @@ public class NetworkUtils {
 			if (orgVdcNet.getTasks().size() > 0) {
 				orgVdcNet.getTasks().get(0).waitForTask(0);
 			}
-			
+
 			System.out.println("	Nat-Routed Org vDC Network : " + orgVdcNet.getResource().getName() + " created - "
 					+ orgVdcNet.getResource().getHref() + "\n");
 		} catch (VCloudException e) {
 			System.out.println("FAILED: creating org vdc network - " + e.getLocalizedMessage());
 		}
-		 
+		
 	}
 
 	/**

@@ -16,8 +16,11 @@ import org.apache.commons.cli.ParseException;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.exception.ExternalNetworkNotFoundException;
+import com.vmware.vcloud.exception.InsufficientIPAddressesException;
 import com.vmware.vcloud.exception.InvalidTemplateException;
+import com.vmware.vcloud.exception.MissingVMTemplateException;
 import com.vmware.vcloud.exception.UserRoleNotFoundException;
+import com.vmware.vcloud.exception.VdcNetworkNotAvailableException;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -129,7 +132,7 @@ public class VcdPush {
 					System.err.println("Invalid template version!");
 					System.exit(1);
 				}
-									
+			
 				VcloudClient.setLogLevel(Level.OFF);
 				System.out.println("Vcloud Login");
 				client = new VcloudClient(vcdurl, Version.V5_5);
@@ -170,12 +173,14 @@ public class VcdPush {
 					catalogName = vCloudOrg.getCloudResources().getCatalog().getName();
 				else
 					catalogName = "AIS-VM-TEMPLATES-CATALOG";
-								
-				ReferenceType vappTemplateRef = VappUtils.findVappTemplateRef(client, catalogName, vCloudOrg.getvApp().getChildVms().get(0).getTemplateType()); 
-
+				
 				// Composed vApp. 
-				System.out.println("vApp: " + vCloudOrg.getvApp().getName());
-				Vapp vapp = vdc.composeVapp(VappUtils.createComposeParams(client, vCloudOrg, vappTemplateRef, vdc));
+				if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getName() != null)
+					System.out.println("vApp: " + vCloudOrg.getvApp().getName());
+				else
+					System.out.println("vApp: vApp_system_1");
+				
+				Vapp vapp = vdc.composeVapp(VappUtils.createComposeParams(client, vCloudOrg, catalogName, vdc));
 				System.out.println("	Composing vApp : " + vapp.getResource().getName());
 				List<Task> tasks = vapp.getTasks();
 				if (tasks.size() > 0)
@@ -213,6 +218,15 @@ public class VcdPush {
 		} catch (ExternalNetworkNotFoundException e) {
 			// TODO Auto-generated catch block
 			System.err.println("ExternalNetworkNotFound exception: \n" + e.getMessage());
+		} catch (InsufficientIPAddressesException e) {
+			// TODO Auto-generated catch block
+			System.err.println("InsufficientIPAddresses exception: \n" + e.getMessage());
+		} catch (MissingVMTemplateException e) {
+			// TODO Auto-generated catch block
+			System.err.println("MissingVMTemplate exception: \n" + e.getMessage());
+		} catch (VdcNetworkNotAvailableException e) {
+			// TODO Auto-generated catch block
+			System.err.println("VdcNetworkNotAvailable exception: \n" + e.getMessage());
 		} 
 
 	}

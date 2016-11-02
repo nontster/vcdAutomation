@@ -25,6 +25,9 @@ import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
 import com.vmware.vcloud.api.rest.schema.VmType;
 import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
+import com.vmware.vcloud.exception.MissingVMTemplateException;
+import com.vmware.vcloud.exception.VdcNetworkNotAvailableException;
+import com.vmware.vcloud.model.ChildVm;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Expression;
 import com.vmware.vcloud.sdk.Filter;
@@ -56,17 +59,17 @@ public class VappUtils {
 	 * @param vdc
 	 * @return
 	 * @throws VCloudException
+	 * @throws MissingVMTemplateException 
+	 * @throws VdcNetworkNotAvailableException 
 	 */
 
 	static ComposeVAppParamsType createComposeParams(VcloudClient client, VCloudOrganization vCloudOrg,
-			ReferenceType vappTemplateRef, Vdc vdc) throws VCloudException {
+			String catalogName, Vdc vdc) throws VCloudException, MissingVMTemplateException, VdcNetworkNotAvailableException {
 	
 		// Get the href of the OrgNetwork to which we can connect the vApp network
 		NetworkConfigurationType networkConfigurationType = new NetworkConfigurationType();
-		if (vdc.getResource().getAvailableNetworks().getNetwork().size() == 0) {
-			System.out.println("No Networks in vdc to instantiate vapp");
-			System.exit(0);
-		}		
+		if (vdc.getResource().getAvailableNetworks().getNetwork().size() == 0)
+			throw new VdcNetworkNotAvailableException("At least 1 Vdc network required");
 		
 		// Specify the NetworkConfiguration for the vApp network
 		System.out.println("	Setting vApp ParantNetwork: "+ vdc.getResource().getAvailableNetworks().getNetwork().get(0).getName());
@@ -94,53 +97,63 @@ public class VappUtils {
 		ComposeVAppParamsType composeVAppParamsType = new ComposeVAppParamsType(); 
 		composeVAppParamsType.setDeploy(false);
 		composeVAppParamsType.setInstantiationParams(vappOrvAppTemplateInstantiationParamsType);
-		composeVAppParamsType.setName(vCloudOrg.getvApp().getName());
-		composeVAppParamsType.setDescription(vCloudOrg.getvApp().getDescription());
+		
+		if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getName() != null)
+			composeVAppParamsType.setName(vCloudOrg.getvApp().getName());
+		else
+			composeVAppParamsType.setName(" vApp_system_1");
+		
+		if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getDescription() != null)
+			composeVAppParamsType.setDescription(vCloudOrg.getvApp().getDescription());
+		else
+			composeVAppParamsType.setDescription("vApp_system_1");
 		
 		List<SourcedCompositionItemParamType> items = composeVAppParamsType.getSourcedItem();
 
-		// getting the vApp Templates first vm.
-		VappTemplate vappTemplate = VappTemplate.getVappTemplateByReference(client, vappTemplateRef);
-		VappTemplate vm = null; 
+		if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getChildVms() != null)
+			for (ChildVm childVM : vCloudOrg.getvApp().getChildVms()) {
+
+				// getting the vApp Templates first vm.
+				ReferenceType vappTemplateRef = VappUtils.findVappTemplateRef(client, catalogName, childVM.getTemplateType());
+				VappTemplate vappTemplate = VappTemplate.getVappTemplateByReference(client, vappTemplateRef);
+				VappTemplate vm = null;
+
+				for (VappTemplate child : vappTemplate.getChildren()) {
+					if (child.isVm()) {
+						vm = child;
+					}
+				}
+
+				if (vm == null)
+					throw new MissingVMTemplateException("Missing VM template");
+
+				String vmHref = vm.getReference().getHref();
+
+				SourcedCompositionItemParamType vappTemplateItem = new SourcedCompositionItemParamType();
+				ReferenceType vappTemplateVMRef = new ReferenceType();
+				vappTemplateVMRef.setHref(vmHref);
+				vappTemplateVMRef.setName(childVM.getName());
+				vappTemplateItem.setSource(vappTemplateVMRef);
+
+				NetworkConnectionSectionType networkConnectionSectionType = new NetworkConnectionSectionType();
+				networkConnectionSectionType.setInfo(networkInfo);
+
+				NetworkConnectionType networkConnectionType = new NetworkConnectionType();
+				networkConnectionType.setNetwork(vdc.getResource().getAvailableNetworks().getNetwork().get(0).getName());
+				networkConnectionType.setIpAddressAllocationMode(IpAddressAllocationModeType.POOL.value());
+				networkConnectionType.setIsConnected(Boolean.TRUE);
+				networkConnectionSectionType.getNetworkConnection().add(networkConnectionType);
+
+				InstantiationParamsType vmInstantiationParamsType = new InstantiationParamsType();
+				List<JAXBElement<? extends SectionType>> vmSections = vmInstantiationParamsType.getSection();
+				vmSections.add(new ObjectFactory().createNetworkConnectionSection(networkConnectionSectionType));
+
+				vappTemplateItem.setInstantiationParams(vmInstantiationParamsType);
+
+				items.add(vappTemplateItem);
+			}
 		
-		for(VappTemplate child : vappTemplate.getChildren()){
-			if(child.isVm()){
-				vm = child;
-			}			
-		}
-		
-		if (vm == null) {
-			System.out.println("	Could not find template VM");
-			System.exit(1);
-		}
-
-		String vmHref = vm.getReference().getHref();
-
-		SourcedCompositionItemParamType vappTemplateItem = new SourcedCompositionItemParamType();
-		ReferenceType vappTemplateVMRef = new ReferenceType();
-		vappTemplateVMRef.setHref(vmHref);
-		vappTemplateVMRef.setName(vCloudOrg.getvApp().getChildVms().get(0).getName());
-		vappTemplateItem.setSource(vappTemplateVMRef);
-
-		NetworkConnectionSectionType networkConnectionSectionType = new NetworkConnectionSectionType();
-		networkConnectionSectionType.setInfo(networkInfo);
-
-		NetworkConnectionType networkConnectionType = new NetworkConnectionType();
-		networkConnectionType.setNetwork(vdc.getResource().getAvailableNetworks().getNetwork().get(0).getName());
-		networkConnectionType.setIpAddressAllocationMode(IpAddressAllocationModeType.POOL.value());
-		networkConnectionType.setIsConnected(Boolean.TRUE);
-		networkConnectionSectionType.getNetworkConnection().add(networkConnectionType);
-
-		InstantiationParamsType vmInstantiationParamsType = new InstantiationParamsType();
-		List<JAXBElement<? extends SectionType>> vmSections = vmInstantiationParamsType.getSection();
-		vmSections.add(new ObjectFactory().createNetworkConnectionSection(networkConnectionSectionType));
-
-		vappTemplateItem.setInstantiationParams(vmInstantiationParamsType);
-
-		items.add(vappTemplateItem);
-
 		return composeVAppParamsType;
-
 	}
 	
 
@@ -185,63 +198,97 @@ public class VappUtils {
 			System.out.println("	Reconfigure VM: " + vm.getReference().getName());
 			System.out.println("	Reconfigure GuestOS...");
 			
-			// Set VM description 
-			VmType vmType = vm.getResource();
-			vmType.setDescription("Non-Mobile :"+ vCloudOrg.getvApp().getChildVms().get(0).getNonMobileNo());
-			vm.updateVM(vmType).waitForTask(0);
-			 			
-			// Set administrator password
-			GuestCustomizationSectionType guestCustomizationSection = vm.getGuestCustomizationSection();					
-			guestCustomizationSection.setComputerName(vCloudOrg.getvApp().getChildVms().get(0).getComputerName());				
-			guestCustomizationSection.setAdminPasswordEnabled(Boolean.TRUE);
-			guestCustomizationSection.setAdminPasswordAuto(Boolean.FALSE);
-			guestCustomizationSection.setResetPasswordRequired(Boolean.TRUE);
-			
-			guestCustomizationSection.setChangeSid(Boolean.TRUE);
-			
-			String adminPass = VappUtils.genPassword();			
-			guestCustomizationSection.setAdminPassword(adminPass);
-			System.out.println("		Administrator password: "+ adminPass);
-			
-			vm.updateSection(guestCustomizationSection).waitForTask(0);
-			
-			// Configure CPU
-			System.out.println("	Updating CPU Section...");
-			VirtualCpu virtualCpuItem = vm.getCpu();
-			virtualCpuItem.setCoresPerSocket(vCloudOrg.getvApp().getChildVms().get(0).getvCpu().getCoresPerSocket());
-			virtualCpuItem.setNoOfCpus(vCloudOrg.getvApp().getChildVms().get(0).getvCpu().getNoOfCpus());
-			vm.updateCpu(virtualCpuItem).waitForTask(0);
+			for (ChildVm childVM : vCloudOrg.getvApp().getChildVms()) {
 
-			// Configure Memory
-			System.out.println("	Updating Memory Section...");
-			VirtualMemory virtualMemoryItem = vm.getMemory();
-			virtualMemoryItem.setMemorySize(BigInteger.valueOf(1024).multiply(vCloudOrg.getvApp().getChildVms().get(0).getvMemory().getMemorySize()));
-			vm.updateMemory(virtualMemoryItem).waitForTask(0);
+				if (vm.getResource().getName().equalsIgnoreCase(childVM.getName())) {
 
-			// Configure Disks
-/*			System.out.println("	Updating Disks Section...");
-			List <VirtualDisk> disks = vm.getDisks();
-			
-			for(VirtualDisk disk: disks){				
-				if (disk.isHardDisk()){
-					System.out.println("		Disk size: "+ disk.getHardDiskSize());
-					BigInteger newDiskSize = disk.getHardDiskSize().multiply(BigInteger.valueOf(2));
-					disk.updateHardDiskSize(newDiskSize);
-				}				
+					// Set VM description
+					VmType vmType = vm.getResource();
+					
+					if (childVM.getDescription() != null)
+						vmType.setDescription(childVM.getDescription());
+					else {
+						if(childVM.getNonMobileNo() != null)
+							vmType.setDescription("Non-Mobile :" + childVM.getNonMobileNo());
+						else
+							vmType.setDescription("Non-Mobile : NA");
+					}
+					vm.updateVM(vmType).waitForTask(0);
+
+					// Set administrator password
+					GuestCustomizationSectionType guestCustomizationSection = vm.getGuestCustomizationSection();
+					
+					if(childVM.getComputerName() != null)
+						guestCustomizationSection.setComputerName(childVM.getComputerName());
+					else
+						guestCustomizationSection.setComputerName(childVM.getName());
+					
+					guestCustomizationSection.setAdminPasswordEnabled(Boolean.TRUE);
+					guestCustomizationSection.setAdminPasswordAuto(Boolean.FALSE);
+					guestCustomizationSection.setResetPasswordRequired(Boolean.TRUE);
+
+					guestCustomizationSection.setChangeSid(Boolean.TRUE);
+
+					String adminPass = VappUtils.genPassword();
+					guestCustomizationSection.setAdminPassword(adminPass);
+					System.out.println("		Administrator password: " + adminPass);
+
+					vm.updateSection(guestCustomizationSection).waitForTask(0);
+
+					// Configure CPU
+					System.out.println("	Updating CPU Section...");
+					VirtualCpu virtualCpuItem = vm.getCpu();
+					
+					// Set core per socket, default is 1
+					if (childVM.getvCpu() != null && childVM.getvCpu().getCoresPerSocket() != null)
+						virtualCpuItem.setCoresPerSocket(childVM.getvCpu().getCoresPerSocket());
+					else
+						virtualCpuItem.setCoresPerSocket(1);
+					
+					// Set number of Cpu, default is 1
+					if (childVM.getvCpu() != null && childVM.getvCpu().getNoOfCpus() != null)
+						virtualCpuItem.setNoOfCpus(childVM.getvCpu().getNoOfCpus());
+					else
+						virtualCpuItem.setNoOfCpus(1);
+					
+					vm.updateCpu(virtualCpuItem).waitForTask(0);
+
+					// Configure Memory
+					System.out.println("	Updating Memory Section...");
+					VirtualMemory virtualMemoryItem = vm.getMemory();
+
+					// Set memory, default is 2GB
+					if (childVM.getvMemory() != null && childVM.getvMemory().getMemorySize() != null)
+						virtualMemoryItem.setMemorySize(BigInteger.valueOf(1024).multiply(childVM.getvMemory().getMemorySize()));
+					else
+						virtualMemoryItem.setMemorySize(BigInteger.valueOf(2048));
+					
+					vm.updateMemory(virtualMemoryItem).waitForTask(0);
+
+					// Configure Disks
+					/*
+					 * System.out.println("	Updating Disks Section..."); List
+					 * <VirtualDisk> disks = vm.getDisks();
+					 * 
+					 * for(VirtualDisk disk: disks){ if (disk.isHardDisk()){
+					 * System.out.println("		Disk size: "+
+					 * disk.getHardDiskSize()); BigInteger newDiskSize =
+					 * disk.getHardDiskSize().multiply(BigInteger.valueOf(2));
+					 * disk.updateHardDiskSize(newDiskSize); } }
+					 * 
+					 * vm.updateDisks(disks).waitForTask(0);
+					 */
+
+					// Display summary
+					System.out.println("	Status : " + vm.getVMStatus());
+					System.out.println("	No of CPUs : " + vm.getCpu().getNoOfCpus());
+					System.out.println("	Core per Socket : " + vm.getCpu().getCoresPerSocket());
+					System.out.println("	Memory : " + vm.getMemory().getMemorySize() + " Mb");
+					for (VirtualDisk disk : vm.getDisks())
+						if (disk.isHardDisk())
+							System.out.println("	HardDisk : " + disk.getHardDiskSize() + " Mb");
+				}
 			}
-			
-			vm.updateDisks(disks).waitForTask(0);*/
-			
-			// Display summary
-			System.out.println("	Status : " + vm.getVMStatus());
-			System.out.println("	CPU : "
-					+ vm.getCpu().getNoOfCpus());
-			System.out.println("	Memory : "
-					+ vm.getMemory().getMemorySize() + " Mb");
-			for (VirtualDisk disk : vm.getDisks())
-				if (disk.isHardDisk())
-					System.out.println("	HardDisk : "
-							+ disk.getHardDiskSize() + " Mb");
 			
 		}
 	}

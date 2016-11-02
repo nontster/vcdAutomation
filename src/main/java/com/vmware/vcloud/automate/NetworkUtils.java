@@ -1,5 +1,7 @@
 package com.vmware.vcloud.automate;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
@@ -34,8 +36,13 @@ import com.vmware.vcloud.api.rest.schema.SubnetParticipationType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
 import com.vmware.vcloud.exception.ExternalNetworkNotFoundException;
+import com.vmware.vcloud.exception.InsufficientIPAddressesException;
 import com.vmware.vcloud.model.FirewallRule;
 import com.vmware.vcloud.model.FirewallService;
+import com.vmware.vcloud.model.GatewayInterface;
+import com.vmware.vcloud.model.InterfaceTypeEnums;
+import com.vmware.vcloud.model.IpRange;
+import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -99,8 +106,9 @@ public class NetworkUtils {
 		return sb.toString();
 	}	
 	
-	
-	static SortedSet<String> getAvailableAggresses(VcloudClient client, ReferenceType externalNetRef) throws VCloudException {
+	 
+	static List<String> getAvailableAddresses(VcloudClient client, ReferenceType externalNetRef, int numIP)
+			throws VCloudException, InsufficientIPAddressesException {
 
 		Comparator<String> ipComparator = new Comparator<String>() {
 			@Override
@@ -109,17 +117,17 @@ public class NetworkUtils {
 			}
 		};
 
-		SortedSet<String> ips = new TreeSet<String>(ipComparator);
-		SortedSet<String> ipsAll = new TreeSet<String>(ipComparator);
-
-		//ReferenceType externalNetRef = getExternalNetworkRef(client, externalNetwork);
+		// IPs already allocated
+		ArrayList<String> ips = new ArrayList<String>();
+		// All IPs in scope
+		ArrayList<String> ipsAll = new ArrayList<String>();
 
 		ExternalNetwork externalNet = ExternalNetwork.getExternalNetworkByReference(client, externalNetRef);
 
 		IpScopesType externalNetIpScopes = externalNet.getResource().getConfiguration().getIpScopes();
 
 		for (IpScopeType ipScope : externalNetIpScopes.getIpScope()) {
-			
+
 			for (IpRangeType ipRangeType : ipScope.getIpRanges().getIpRange()) {
 
 				long start = ipToLong(ipRangeType.getStartAddress());
@@ -141,7 +149,6 @@ public class NetworkUtils {
 					for (long i = start; i <= end; i++) {
 						ips.add(longToIp(i));
 					}
-
 				}
 			}
 
@@ -149,10 +156,87 @@ public class NetworkUtils {
 				ips.add(ipAddress);
 			}
 
+			Collections.sort(ips, ipComparator);
+			Collections.sort(ipsAll, ipComparator);
+
 			ipsAll.removeAll(ips);
 		}
 
-		return ipsAll;
+		if (ipsAll.size() < numIP) {
+			StringBuffer errMsg = new StringBuffer();
+			errMsg.append("You've requested ").append(numIP).append(" IP addresses but ").append(ipsAll.size())
+					.append(" available");
+			throw new InsufficientIPAddressesException(errMsg.toString());
+		}
+
+		int startIdx = 0;
+
+		// validate array index
+		if (ipsAll.size() - numIP < 0)
+			startIdx = 0;
+		else
+			startIdx = ipsAll.size() - numIP;
+
+		return ipsAll.subList(startIdx, ipsAll.size());
+	}
+	
+	private static void addNatRule(GatewayInterfaceType gatewayInterface, NatServiceType natService, String pubIP, String privIP) {
+		// Edge Gateway NAT service configuration
+
+		// To Enable the service using this flag
+		natService.setIsEnabled(Boolean.TRUE);
+
+		// Configuring destination NAT
+		NatRuleType dnatRule = new NatRuleType();
+
+		ReferenceType refd = new ReferenceType();
+		refd.setHref(gatewayInterface.getNetwork().getHref());
+
+		// Setting Rule type Destination Nat (DNAT)
+		dnatRule.setRuleType("DNAT");
+		dnatRule.setIsEnabled(Boolean.TRUE);
+		dnatRule.setDescription("DNAT");
+		GatewayNatRuleType dgatewayNat = new GatewayNatRuleType();
+
+		// Network on which NAT rules to be applied
+		dgatewayNat.setInterface(refd);
+
+		// Setting Original IP/Port
+		dgatewayNat.setOriginalIp(pubIP);
+		dgatewayNat.setOriginalPort("any");
+		dgatewayNat.setTranslatedIp(privIP);
+
+		// To allow all ports and all protocols
+		dgatewayNat.setTranslatedPort("any");
+		dgatewayNat.setProtocol("any");
+
+		// Setting Destination IP
+		dnatRule.setGatewayNatRule(dgatewayNat);
+		natService.getNatRule().add(dnatRule);
+
+		// Configuring Source NAT (SNAT)
+		NatRuleType snatRule = new NatRuleType();
+
+		// Setting Rule type Source Nat SNAT
+		snatRule.setRuleType("SNAT");
+		snatRule.setDescription("SNAT");
+		snatRule.setIsEnabled(Boolean.TRUE);
+		GatewayNatRuleType sgatewayNat = new GatewayNatRuleType();
+
+		// Network on which NAT rules to be applied
+		sgatewayNat.setInterface(refd);
+
+		// To allow all ports and all protocols
+		sgatewayNat.setProtocol("any");
+		sgatewayNat.setTranslatedPort("any");
+
+		// Setting Original IP/Port
+		sgatewayNat.setOriginalIp(privIP);
+		sgatewayNat.setOriginalPort("any");
+		sgatewayNat.setTranslatedIp(pubIP);
+
+		snatRule.setGatewayNatRule(sgatewayNat);
+		natService.getNatRule().add(snatRule);
 	}
 	
 	private static void addFirewallRule(List<FirewallRuleType> fwRules, String name, String protocol, String srcIp,
@@ -189,134 +273,248 @@ public class NetworkUtils {
 	 *            {@link ReferenceType}
 	 * @return GatewayType
 	 * @throws VCloudException
+	 * @throws InsufficientIPAddressesException 
 	 */
 	static GatewayType createEdgeGatewayParams(VcloudClient client, VCloudOrganization vCloudOrg, ReferenceType externalNetwork)
-			throws VCloudException {
+			throws VCloudException, InsufficientIPAddressesException {
 		ExternalNetwork externalNet = ExternalNetwork.getExternalNetworkByReference(client, externalNetwork);
 		IpScopeType externalNetIpScope = externalNet.getResource().getConfiguration().getIpScopes().getIpScope().get(0);
 
-		String edgeGatewayName = vCloudOrg.getEdgeGateway().getName();
+		List<String> pubIPs = null;
 		
+		// Create edge gateway
+		StringBuffer edgeGatewayName = new StringBuffer();
+		
+		if(vCloudOrg.getEdgeGateway() != null && vCloudOrg.getEdgeGateway().getName() != null)
+			edgeGatewayName.append(vCloudOrg.getEdgeGateway().getName());
+		else{
+			if(vCloudOrg.getOrderType() == OrderType.TRIAL)
+				edgeGatewayName.append("Trial-");
+			
+			edgeGatewayName.append(vCloudOrg.getShortName());
+			edgeGatewayName.append("-edgegw-01");
+		}
+			
+		System.out.println("Creating EdgeGateway: " + edgeGatewayName.toString());
+		
+	
 		GatewayType gatewayParams = new GatewayType();
-		gatewayParams.setName(edgeGatewayName);
-		gatewayParams.setDescription(vCloudOrg.getEdgeGateway().getDescription());
+		
+		// Set edge gateway name
+		gatewayParams.setName(edgeGatewayName.toString());
+		
+		// Set edge gateway description
+		if (vCloudOrg.getEdgeGateway() != null && vCloudOrg.getEdgeGateway().getDescription() != null)
+			gatewayParams.setDescription(vCloudOrg.getEdgeGateway().getDescription());
+		else
+			gatewayParams.setDescription("Edge gateway for " + vCloudOrg.getFullName());
+		
 		GatewayConfigurationType gatewayConfig = new GatewayConfigurationType();
-		gatewayConfig.setGatewayBackingConfig(GatewayBackingConfigValuesType.COMPACT.value());
-		GatewayInterfaceType gatewayInterface = new GatewayInterfaceType();
-		gatewayInterface.setDisplayName(vCloudOrg.getEdgeGateway().getGatewayConfiguration()
-				.getGatewayInterfaces().get(0).getDisplayName());
-		gatewayInterface.setNetwork(externalNetwork);
-		gatewayInterface.setInterfaceType(GatewayEnums.UPLINK.value());
+		
+		// Set Gateway backing config
+		if (vCloudOrg.getEdgeGateway() != null 
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration() != null
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayBackingConfig() != null
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayBackingConfig().name() != null){
+			
+			if (vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayBackingConfig().name().equalsIgnoreCase("COMPACT"))
+				gatewayConfig.setGatewayBackingConfig(GatewayBackingConfigValuesType.COMPACT.value());
+			else if (vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayBackingConfig().name().equalsIgnoreCase("FULL") 
+					|| vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayBackingConfig().name().equalsIgnoreCase("FULL4"))
+				gatewayConfig.setGatewayBackingConfig(GatewayBackingConfigValuesType.FULL.value());		
+		} else {
+			gatewayConfig.setGatewayBackingConfig(GatewayBackingConfigValuesType.COMPACT.value());
+		}
+		
+		// Set isHaEnable
+		if (vCloudOrg.getEdgeGateway() != null 
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration() != null
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration().isHaEnabled() != null)
+			gatewayConfig.setHaEnabled(vCloudOrg.getEdgeGateway().getGatewayConfiguration().isHaEnabled());
+		else
+			gatewayConfig.setHaEnabled(Boolean.FALSE);
 
-		SubnetParticipationType subnetParticipationType = new SubnetParticipationType();
-		subnetParticipationType.setGateway(externalNetIpScope.getGateway());
-		subnetParticipationType.setNetmask(externalNetIpScope.getNetmask());
+		// Set useDefaultRouteForDnsRelay
+		if(vCloudOrg.getEdgeGateway()!= null 
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration() != null 
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration().isUseDefaultRouteForDnsRelay() != null)
+			gatewayConfig.setUseDefaultRouteForDnsRelay(vCloudOrg.getEdgeGateway().getGatewayConfiguration().isUseDefaultRouteForDnsRelay());
+		else
+			gatewayConfig.setUseDefaultRouteForDnsRelay(Boolean.FALSE);
 		
-		IpRangesType ipRanges = new IpRangesType();
-		IpRangeType ipRange = new IpRangeType();
-
-		SortedSet<String> ips = getAvailableAggresses(client, externalNetwork);
-		String startAddress = ips.last();
-		String endAddress = ips.last();
-				
-		// Specify IP range
-		ipRange.setStartAddress(startAddress);
-		ipRange.setEndAddress(endAddress);
-		
-		ipRanges.getIpRange().add(ipRange);
-		subnetParticipationType.setIpRanges(ipRanges);
-		gatewayInterface.getSubnetParticipation().add(subnetParticipationType);
-		
-		// Is use for default route
-		gatewayInterface.setUseForDefaultRoute(vCloudOrg.getEdgeGateway().getGatewayConfiguration()
-				.getGatewayInterfaces().get(0).isUseForDefaultRoute());
-		
+		// Set gateway interface
 		GatewayInterfacesType interfaces = new GatewayInterfacesType();
-		interfaces.getGatewayInterface().add(gatewayInterface);
+		GatewayFeaturesType gatewayFeatures = new GatewayFeaturesType();
+		ObjectFactory objectFactory = new ObjectFactory();
+		
+		if (vCloudOrg.getEdgeGateway() != null 
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration() != null
+				&& vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces() != null) {
+
+			for (GatewayInterface gwInterface : vCloudOrg.getEdgeGateway().getGatewayConfiguration().getGatewayInterfaces()) {
+				
+				GatewayInterfaceType gatewayInterface = new GatewayInterfaceType();
+				
+				gatewayInterface.setDisplayName(gwInterface.getDisplayName());
+				gatewayInterface.setNetwork(externalNetwork);
+				
+				if (gwInterface.getInterfaceType().name().equalsIgnoreCase("UPLINK"))
+					gatewayInterface.setInterfaceType(GatewayEnums.UPLINK.value());
+				else if (gwInterface.getInterfaceType().name().equalsIgnoreCase("INTERNAL"))
+					gatewayInterface.setInterfaceType(GatewayEnums.INTERNAL.value());
+
+				SubnetParticipationType subnetParticipationType = new SubnetParticipationType();
+				
+				if (gwInterface.getSubnetParticipation() != null
+						&& gwInterface.getSubnetParticipation().getGateway() != null)
+					subnetParticipationType.setGateway(gwInterface.getSubnetParticipation().getGateway());
+
+				if (gwInterface.getSubnetParticipation() != null
+						&& gwInterface.getSubnetParticipation().getNetmask() != null)
+					subnetParticipationType.setNetmask(gwInterface.getSubnetParticipation().getNetmask());
+
+				// Set IP Ranges
+				IpRangesType ipRangesType = new IpRangesType();
+				
+				NatServiceType natService = new NatServiceType();
+				//natService.setExternalIp(pubIP);
+				
+				for(IpRange ipRange : gwInterface.getSubnetParticipation().getIpRanges()){
+					String startAddress = ipRange.getStartAddress();
+					String endAddress = ipRange.getEndAddress();
+					
+					IpRangeType ipRangeType = new IpRangeType();
+					
+					// Specify IP range
+					ipRangeType.setStartAddress(startAddress);
+					ipRangeType.setEndAddress(endAddress);
+					
+					ipRangesType.getIpRange().add(ipRangeType);
+					
+					
+					long pubStart = ipToLong(ipRangeType.getStartAddress());
+					long pubEnd = ipToLong(ipRangeType.getEndAddress());
+					
+					long priStart = ipToLong("10.1.1.11");
+
+					for (long i = pubStart; i <= pubEnd; i++) {
+						System.out.println("PubIP: "+longToIp(i));
+						addNatRule(gatewayInterface, natService, longToIp(i), longToIp(priStart));
+						priStart = priStart + 1;
+						
+						JAXBElement<NetworkServiceType> nat = objectFactory.createNetworkService(natService);
+						gatewayFeatures.getNetworkService().add(nat);
+					}				
+				}
+								
+				subnetParticipationType.setIpRanges(ipRangesType);
+				gatewayInterface.getSubnetParticipation().add(subnetParticipationType);
+
+				// Is use for default route
+				gatewayInterface.setUseForDefaultRoute(gwInterface.isUseForDefaultRoute());
+				
+				// Add gateway interface
+				interfaces.getGatewayInterface().add(gatewayInterface);
+			}
+			
+		} else {
+			
+			GatewayInterfaceType gatewayInterface = new GatewayInterfaceType();
+
+			gatewayInterface.setDisplayName("Gateway interface for " + vCloudOrg.getFullName());
+			gatewayInterface.setNetwork(externalNetwork);
+			gatewayInterface.setInterfaceType(GatewayEnums.UPLINK.value());
+
+			SubnetParticipationType subnetParticipationType = new SubnetParticipationType();
+
+			// Use gateway/netmask from external network
+			subnetParticipationType.setGateway(externalNetIpScope.getGateway());
+			subnetParticipationType.setNetmask(externalNetIpScope.getNetmask());
+
+			IpRangesType ipRanges = new IpRangesType();
+
+			int numVM = vCloudOrg.getvApp().getChildVms().size();
+
+			List<String> ips = getAvailableAddresses(client, externalNetwork, numVM);
+			long priStart = ipToLong("10.1.1.11");
+
+			NatServiceType natService = new NatServiceType();
+			//natService.setExternalIp(pubIP);
+			
+			for (String ipAddr : ips) {
+				System.out.println("PubIP: "+ipAddr + "PrivIP: " + longToIp(priStart));
+				IpRangeType ipRange = new IpRangeType();
+
+				// Specify IP range
+				ipRange.setStartAddress(ipAddr);
+				ipRange.setEndAddress(ipAddr);
+
+				ipRanges.getIpRange().add(ipRange);
+
+				addNatRule(gatewayInterface, natService, ipAddr, longToIp(priStart));
+				priStart = priStart + 1;
+
+				
+				JAXBElement<NetworkServiceType> nat = objectFactory.createNetworkService(natService);
+				gatewayFeatures.getNetworkService().add(nat);
+			}
+
+			subnetParticipationType.setIpRanges(ipRanges);
+			gatewayInterface.getSubnetParticipation().add(subnetParticipationType);
+
+			// Is use for default route
+			gatewayInterface.setUseForDefaultRoute(Boolean.TRUE);
+
+			interfaces.getGatewayInterface().add(gatewayInterface);
+		}
+		
+				
 		gatewayConfig.setGatewayInterfaces(interfaces);
 		
-		GatewayFeaturesType gatewayFeatures = new GatewayFeaturesType();
-
-
-		// Edge Gateway NAT service configuration
-		NatServiceType natService = new NatServiceType();
-		natService.setExternalIp(startAddress);
-		// To Enable the service using this flag
-		natService.setIsEnabled(Boolean.TRUE);
-
-        // Configuring destination NAT
-        NatRuleType dnatRule = new NatRuleType();
-        
-        ReferenceType refd = new ReferenceType();
-        refd.setHref(gatewayInterface.getNetwork().getHref());
-        
-        // Setting Rule type Destination Nat (DNAT)
-        dnatRule.setRuleType("DNAT");
-        dnatRule.setIsEnabled(Boolean.TRUE);
-        dnatRule.setDescription("DNAT");
-        GatewayNatRuleType dgatewayNat = new GatewayNatRuleType();
-       
-        // Network on which NAT rules to be applied
-        dgatewayNat.setInterface(refd);
-
-        // Setting Original IP/Port
-        dgatewayNat.setOriginalIp(startAddress);
-        dgatewayNat.setOriginalPort("any");
-        dgatewayNat.setTranslatedIp("10.1.1.11");
-
-        // To allow all ports and all protocols
-		dgatewayNat.setTranslatedPort("any");
-		dgatewayNat.setProtocol("any");
-
-        // Setting Destination IP
-        dnatRule.setGatewayNatRule(dgatewayNat);
-        natService.getNatRule().add(dnatRule);
-
-        // Configuring Source NAT (SNAT)
-        NatRuleType snatRule = new NatRuleType();
-        
-        // Setting Rule type Source Nat SNAT
-        snatRule.setRuleType("SNAT");
-        snatRule.setDescription("SNAT");
-        snatRule.setIsEnabled(Boolean.TRUE);
-        GatewayNatRuleType sgatewayNat = new GatewayNatRuleType();
-
-        // Network on which NAT rules to be applied
-        sgatewayNat.setInterface(refd);
-
-        // To allow all ports and all protocols
-        sgatewayNat.setProtocol("any");
-        sgatewayNat.setTranslatedPort("any");
-        
-        // Setting Original IP/Port
-        sgatewayNat.setOriginalIp("10.1.1.11");
-        sgatewayNat.setOriginalPort("any");
-        sgatewayNat.setTranslatedIp(startAddress);
-      
-        snatRule.setGatewayNatRule(sgatewayNat);
-        natService.getNatRule().add(snatRule);
-        
-		ObjectFactory objectFactory = new ObjectFactory();
-		JAXBElement<NetworkServiceType> nat = objectFactory.createNetworkService(natService);
-		gatewayFeatures.getNetworkService().add(nat);
-
 		// Edge Gateway Firewall service configuration
-		FirewallService fs = vCloudOrg.getEdgeGateway().getGatewayFeatures().getFirewallService();
-		
 		FirewallServiceType firewallService = new FirewallServiceType(); 
-		firewallService.setIsEnabled(fs.isEnabled());
+		List<FirewallRuleType> fwRules = firewallService.getFirewallRule();
+		FirewallService fs = null;
 		
-		if (fs.getDefaultAction().name().equalsIgnoreCase("DROP"))
-			firewallService.setDefaultAction(FirewallPolicyType.DROP.value());
-		else if (fs.getDefaultAction().name().equalsIgnoreCase("ALLOW"))
-			firewallService.setDefaultAction(FirewallPolicyType.ALLOW.value());
-		
-		firewallService.setLogDefaultAction(fs.isLogDefaultAction());
-		
-		List <FirewallRuleType> fwRules = firewallService.getFirewallRule();		       
-				
-		for(FirewallRule fr : fs.getFirewallRules()){			
-			addFirewallRule(fwRules, fr.getDescription(), fr.getProtocol().name(), fr.getSourceIp(), fr.getDestIp(), fr.getDestPort());
+		if (vCloudOrg.getEdgeGateway() != null 
+				&& vCloudOrg.getEdgeGateway().getGatewayFeatures() != null
+				&& vCloudOrg.getEdgeGateway().getGatewayFeatures().getFirewallService() != null) {
+			
+			fs = vCloudOrg.getEdgeGateway().getGatewayFeatures().getFirewallService();
+
+			if (fs.isEnabled() != null)
+				firewallService.setIsEnabled(fs.isEnabled());
+			else
+				firewallService.setIsEnabled(Boolean.TRUE);
+
+			if (fs.getDefaultAction() != null 
+					&& fs.getDefaultAction().name() != null 
+					&& fs.getDefaultAction().name().equalsIgnoreCase("DROP"))
+				firewallService.setDefaultAction(FirewallPolicyType.DROP.value());
+			else if (fs.getDefaultAction() != null 
+					&& fs.getDefaultAction().name() != null 
+					&& fs.getDefaultAction().name().equalsIgnoreCase("ALLOW"))
+				firewallService.setDefaultAction(FirewallPolicyType.ALLOW.value());
+			else
+				firewallService.setDefaultAction(FirewallPolicyType.DROP.value());
+
+			if (fs.isLogDefaultAction() != null)
+				firewallService.setLogDefaultAction(fs.isLogDefaultAction());
+			else
+				firewallService.setLogDefaultAction(Boolean.FALSE);
+
+			for (FirewallRule fr : fs.getFirewallRules()) {
+				addFirewallRule(fwRules, fr.getDescription(), fr.getProtocol().name(), fr.getSourceIp(), fr.getDestIp(), fr.getDestPort());
+			}
+		} else {
+
+			addFirewallRule(fwRules, "PING OUT", "ICMP", "10.1.1.0/24", "Any", "Any");
+			addFirewallRule(fwRules, "DNS OUT", "UDP", "10.1.1.0/24", "Any", "53");
+			addFirewallRule(fwRules, "NTP OUT", "UDP", "10.1.1.0/24", "Any", "123");
+			addFirewallRule(fwRules, "HTTP OUT", "TCP", "10.1.1.0/24", "Any", "80");
+			addFirewallRule(fwRules, "HTTP OUT", "TCP", "10.1.1.0/24", "Any", "80");
+			addFirewallRule(fwRules, "HTTPS OUT", "TCP", "10.1.1.0/24", "Any", "443");
+			addFirewallRule(fwRules, "PING IN", "ICMP", "Any", "internal", "Any");
 		}
 		
 		JAXBElement<FirewallServiceType> firewall = objectFactory.createFirewallService(firewallService); 
@@ -441,8 +639,9 @@ public class NetworkUtils {
 	 * @throws VCloudException
 	 * @throws TimeoutException
 	 * @throws ExternalNetworkNotFoundException 
+	 * @throws InsufficientIPAddressesException 
 	 */
-	static void addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, EdgeGateway edgeGateway, AdminVdc adminVdc, AdminOrganization adminOrg) throws VCloudException, TimeoutException, ExternalNetworkNotFoundException {
+	static void addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, EdgeGateway edgeGateway, AdminVdc adminVdc, AdminOrganization adminOrg) throws VCloudException, TimeoutException, ExternalNetworkNotFoundException, InsufficientIPAddressesException {
 		
 		OrgVdcNetworkType OrgVdcNetworkParams = new OrgVdcNetworkType();
 		
@@ -538,8 +737,6 @@ public class NetworkUtils {
 				
 		System.out.println("External Network: " + externalNetName + " : " + externalNetRef.getHref() + "\n");
 		
-		// Create edge gateway
-		System.out.println("Creating EdgeGateway: " + vCloudOrg.getEdgeGateway().getName());
 		GatewayType gateway = NetworkUtils.createEdgeGatewayParams(client, vCloudOrg, externalNetRef);
 
 		edgeGateway = adminVdc.createEdgeGateway(gateway);

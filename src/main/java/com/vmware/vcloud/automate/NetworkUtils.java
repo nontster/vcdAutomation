@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.TimeoutException;
 
 import javax.xml.bind.JAXBElement;
@@ -280,8 +278,6 @@ public class NetworkUtils {
 		ExternalNetwork externalNet = ExternalNetwork.getExternalNetworkByReference(client, externalNetwork);
 		IpScopeType externalNetIpScope = externalNet.getResource().getConfiguration().getIpScopes().getIpScope().get(0);
 
-		List<String> pubIPs = null;
-		
 		// Create edge gateway
 		StringBuffer edgeGatewayName = new StringBuffer();
 		

@@ -21,6 +21,7 @@ import com.vmware.vcloud.exception.InvalidTemplateException;
 import com.vmware.vcloud.exception.MissingVMTemplateException;
 import com.vmware.vcloud.exception.UserRoleNotFoundException;
 import com.vmware.vcloud.exception.VdcNetworkNotAvailableException;
+import com.vmware.vcloud.model.ChildVm;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -192,6 +193,9 @@ public class VcdPush {
 				// reconfigure Vms
 				VappUtils.reconfigureVms(vapp, vCloudOrg);
 										
+				// generate report
+				for(ChildVm childVm : vCloudOrg.getvApp().getChildVms())
+				System.out.println("Administrative password: "+childVm.getPassword());
 				System.out.println("---------- Completed! ----------");
 			}
 		} catch (ParseException e) {

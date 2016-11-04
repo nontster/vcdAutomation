@@ -8,6 +8,8 @@ public class ChildVm {
     private String computerName;
     private VCpu vCpu;
     private VMemory vMemory;
+    private String userName;
+    private String password;
     
 	/**
 	 * @return the nonMobileNo
@@ -84,6 +86,34 @@ public class ChildVm {
 
 	public void setvMemory(VMemory vMemory) {
 		this.vMemory = vMemory;
+	}
+
+	/**
+	 * @return the userName
+	 */
+	public String getUserName() {
+		return userName;
+	}
+
+	/**
+	 * @param userName the userName to set
+	 */
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
 	}
      
 }

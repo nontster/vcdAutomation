@@ -233,6 +233,9 @@ public class VappUtils {
 					guestCustomizationSection.setAdminPassword(adminPass);
 					System.out.println("		Administrator password: " + adminPass);
 
+					// Update username/password in VCloudOrganization
+					childVM.setPassword(adminPass);
+					
 					vm.updateSection(guestCustomizationSection).waitForTask(0);
 
 					// Configure CPU

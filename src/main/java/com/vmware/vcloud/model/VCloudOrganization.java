@@ -8,6 +8,7 @@ public class VCloudOrganization {
 	private String description;
 	private String fullName;
 	private String shortName;
+	private String url;
 	private Boolean enabled;
 	private OrderType orderType;
 	private String caNumber;
@@ -107,6 +108,20 @@ public class VCloudOrganization {
 	 */
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
+	}
+
+	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @param url the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public Boolean isEnabled() {

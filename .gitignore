@@ -3,8 +3,6 @@
 /bin/
 target/
 
-
-
 # OS Files #
 .DS_Store
  
@@ -60,6 +58,8 @@ local.properties
 .settings/
 .loadpath
 /src/main/resources/rebel.xml
+/src/main/resources/config.properties
+
 # External tool builders
 .externalToolBuilders/
  

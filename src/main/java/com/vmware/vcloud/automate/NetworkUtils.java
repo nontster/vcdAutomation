@@ -38,7 +38,6 @@ import com.vmware.vcloud.exception.InsufficientIPAddressesException;
 import com.vmware.vcloud.model.FirewallRule;
 import com.vmware.vcloud.model.FirewallService;
 import com.vmware.vcloud.model.GatewayInterface;
-import com.vmware.vcloud.model.InterfaceTypeEnums;
 import com.vmware.vcloud.model.IpRange;
 import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.VCloudOrganization;
@@ -393,6 +392,14 @@ public class NetworkUtils {
 					
 					long priStart = ipToLong("10.1.1.11");
 
+					if(vCloudOrg.getOrgVdcNetwork() != null 
+							&& vCloudOrg.getOrgVdcNetwork().getConfiguration() != null
+							&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes() != null 
+							&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0) != null 
+							&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange() != null 
+							&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange().getStartAddress() != null)
+							priStart = ipToLong(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange().getStartAddress());
+							
 					for (long i = pubStart; i <= pubEnd; i++) {
 						System.out.println("PubIP: "+longToIp(i));
 						addNatRule(gatewayInterface, natService, longToIp(i), longToIp(priStart));
@@ -434,11 +441,19 @@ public class NetworkUtils {
 			List<String> ips = getAvailableAddresses(client, externalNetwork, numVM);
 			long priStart = ipToLong("10.1.1.11");
 
+			if(vCloudOrg.getOrgVdcNetwork() != null 
+					&& vCloudOrg.getOrgVdcNetwork().getConfiguration() != null
+					&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes() != null 
+					&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0) != null 
+					&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange() != null 
+					&& vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange().getStartAddress() != null)
+					priStart = ipToLong(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange().getStartAddress());
+			
 			NatServiceType natService = new NatServiceType();
 			//natService.setExternalIp(pubIP);
 			
 			for (String ipAddr : ips) {
-				System.out.println("PubIP: "+ipAddr + "PrivIP: " + longToIp(priStart));
+				System.out.println("PubIP: "+ipAddr + " PrivIP: " + longToIp(priStart));
 				IpRangeType ipRange = new IpRangeType();
 
 				// Specify IP range

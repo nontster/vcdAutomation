@@ -1,6 +1,7 @@
 package com.vmware.vcloud.model;
 
 public class ChildVm {
+	private String id;
 	private String nonMobileNo;
     private String name;
     private String description;
@@ -8,23 +9,10 @@ public class ChildVm {
     private String computerName;
     private VCpu vCpu;
     private VMemory vMemory;
+    private Integer storageSize;
     private String userName;
     private String password;
     
-	/**
-	 * @return the nonMobileNo
-	 */
-	public String getNonMobileNo() {
-		return nonMobileNo;
-	}
-
-	/**
-	 * @param nonMobileNo the nonMobileNo to set
-	 */
-	public void setNonMobileNo(String nonMobileNo) {
-		this.nonMobileNo = nonMobileNo;
-	}
-
 	public ChildVm() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -38,6 +26,34 @@ public class ChildVm {
 		this.setComputerName(computerName);
 		this.setvCpu(vCpu);
 		this.setvMemory(vMemory);
+	}
+	
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the nonMobileNo
+	 */
+	public String getNonMobileNo() {
+		return nonMobileNo;
+	}
+
+	/**
+	 * @param nonMobileNo the nonMobileNo to set
+	 */
+	public void setNonMobileNo(String nonMobileNo) {
+		this.nonMobileNo = nonMobileNo;
 	}
 
 	public String getName() {
@@ -86,6 +102,20 @@ public class ChildVm {
 
 	public void setvMemory(VMemory vMemory) {
 		this.vMemory = vMemory;
+	}
+
+	/**
+	 * @return the storageSize
+	 */
+	public Integer getStorageSize() {
+		return storageSize;
+	}
+
+	/**
+	 * @param storageSize the storageSize to set
+	 */
+	public void setStorageSize(Integer storageSize) {
+		this.storageSize = storageSize;
 	}
 
 	/**

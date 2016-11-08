@@ -1,8 +1,10 @@
 package com.vmware.vcloud.automate;
 
 import java.io.Console;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
@@ -14,14 +16,12 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.exception.ExternalNetworkNotFoundException;
 import com.vmware.vcloud.exception.InsufficientIPAddressesException;
 import com.vmware.vcloud.exception.InvalidTemplateException;
 import com.vmware.vcloud.exception.MissingVMTemplateException;
 import com.vmware.vcloud.exception.UserRoleNotFoundException;
 import com.vmware.vcloud.exception.VdcNetworkNotAvailableException;
-import com.vmware.vcloud.model.ChildVm;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -47,6 +47,8 @@ public class VcdPush {
 	private static String password;
 	private static String template;	
 
+	private static Properties prop = new Properties();
+	private static InputStream input = null;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -84,6 +86,12 @@ public class VcdPush {
 		}
 
 		try {
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			input = classLoader.getResourceAsStream("config.properties");
+
+			// load a properties file
+			prop.load(input);
+						
 			CommandLine cmd = parser.parse(options, args);
 
 			if (cmd.hasOption("help"))
@@ -127,7 +135,7 @@ public class VcdPush {
 				ConfigParser cParser = ConfigParser.getParser(template);
 				cParser.validate();
 				vCloudOrg = cParser.getOrg();
-
+				
 				// Check template version
 				if(!vCloudOrg.getTemplate_version().equalsIgnoreCase("2016-10-25")){
 					System.err.println("Invalid template version!");
@@ -153,6 +161,9 @@ public class VcdPush {
 				System.out.print(adminOrg.getResource().getName() + " : ");
 				System.out.println("	" + adminOrg.getResource().getHref() + "\n");
 
+				// Set vCloud director URL for organization
+				vCloudOrg.setUrl(prop.getProperty("url") + vCloudOrg.getShortName() +"/");
+				
 				// Create vDC You may end using one of the following.
 				adminVdc = VdcUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg);
 
@@ -182,7 +193,7 @@ public class VcdPush {
 					System.out.println("vApp: vApp_system_1");
 				
 				Vapp vapp = vdc.composeVapp(VappUtils.createComposeParams(client, vCloudOrg, catalogName, vdc));
-				System.out.println("	Composing vApp : " + vapp.getResource().getName());
+				System.out.print("	Composing vApp : " + vapp.getResource().getName());
 				List<Task> tasks = vapp.getTasks();
 				if (tasks.size() > 0)
 					tasks.get(0).waitForTask(0);
@@ -190,20 +201,21 @@ public class VcdPush {
 				// refresh the vapp
 				vapp = Vapp.getVappByReference(client, vapp.getReference());
 				
+				System.out.println(" - " + vapp.getResource().getHref());
+				
 				// reconfigure Vms
 				VappUtils.reconfigureVms(vapp, vCloudOrg);
 										
 				// generate report
-				for(ChildVm childVm : vCloudOrg.getvApp().getChildVms())
-				System.out.println("Administrative password: "+childVm.getPassword());
+				ReportUtils.generateReport(vapp, vCloudOrg);
 				System.out.println("---------- Completed! ----------");
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			System.err.println("Parsing failed.  Reason: " + e.getMessage());
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.err.println("BOT template not found: " + e.getMessage());
+			System.err.println("File not found: " + e.getMessage());
 		} catch (VCloudException e) {
 			// TODO Auto-generated catch block
 			if(e.getMessage().equalsIgnoreCase("Unauthorized"))

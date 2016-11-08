@@ -2,7 +2,6 @@ package com.vmware.vcloud.automate;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -19,6 +18,7 @@ import com.vmware.vcloud.api.rest.schema.NetworkConnectionSectionType;
 import com.vmware.vcloud.api.rest.schema.NetworkConnectionType;
 import com.vmware.vcloud.api.rest.schema.ObjectFactory;
 import com.vmware.vcloud.api.rest.schema.QueryResultAdminVAppTemplateRecordType;
+import com.vmware.vcloud.api.rest.schema.QueryResultAdminVMRecordType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.SourcedCompositionItemParamType;
 import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
@@ -46,6 +46,7 @@ import com.vmware.vcloud.sdk.constants.FenceModeValuesType;
 import com.vmware.vcloud.sdk.constants.IpAddressAllocationModeType;
 import com.vmware.vcloud.sdk.constants.query.ExpressionType;
 import com.vmware.vcloud.sdk.constants.query.QueryAdminVAppTemplateField;
+import com.vmware.vcloud.sdk.constants.query.QueryAdminVMField;
 import com.vmware.vcloud.sdk.constants.query.QueryRecordType;
 
 public class VappUtils {
@@ -110,6 +111,7 @@ public class VappUtils {
 		
 		List<SourcedCompositionItemParamType> items = composeVAppParamsType.getSourcedItem();
 
+		int i = 1;
 		if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getChildVms() != null)
 			for (ChildVm childVM : vCloudOrg.getvApp().getChildVms()) {
 
@@ -132,7 +134,15 @@ public class VappUtils {
 				SourcedCompositionItemParamType vappTemplateItem = new SourcedCompositionItemParamType();
 				ReferenceType vappTemplateVMRef = new ReferenceType();
 				vappTemplateVMRef.setHref(vmHref);
-				vappTemplateVMRef.setName(childVM.getName());
+				
+				if (childVM.getName() != null)
+					vappTemplateVMRef.setName(childVM.getName());
+				else{
+					vappTemplateVMRef.setName(vCloudOrg.getShortName() +"-VM"+i);
+					childVM.setName(vCloudOrg.getShortName() +"-VM"+i);
+				}
+				++i;
+				
 				vappTemplateItem.setSource(vappTemplateVMRef);
 
 				NetworkConnectionSectionType networkConnectionSectionType = new NetworkConnectionSectionType();
@@ -192,6 +202,22 @@ public class VappUtils {
 		return null;	
 	}
 
+	static ReferenceType findVMByID(VcloudClient client, String vmId)
+			throws VCloudException {
+		ReferenceType vappTemplateRef = new ReferenceType();
+		
+		QueryParams<QueryAdminVMField> queryParams = new QueryParams<QueryAdminVMField>();
+		
+		queryParams.setFilter(new Filter(new Expression(QueryAdminVMField.ID, vmId, ExpressionType.EQUALS)));
+		
+		RecordResult<QueryResultAdminVMRecordType> vmResult = client.getQueryService().queryRecords(QueryRecordType.VM, queryParams);
+		for (QueryResultAdminVMRecordType vmRecord : vmResult.getRecords()) { 
+
+		}		
+		
+		return null;	
+	}
+	
 	static void reconfigureVms(Vapp vapp, VCloudOrganization vCloudOrg) throws VCloudException, TimeoutException {
 								
 		for (VM vm : vapp.getChildrenVms()) {
@@ -204,6 +230,9 @@ public class VappUtils {
 
 					// Set VM description
 					VmType vmType = vm.getResource();
+					
+					// Set VM id
+					childVM.setId(vmType.getId());
 					
 					if (childVM.getDescription() != null)
 						vmType.setDescription(childVM.getDescription());
@@ -269,18 +298,23 @@ public class VappUtils {
 					vm.updateMemory(virtualMemoryItem).waitForTask(0);
 
 					// Configure Disks
-					/*
-					 * System.out.println("	Updating Disks Section..."); List
-					 * <VirtualDisk> disks = vm.getDisks();
-					 * 
-					 * for(VirtualDisk disk: disks){ if (disk.isHardDisk()){
-					 * System.out.println("		Disk size: "+
-					 * disk.getHardDiskSize()); BigInteger newDiskSize =
-					 * disk.getHardDiskSize().multiply(BigInteger.valueOf(2));
-					 * disk.updateHardDiskSize(newDiskSize); } }
-					 * 
-					 * vm.updateDisks(disks).waitForTask(0);
-					 */
+					
+					 System.out.println("	Updating Disks Section..."); List
+					 <VirtualDisk> disks = vm.getDisks();
+					  
+					for (VirtualDisk disk : disks) {
+						if (disk.isHardDisk()) {
+							System.out.println("		Template size: " + disk.getHardDiskSize());
+
+							if (disk.getHardDiskSize().intValue() < (childVM.getStorageSize().intValue()*1024)) {
+								System.out.println("		Update to size: " + disk.getHardDiskSize());
+								BigInteger newDiskSize = BigInteger.valueOf(childVM.getStorageSize().intValue()*1024);
+								disk.updateHardDiskSize(newDiskSize);
+							}
+						}
+					}
+
+					vm.updateDisks(disks).waitForTask(0);
 
 					// Display summary
 					System.out.println("	Status : " + vm.getVMStatus());

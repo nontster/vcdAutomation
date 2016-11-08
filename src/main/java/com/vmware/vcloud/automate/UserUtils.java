@@ -22,9 +22,11 @@ public class UserUtils {
 		
 		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getName() != null)
 			newUserType.setName(vCloudOrg.getUser().getName());
-		else
+		else {
 			newUserType.setName(vCloudOrg.getShortName() + "_admin");
-			
+			vCloudOrg.getUser().setName(vCloudOrg.getShortName() + "_admin");
+		}
+		
 		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getPassword() != null)
 			newUserType.setPassword(vCloudOrg.getUser().getPassword());
 		else{

@@ -169,7 +169,7 @@ public class VappUtils {
 
 	/* Generate a random password */
 	static String genPassword(){
-		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()=+[{]};:\",<.>/?";
 		String pwd = RandomStringUtils.random( 8, 0, 0, false, false, characters.toCharArray(), new SecureRandom() );
 		return pwd;
 	}	
@@ -306,10 +306,12 @@ public class VappUtils {
 						if (disk.isHardDisk()) {
 							System.out.println("		Template size: " + disk.getHardDiskSize());
 
-							if (disk.getHardDiskSize().intValue() < (childVM.getStorageSize().intValue()*1024)) {
-								System.out.println("		Update to size: " + disk.getHardDiskSize());
-								BigInteger newDiskSize = BigInteger.valueOf(childVM.getStorageSize().intValue()*1024);
-								disk.updateHardDiskSize(newDiskSize);
+							if (childVM.getStorageSize() != null) {
+								if (disk.getHardDiskSize().intValue() < (childVM.getStorageSize().intValue()*1024)) {
+									System.out.println("		Update to size: " + disk.getHardDiskSize());
+									BigInteger newDiskSize = BigInteger.valueOf(childVM.getStorageSize().intValue()*1024);
+									disk.updateHardDiskSize(newDiskSize);
+								}
 							}
 						}
 					}
@@ -320,10 +322,10 @@ public class VappUtils {
 					System.out.println("	Status : " + vm.getVMStatus());
 					System.out.println("	No of CPUs : " + vm.getCpu().getNoOfCpus());
 					System.out.println("	Core per Socket : " + vm.getCpu().getCoresPerSocket());
-					System.out.println("	Memory : " + vm.getMemory().getMemorySize() + " Mb");
+					System.out.println("	Memory : " + vm.getMemory().getMemorySize() + " MB");
 					for (VirtualDisk disk : vm.getDisks())
 						if (disk.isHardDisk())
-							System.out.println("	HardDisk : " + disk.getHardDiskSize() + " Mb");
+							System.out.println("	HardDisk : " + disk.getHardDiskSize() + " MB\n");
 				}
 			}
 			

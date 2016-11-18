@@ -1,8 +1,11 @@
 package com.vmware.vcloud.automate;
 
 import java.io.Console;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
@@ -46,6 +49,7 @@ public class VcdPush {
 	private static String username;
 	private static String password;
 	private static String template;	
+	private static String output;	
 
 	private static Properties prop = new Properties();
 	private static InputStream input = null;
@@ -72,6 +76,9 @@ public class VcdPush {
 
 		Option optPassword = Option.builder("p").longOpt("password").desc("password").hasArg(true).required(false)
 				.argName("password").build();
+		
+		Option optOutput = Option.builder("o").longOpt("output").desc("Output").hasArg(true).required(false)
+				.argName("output").build();
 
 		options.addOption(optBlueprint);
 		options.addOption(optVcdurl);
@@ -79,8 +86,9 @@ public class VcdPush {
 		options.addOption(optPassword);
 		options.addOption(optHelp);
 		options.addOption(optDebug);
+		options.addOption(optOutput);
 
-		if (args.length < 5) {
+		if (args.length < 6) {
 			formatter.printHelp("bee", options);
 			System.exit(1);
 		}
@@ -119,6 +127,10 @@ public class VcdPush {
 				if (cmd.hasOption("template")) {
 					template = cmd.getOptionValue("template");
 				}
+				
+				if (cmd.hasOption("output")) {
+					output = cmd.getOptionValue("output");
+				}
 
 				if (password == null) {					
 					// creates a console object
@@ -130,6 +142,11 @@ public class VcdPush {
 			             char[] pwd = cnsl.readPassword("Enter your password: ");
 			             password = new String(pwd);
 			         }				
+				}
+				
+				if(output == null){
+					Path currentRelativePath = Paths.get("");
+					output = currentRelativePath.toAbsolutePath().toString() + File.separator + "report.xlsx";			
 				}
 
 				ConfigParser cParser = ConfigParser.getParser(template);
@@ -159,7 +176,7 @@ public class VcdPush {
 				if (task != null)
 					task.waitForTask(0);
 				System.out.print(adminOrg.getResource().getName() + " : ");
-				System.out.println("	" + adminOrg.getResource().getHref() + "\n");
+				System.out.println(adminOrg.getResource().getHref() + "\n");
 
 				// Set vCloud director URL for organization
 				vCloudOrg.setUrl(prop.getProperty("url") + vCloudOrg.getShortName() +"/");
@@ -207,7 +224,7 @@ public class VcdPush {
 				VappUtils.reconfigureVms(vapp, vCloudOrg);
 										
 				// generate report
-				ReportUtils.generateReport(vapp, vCloudOrg);
+				ReportUtils.generateReport(vapp, vCloudOrg, adminVdc.getResource().getName(), output);
 				System.out.println("---------- Completed! ----------");
 			}
 		} catch (ParseException e) {

@@ -401,7 +401,7 @@ public class NetworkUtils {
 							priStart = ipToLong(vCloudOrg.getOrgVdcNetwork().getConfiguration().getIpScopes().get(0).getIpRange().getStartAddress());
 							
 					for (long i = pubStart; i <= pubEnd; i++) {
-						System.out.println("PubIP: "+longToIp(i));
+
 						addNatRule(gatewayInterface, natService, longToIp(i), longToIp(priStart));
 						priStart = priStart + 1;
 						
@@ -453,7 +453,7 @@ public class NetworkUtils {
 			//natService.setExternalIp(pubIP);
 			
 			for (String ipAddr : ips) {
-				System.out.println("PubIP: "+ipAddr + " PrivIP: " + longToIp(priStart));
+
 				IpRangeType ipRange = new IpRangeType();
 
 				// Specify IP range
@@ -652,9 +652,10 @@ public class NetworkUtils {
 	 * @throws ExternalNetworkNotFoundException 
 	 * @throws InsufficientIPAddressesException 
 	 */
-	static void addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, EdgeGateway edgeGateway, AdminVdc adminVdc, AdminOrganization adminOrg) throws VCloudException, TimeoutException, ExternalNetworkNotFoundException, InsufficientIPAddressesException {
+	static EdgeGateway addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, AdminVdc adminVdc, AdminOrganization adminOrg) throws VCloudException, TimeoutException, ExternalNetworkNotFoundException, InsufficientIPAddressesException {
 		
 		OrgVdcNetworkType OrgVdcNetworkParams = new OrgVdcNetworkType();
+		EdgeGateway edgeGateway = null;
 		
 		// If Organization VDC network name defined in template use those one, if omitted use short name combination with fixed string
 		if(vCloudOrg.getOrgVdcNetwork() != null && vCloudOrg.getOrgVdcNetwork().getName() != null)
@@ -774,6 +775,8 @@ public class NetworkUtils {
 			System.out.println("FAILED: creating org vdc network - " + e.getLocalizedMessage());
 		}
 		
+		return edgeGateway;
+		
 	}
 
 	/**
@@ -805,5 +808,38 @@ public class NetworkUtils {
 	static ReferenceType getExternalNetworkRef(VcloudClient client, String networkName) throws VCloudException {
 		return client.getVcloudAdmin().getExternalNetworkRefByName(networkName);
 	}
+
+	/**
+	 * Gets NatServiceType
+	 * 
+	 * @param gateway
+	 *            {@link EdgeGateway}
+	 * @return {@link NatServiceType}
+	 */
+	static NatServiceType getNatService(EdgeGateway gateway) {
+		for (JAXBElement<? extends NetworkServiceType> service : gateway.getResource().getConfiguration()
+				.getEdgeGatewayServiceConfiguration().getNetworkService()) {
+			if (service.getValue() instanceof NatServiceType) {
+				return (NatServiceType) service.getValue();
+			}
+		}
+		return null;
+	}
 	
+	/**
+	 * Gets FirewallServiceType
+	 * 
+	 * @param gateway
+	 *            {@link EdgeGateway}
+	 * @return {@link FirewallServiceType}
+	 */	
+	static FirewallServiceType getFirewallService(EdgeGateway gateway) {
+		for (JAXBElement<? extends NetworkServiceType> service : gateway.getResource().getConfiguration()
+				.getEdgeGatewayServiceConfiguration().getNetworkService()) {
+			if (service.getValue() instanceof FirewallServiceType) {
+				return (FirewallServiceType) service.getValue();
+			}
+		}
+		return null;
+	}
 }

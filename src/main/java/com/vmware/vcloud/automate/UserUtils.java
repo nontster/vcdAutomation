@@ -64,8 +64,7 @@ public class UserUtils {
 		User user = adminOrg.createUser(newUserType);
 
 		System.out.println("Creating admin user for organization : " 
-				+ user.getResource().getName() + "/"
-				+ vCloudOrg.getUser().getPassword() + " : "
+				+ user.getResource().getName() + " : "
 				+ user.getResource().getHref() + "\n");
 		List<Task> tasks = user.getTasks();
 		if (tasks.size() > 0)

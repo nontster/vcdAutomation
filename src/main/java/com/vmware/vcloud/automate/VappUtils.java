@@ -260,7 +260,6 @@ public class VappUtils {
 
 					String adminPass = VappUtils.genPassword();
 					guestCustomizationSection.setAdminPassword(adminPass);
-					System.out.println("		Administrator password: " + adminPass);
 
 					// Update username/password in VCloudOrganization
 					childVM.setPassword(adminPass);

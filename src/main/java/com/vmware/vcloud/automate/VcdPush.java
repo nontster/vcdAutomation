@@ -188,8 +188,8 @@ public class VcdPush {
 				UserUtils.addUserToOrg(vCloudOrg, admin, adminOrg);
 
 				// Create org vdc networks on the organizaiton
-				NetworkUtils.addNatRoutedOrgVdcNetwork(client, vCloudOrg, edgeGateway, adminVdc, adminOrg);
-			
+				edgeGateway = NetworkUtils.addNatRoutedOrgVdcNetwork(client, vCloudOrg, adminVdc, adminOrg);
+
 				// find the vdc ref
 				Vdc vdc = Vdc.getVdcByReference(client, adminVdc.getVdcReference());
 				
@@ -224,7 +224,7 @@ public class VcdPush {
 				VappUtils.reconfigureVms(vapp, vCloudOrg);
 										
 				// generate report
-				ReportUtils.generateReport(vapp, vCloudOrg, adminVdc.getResource().getName(), output);
+				ReportUtils.generateReport(client, vapp, edgeGateway, vCloudOrg, adminVdc.getResource().getName(), output);
 				System.out.println("---------- Completed! ----------");
 			}
 		} catch (ParseException e) {

@@ -69,7 +69,7 @@ public class VcdPush {
 				.required(true).argName("file").build();
 
 		Option optVcdurl = Option.builder("l").longOpt("vcdurl").desc("vCloud Director public URL").hasArg(true)
-				.required(true).argName("url").build();
+				.required(false).argName("url").build();
 
 		Option optUsername = Option.builder("u").longOpt("user").desc("username").hasArg(true).required(true)
 				.argName("username").build();
@@ -88,7 +88,7 @@ public class VcdPush {
 		options.addOption(optDebug);
 		options.addOption(optOutput);
 
-		if (args.length < 6) {
+		if (args.length < 5) {
 			formatter.printHelp("bee", options);
 			System.exit(1);
 		}
@@ -132,6 +132,14 @@ public class VcdPush {
 					output = cmd.getOptionValue("output");
 				}
 
+				if(vcdurl == null){
+					vcdurl = prop.getProperty("url");
+				}
+				
+				if(vcdurl.charAt(vcdurl.length()-1)!='/'){
+					vcdurl += '/';
+				}
+				
 				if (password == null) {					
 					// creates a console object
 			         cnsl = System.console();
@@ -179,7 +187,7 @@ public class VcdPush {
 				System.out.println(adminOrg.getResource().getHref() + "\n");
 
 				// Set vCloud director URL for organization
-				vCloudOrg.setUrl(prop.getProperty("url") + vCloudOrg.getShortName() +"/");
+				vCloudOrg.setUrl(vcdurl + "cloud/org/" + vCloudOrg.getShortName() +"/");
 				
 				// Create vDC You may end using one of the following.
 				adminVdc = VdcUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg);

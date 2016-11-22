@@ -16,10 +16,10 @@ import com.vmware.vcloud.sdk.admin.VcloudAdmin;
 public class UserUtils {
 	
 	static void addUserToOrg(VCloudOrganization vCloudOrg, VcloudAdmin admin, AdminOrganization adminOrg) throws TimeoutException, UserRoleNotFoundException, VCloudException {
+		
 		UserType newUserType = new UserType();
 
-		// Credential
-		
+		// Credential	
 		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getName() != null)
 			newUserType.setName(vCloudOrg.getUser().getName());
 		else {
@@ -33,6 +33,7 @@ public class UserUtils {
 			String newPassword = VappUtils.genPassword();
 			newUserType.setPassword(newPassword);
 			vCloudOrg.getUser().setPassword(newPassword);
+			System.out.println("Password: " + newPassword);
 		}
 			
 		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().isEnabled() != null)

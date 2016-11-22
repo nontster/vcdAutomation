@@ -187,7 +187,7 @@ public class VcdPush {
 				System.out.println(adminOrg.getResource().getHref() + "\n");
 
 				// Set vCloud director URL for organization
-				vCloudOrg.setUrl(vcdurl + "cloud/org/" + vCloudOrg.getShortName() +"/");
+				vCloudOrg.setUrl(vcdurl + "cloud/org/" + vCloudOrg.getName() +"/");
 				
 				// Create vDC You may end using one of the following.
 				adminVdc = VdcUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg);

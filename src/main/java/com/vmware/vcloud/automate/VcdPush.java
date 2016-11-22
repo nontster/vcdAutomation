@@ -190,13 +190,13 @@ public class VcdPush {
 				vCloudOrg.setUrl(vcdurl + "cloud/org/" + vCloudOrg.getName() +"/");
 				
 				// Create vDC You may end using one of the following.
-				adminVdc = VdcUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg);
+				adminVdc = VdcUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg, prop);
 
 				// Create user on the organization
 				UserUtils.addUserToOrg(vCloudOrg, admin, adminOrg);
 
 				// Create org vdc networks on the organizaiton
-				edgeGateway = NetworkUtils.addNatRoutedOrgVdcNetwork(client, vCloudOrg, adminVdc, adminOrg);
+				edgeGateway = NetworkUtils.addNatRoutedOrgVdcNetwork(client, vCloudOrg, adminVdc, adminOrg, prop);
 
 				// find the vdc ref
 				Vdc vdc = Vdc.getVdcByReference(client, adminVdc.getVdcReference());
@@ -209,7 +209,7 @@ public class VcdPush {
 						&& vCloudOrg.getCloudResources().getCatalog().getName() != null)
 					catalogName = vCloudOrg.getCloudResources().getCatalog().getName();
 				else
-					catalogName = "AIS-VM-TEMPLATES-CATALOG";
+					catalogName = prop.getProperty("catalog");
 				
 				// Composed vApp. 
 				if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getName() != null)

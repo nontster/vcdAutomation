@@ -33,7 +33,6 @@ public class UserUtils {
 			String newPassword = VappUtils.genPassword();
 			newUserType.setPassword(newPassword);
 			vCloudOrg.getUser().setPassword(newPassword);
-			System.out.println("Password: " + newPassword);
 		}
 			
 		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().isEnabled() != null)

@@ -1,6 +1,7 @@
 package com.vmware.vcloud.automate;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -32,7 +33,7 @@ public class VdcUtils {
 	 * @throws VCloudException
 	 * @throws TimeoutException
 	 */
-	static AdminVdc addPayAsYouGoVdc(VCloudOrganization org, VcloudAdmin adminClient, VcloudClient client, AdminOrganization adminOrg)
+	static AdminVdc addPayAsYouGoVdc(VCloudOrganization org, VcloudAdmin adminClient, VcloudClient client, AdminOrganization adminOrg, Properties prop)
 			throws VCloudException, TimeoutException {
 		CreateVdcParamsType createVdcParams = new CreateVdcParamsType();
 
@@ -42,7 +43,7 @@ public class VdcUtils {
 		if(org.getCloudResources() != null && org.getCloudResources().getProviderVdc() != null && org.getCloudResources().getProviderVdc().getName() != null)
 			providerVdc = org.getCloudResources().getProviderVdc().getName();
 		else
-			providerVdc = "TLS1-ALLOC-PVDC01";
+			providerVdc = prop.getProperty("providerVdc");
 				
 		ReferenceType pvdcRef = adminClient.getProviderVdcRefByName(providerVdc);
 		createVdcParams.setProviderVdcReference(pvdcRef);
@@ -166,11 +167,14 @@ public class VdcUtils {
 		createVdcParams.setComputeCapacity(computeCapacity);
 
 		// Select Network Pool
+		String networkPool = null;
 		
-		String networkPool = org.getCloudResources().getNetworkPool().getName();
-		
-		if(networkPool == null)
-			networkPool = "TLS1-ALLOC-PVDC01-VXLAN-NP";
+		if (org.getCloudResources() != null 
+				&& org.getCloudResources().getNetworkPool() != null
+				&& org.getCloudResources().getNetworkPool().getName() != null)
+			networkPool = org.getCloudResources().getNetworkPool().getName();
+		else
+			networkPool = prop.getProperty("networkPool");
 		
 		// Set network pool
 		ReferenceType netPoolRef = pvdc.getVMWNetworkPoolRefByName(networkPool);

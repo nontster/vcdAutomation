@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
 import javax.xml.bind.JAXBElement;
@@ -652,7 +653,7 @@ public class NetworkUtils {
 	 * @throws ExternalNetworkNotFoundException 
 	 * @throws InsufficientIPAddressesException 
 	 */
-	static EdgeGateway addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, AdminVdc adminVdc, AdminOrganization adminOrg) throws VCloudException, TimeoutException, ExternalNetworkNotFoundException, InsufficientIPAddressesException {
+	static EdgeGateway addNatRoutedOrgVdcNetwork(VcloudClient client, VCloudOrganization vCloudOrg, AdminVdc adminVdc, AdminOrganization adminOrg, Properties prop) throws VCloudException, TimeoutException, ExternalNetworkNotFoundException, InsufficientIPAddressesException {
 		
 		OrgVdcNetworkType OrgVdcNetworkParams = new OrgVdcNetworkType();
 		EdgeGateway edgeGateway = null;
@@ -742,7 +743,7 @@ public class NetworkUtils {
 				&& vCloudOrg.getCloudResources().getExternalNetwork().getName() != null)
 			externalNetName = vCloudOrg.getCloudResources().getExternalNetwork().getName();
 		else
-			externalNetName = "Tenant-External-Internet02";
+			externalNetName = prop.getProperty("externalNetwork");
 		
 		if((externalNetRef = NetworkUtils.getExternalNetworkRef(client, externalNetName)) == null)
 			throw new ExternalNetworkNotFoundException("External network: " + externalNetName + " not found");

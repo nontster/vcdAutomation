@@ -254,8 +254,9 @@ public class VappUtils {
 					
 					guestCustomizationSection.setAdminPasswordEnabled(Boolean.TRUE);
 					guestCustomizationSection.setAdminPasswordAuto(Boolean.FALSE);
-					guestCustomizationSection.setResetPasswordRequired(Boolean.TRUE);
+					guestCustomizationSection.setResetPasswordRequired(Boolean.FALSE);
 
+					// For Microsoft Windows VM
 					guestCustomizationSection.setChangeSid(Boolean.TRUE);
 
 					String adminPass = VappUtils.genPassword();

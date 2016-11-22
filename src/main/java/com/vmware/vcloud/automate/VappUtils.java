@@ -308,8 +308,8 @@ public class VappUtils {
 
 							if (childVM.getStorageSize() != null) {
 								if (disk.getHardDiskSize().intValue() < (childVM.getStorageSize().intValue()*1024)) {
-									System.out.println("		Update to size: " + disk.getHardDiskSize());
 									BigInteger newDiskSize = BigInteger.valueOf(childVM.getStorageSize().intValue()*1024);
+									System.out.println("		Update to size: " + newDiskSize.intValue());
 									disk.updateHardDiskSize(newDiskSize);
 								}
 							}

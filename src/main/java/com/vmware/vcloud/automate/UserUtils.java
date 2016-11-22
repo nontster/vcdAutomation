@@ -24,6 +24,10 @@ public class UserUtils {
 			newUserType.setName(vCloudOrg.getUser().getName());
 		else {
 			newUserType.setName(vCloudOrg.getShortName() + "_admin");
+			
+			if(vCloudOrg.getUser() == null)
+				vCloudOrg.setUser(new com.vmware.vcloud.model.User());
+			
 			vCloudOrg.getUser().setName(vCloudOrg.getShortName() + "_admin");
 		}
 		

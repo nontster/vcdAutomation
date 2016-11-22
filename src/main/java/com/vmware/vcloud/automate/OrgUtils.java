@@ -159,7 +159,7 @@ public class OrgUtils {
 		if(vCloudOrg.getFullName() != null)
 			adminOrgType.setFullName(vCloudOrg.getFullName());
 		else
-			throw new NullPointerException("Customer full name cannot be NULL");
+			throw new NullPointerException("Organization full name cannot be NULL");
 			
 		adminOrgType.setSettings(orgSettings);
 		

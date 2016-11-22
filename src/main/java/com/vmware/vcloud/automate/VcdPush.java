@@ -22,6 +22,7 @@ import org.apache.commons.cli.ParseException;
 import com.vmware.vcloud.exception.ExternalNetworkNotFoundException;
 import com.vmware.vcloud.exception.InsufficientIPAddressesException;
 import com.vmware.vcloud.exception.InvalidTemplateException;
+import com.vmware.vcloud.exception.MissingParameterException;
 import com.vmware.vcloud.exception.MissingVMTemplateException;
 import com.vmware.vcloud.exception.UserRoleNotFoundException;
 import com.vmware.vcloud.exception.VdcNetworkNotAvailableException;
@@ -268,6 +269,9 @@ public class VcdPush {
 		} catch (VdcNetworkNotAvailableException e) {
 			// TODO Auto-generated catch block
 			System.err.println("VdcNetworkNotAvailable exception: \n" + e.getMessage());
+		} catch (MissingParameterException e) {
+			// TODO Auto-generated catch block
+			System.err.println("MissingParameter exception: \n" + e.getMessage());
 		} 
 
 	}

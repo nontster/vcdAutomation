@@ -11,6 +11,7 @@ import com.vmware.vcloud.api.rest.schema.ComputeCapacityType;
 import com.vmware.vcloud.api.rest.schema.CreateVdcParamsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.VdcStorageProfileParamsType;
+import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.Task;
@@ -285,7 +286,7 @@ public class VdcUtils {
 		String characters = "abcdefghijklmnopqrstuvwxyz0123456789";	
 		StringBuffer vdcName = new StringBuffer();
 		
-		if(org.getOrderType().name().equalsIgnoreCase("trial"))
+		if(org.getOrderType().name().equalsIgnoreCase(OrderType.TRIAL.name()))
 			vdcName.append("trial-");
 		if(org.getShortName() != null && !org.getShortName().isEmpty())
 			vdcName.append(org.getShortName());

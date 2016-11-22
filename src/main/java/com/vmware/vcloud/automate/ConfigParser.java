@@ -45,8 +45,8 @@ public class ConfigParser {
 		
 		VCloudOrganization vcdOrg = this.org;
 		
-		if(vcdOrg.getName() == null || vcdOrg.getName().length() == 0)
-			throw new InvalidTemplateException("Missing organization name");
+/*		if(vcdOrg.getName() == null || vcdOrg.getName().length() == 0)
+			throw new InvalidTemplateException("Missing organization name");*/
 		
 		return true;
 	}

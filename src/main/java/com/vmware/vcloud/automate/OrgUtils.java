@@ -3,6 +3,8 @@ package com.vmware.vcloud.automate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import com.vmware.vcloud.api.rest.schema.AdminOrgType;
 import com.vmware.vcloud.api.rest.schema.OrgGeneralSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgLeaseSettingsType;
@@ -12,6 +14,7 @@ import com.vmware.vcloud.api.rest.schema.OrgVAppTemplateLeaseSettingsType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
 import com.vmware.vcloud.exception.InvalidTemplateException;
+import com.vmware.vcloud.exception.MissingParameterException;
 import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.VCloudOrganization;
 import com.vmware.vcloud.sdk.Task;
@@ -25,9 +28,10 @@ public class OrgUtils {
 	 * Creates a new admin org type object
 	 * 
 	 * @throws VCloudException
+	 * @throws MissingParameterException 
 	 * 
 	 */
-	static AdminOrgType createNewAdminOrgType(VCloudOrganization vCloudOrg) throws VCloudException {
+	static AdminOrgType createNewAdminOrgType(VCloudOrganization vCloudOrg) throws VCloudException, MissingParameterException {
 
 		// Setting orgLeaseSettings
 		OrgLeaseSettingsType orgLeaseSettings = new OrgLeaseSettingsType();
@@ -103,7 +107,24 @@ public class OrgUtils {
 		orgSettings.setOrgPasswordPolicySettings(orgPasswordPolicySettings);
 
 		AdminOrgType adminOrgType = new AdminOrgType();
-		adminOrgType.setName(vCloudOrg.getName());
+		
+		if(vCloudOrg.getName() != null)
+			adminOrgType.setName(vCloudOrg.getName());
+		else {					
+			if(vCloudOrg.getShortName() != null){
+				StringBuffer orgName = new StringBuffer();	
+				
+				if(vCloudOrg.getOrderType().name().equalsIgnoreCase("trial"))
+					orgName.append("Trial-");	
+				
+				orgName.append(vCloudOrg.getShortName());
+				
+				adminOrgType.setName(orgName.toString());
+				vCloudOrg.setName(orgName.toString());				
+			} else {
+				throw new MissingParameterException("Missing shortName parameter");
+			}
+		}
 		
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		StringBuffer descBuff = new StringBuffer();

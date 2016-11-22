@@ -59,8 +59,11 @@ public class UserUtils {
 		
 		if(vCloudOrg.getUser() != null && vCloudOrg.getUser().getEmailAddress() != null)
 			newUserType.setEmailAddress(vCloudOrg.getUser().getEmailAddress());
+		
+		if (vCloudOrg.getUser() != null && vCloudOrg.getUser().getPhone() != null)
+			newUserType.setTelephone(vCloudOrg.getUser().getPhone());
+		
 		// Use defaults for rest of the fields.
-
 		User user = adminOrg.createUser(newUserType);
 
 		System.out.println("Creating admin user for organization : " 

@@ -102,7 +102,7 @@ public class VappUtils {
 		if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getName() != null)
 			composeVAppParamsType.setName(vCloudOrg.getvApp().getName());
 		else
-			composeVAppParamsType.setName(" vApp_system_1");
+			composeVAppParamsType.setName("vApp_system_1");
 		
 		if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getDescription() != null)
 			composeVAppParamsType.setDescription(vCloudOrg.getvApp().getDescription());

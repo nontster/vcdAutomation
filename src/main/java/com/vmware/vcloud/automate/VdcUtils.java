@@ -9,6 +9,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import com.vmware.vcloud.api.rest.schema.CapacityWithUsageType;
 import com.vmware.vcloud.api.rest.schema.ComputeCapacityType;
 import com.vmware.vcloud.api.rest.schema.CreateVdcParamsType;
+import com.vmware.vcloud.api.rest.schema.ProviderVdcStorageProfilesType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.VdcStorageProfileParamsType;
 import com.vmware.vcloud.model.OrderType;
@@ -21,6 +22,7 @@ import com.vmware.vcloud.sdk.Vdc;
 import com.vmware.vcloud.sdk.admin.AdminOrganization;
 import com.vmware.vcloud.sdk.admin.AdminVdc;
 import com.vmware.vcloud.sdk.admin.ProviderVdc;
+import com.vmware.vcloud.sdk.admin.ProviderVdcStorageProfile;
 import com.vmware.vcloud.sdk.admin.VcloudAdmin;
 import com.vmware.vcloud.sdk.constants.AllocationModelType;
 
@@ -246,11 +248,15 @@ public class VdcUtils {
 			vdcStorageProfile.setUnits(org.getVdc().getVdcStorageProfile().getUnits());
 		else
 			vdcStorageProfile.setUnits("MB");
-
-		ReferenceType providerVdcStorageProfileRef = pvdc.getProviderVdcStorageProfileRefs().iterator().next();
-		vdcStorageProfile.setProviderVdcStorageProfile(providerVdcStorageProfileRef);
-		createVdcParams.getVdcStorageProfile().add(vdcStorageProfile);
-
+				
+		for (ReferenceType providerVdcStorageProfileRef : pvdc.getProviderVdcStorageProfileRefs()) {
+			ProviderVdcStorageProfile providerStorageProfile = ProviderVdcStorageProfile
+					.getProviderVdcStorageProfileByReference(client, providerVdcStorageProfileRef);
+			if (providerStorageProfile.getResource().getName().equalsIgnoreCase(prop.getProperty("providerStorageProfile"))) {
+				vdcStorageProfile.setProviderVdcStorageProfile(providerVdcStorageProfileRef);
+				createVdcParams.getVdcStorageProfile().add(vdcStorageProfile);
+			}
+		}
 		// Only Thin Provision allow
 		createVdcParams.setIsThinProvision(Boolean.TRUE);
 

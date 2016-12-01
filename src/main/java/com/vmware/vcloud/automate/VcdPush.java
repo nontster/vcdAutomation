@@ -63,6 +63,14 @@ public class VcdPush {
 		CommandLineParser parser = new DefaultParser();
 		Console cnsl = null;
 
+		if (args.length < 1) {
+			System.err.println("Type Bee -help for usage.");
+			return;
+		} else if (args[0].equals("-v") || args[0].equals("--version")) {
+			System.out.println("Bee version 1.1.1");
+			return;
+		}
+	      
 		Option optHelp = new Option("help", "print this message");
 		Option optDebug = new Option("debug", "print debugging information");
 
@@ -81,6 +89,9 @@ public class VcdPush {
 		Option optOutput = Option.builder("o").longOpt("output").desc("Output").hasArg(true).required(false)
 				.argName("output").build();
 
+		Option optVersion = Option.builder("v").longOpt("version").desc("Version").hasArg(false).required(false)
+				.argName("version").build();
+		
 		options.addOption(optBlueprint);
 		options.addOption(optVcdurl);
 		options.addOption(optUsername);
@@ -88,12 +99,8 @@ public class VcdPush {
 		options.addOption(optHelp);
 		options.addOption(optDebug);
 		options.addOption(optOutput);
-
-		if (args.length < 5) {
-			formatter.printHelp("bee", options);
-			System.exit(1);
-		}
-
+		options.addOption(optVersion);	
+		
 		try {
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			input = classLoader.getResourceAsStream("config.properties");
@@ -103,10 +110,13 @@ public class VcdPush {
 						
 			CommandLine cmd = parser.parse(options, args);
 
-			if (cmd.hasOption("help"))
+			if (cmd.hasOption("version")){
+				System.out.println("Bee version 1.1.1");
+			}
+			else if (cmd.hasOption("help")){
 				/* automatically generate the help statement */
 				formatter.printHelp("bee", options); 
-			else {
+			} else {
 
 				if (cmd.hasOption("vcdurl")) {
 					vcdurl = cmd.getOptionValue("vcdurl");

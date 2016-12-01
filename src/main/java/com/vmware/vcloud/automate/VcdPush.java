@@ -94,7 +94,7 @@ public class VcdPush {
 		options.addOption(optVersion);	
 		
 		if (args.length < 1) {
-			System.err.println("Type Bee -help for usage.");
+			System.err.println("Type Bee -h or --help for usage.");
 			return;
 		} else if (args[0].equals("-v") || args[0].equals("--version")) {
 			System.out.println("Bee version 1.1.1");

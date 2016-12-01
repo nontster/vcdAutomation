@@ -88,10 +88,7 @@ public class VcdPush {
 		
 		Option optOutput = Option.builder("o").longOpt("output").desc("Output").hasArg(true).required(false)
 				.argName("output").build();
-
-		Option optVersion = Option.builder("v").longOpt("version").desc("Version").hasArg(false).required(false)
-				.argName("version").build();
-		
+	
 		options.addOption(optBlueprint);
 		options.addOption(optVcdurl);
 		options.addOption(optUsername);
@@ -99,7 +96,6 @@ public class VcdPush {
 		options.addOption(optHelp);
 		options.addOption(optDebug);
 		options.addOption(optOutput);
-		options.addOption(optVersion);	
 		
 		try {
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

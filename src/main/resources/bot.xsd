@@ -18,11 +18,34 @@
     	<xs:attribute name="osImageName" type="xs:string"
     		use="required">
     	</xs:attribute>
-    	<xs:attribute name="noOfCpus" type="xs:int" use="required"></xs:attribute>
-    	<xs:attribute name="coresPerSocket" type="xs:int"
-    		use="required">
+    	<xs:attribute name="noOfCpus" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int">
+    				<xs:minExclusive value="1"></xs:minExclusive>
+    			</xs:restriction>
+    		</xs:simpleType>
     	</xs:attribute>
-    	<xs:attribute name="memorySize" type="xs:int" use="required"></xs:attribute>
+    	<xs:attribute name="coresPerSocket" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int">
+    				<xs:minExclusive value="1"></xs:minExclusive>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="memorySize" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int">
+    				<xs:minExclusive value="1"></xs:minExclusive>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="storageSize" use="optional">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int">
+    				<xs:minExclusive value="50"></xs:minExclusive>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
     </xs:complexType>
 
 

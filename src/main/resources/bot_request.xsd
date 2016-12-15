@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://enterprisecloud.ais.co.th/bot" xmlns="http://enterprisecloud.ais.co.th/bot" elementFormDefault="qualified">
+
+    <xs:complexType name="vmsType">
+    	<xs:sequence>
+    		<xs:element name="vm" type="vmType" minOccurs="1" maxOccurs="unbounded"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+    
+        <xs:complexType name="usersType">
+    	<xs:sequence>
+    		<xs:element name="user" type="userType" minOccurs="1" maxOccurs="unbounded"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="userType">
+    	<xs:attribute name="fullName" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="email" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="phone" type="xs:string" use="required"></xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="vmType">
+    	<xs:attribute name="nonMobileNumber" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+    				<xs:length value="10"></xs:length>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="osImageName" type="xs:string"
+    		use="required">
+    	</xs:attribute>
+    	<xs:attribute name="noOfCpus" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int"></xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="coresPerSocket" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int"></xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="memorySize" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int"></xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="storageSize" use="optional">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int"></xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+        <xs:attribute name="vmName" type="xs:string" use="optional"></xs:attribute>
+        <xs:attribute name="computerName" type="xs:string" use="optional"></xs:attribute>
+    </xs:complexType>
+
+
+    <xs:element name="organization" type="organizationType"></xs:element>
+    
+    <xs:complexType name="organizationType">
+    	<xs:sequence>
+            <xs:element name="users" type="usersType" minOccurs="1" maxOccurs="1"></xs:element>
+            <xs:element name="vms" type="vmsType" minOccurs="1"
+    			maxOccurs="1">
+    		</xs:element>
+    	</xs:sequence>
+    	<xs:attribute name="name" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+    				<xs:minLength value="3"></xs:minLength>
+    				<xs:maxLength value="512"></xs:maxLength>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="orderType" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+    				<xs:enumeration value="trial"></xs:enumeration>
+    				<xs:enumeration value="standard"></xs:enumeration>
+    				<xs:enumeration value="customize"></xs:enumeration>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="caNumber" type="xs:string" use="optional"></xs:attribute>
+    	<xs:attribute name="start" type="xs:date" use="required"></xs:attribute>
+    	<xs:attribute name="end" type="xs:date"></xs:attribute>
+    	<xs:attribute name="shortName" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+    				<xs:minLength value="3"></xs:minLength>
+    				<xs:maxLength value="64"></xs:maxLength>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    </xs:complexType>
+
+
+
+</xs:schema>

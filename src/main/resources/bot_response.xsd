@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://enterprisecloud.ais.co.th/bot" xmlns="http://enterprisecloud.ais.co.th/bot" elementFormDefault="qualified">
+
+    <xs:complexType name="credentialType">
+    	<xs:attribute name="username" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="password" type="xs:string" use="required"></xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="vmType">
+    	<xs:attribute name="nonMobileNumber" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+    				<xs:length value="10"></xs:length>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="osImageName" use="required" type="xs:string">
+    	</xs:attribute>
+    	<xs:attribute name="noOfCpus" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int">
+    				<xs:minExclusive value="1"></xs:minExclusive>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="coresPerSocket" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int">
+    				<xs:minExclusive value="1"></xs:minExclusive>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="memorySize" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int">
+    				<xs:minExclusive value="1"></xs:minExclusive>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="storageSize" use="optional">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:int">
+    				<xs:minExclusive value="50"></xs:minExclusive>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="username" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="password" type="xs:string" use="required"></xs:attribute>
+    </xs:complexType>
+
+
+    <xs:element name="organization" type="organizationType"></xs:element>
+    
+    <xs:complexType name="organizationType">
+    	<xs:sequence>
+            <xs:element name="users" type="usersType"></xs:element>
+            <xs:element name="vms" type="vmsType" minOccurs="1"
+    			maxOccurs="1">
+    		</xs:element>
+    		<xs:element name="networkServices"
+    			type="networkServicesType" minOccurs="1" maxOccurs="1">
+    		</xs:element>
+    	</xs:sequence>
+    	<xs:attribute name="orderId" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string"></xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="name" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+    				<xs:minLength value="3"></xs:minLength>
+    				<xs:maxLength value="512"></xs:maxLength>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="orgVdcName" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string"></xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    	<xs:attribute name="url" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string"></xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+
+    	<xs:attribute name="username" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="password" type="xs:string" use="required"></xs:attribute>
+    </xs:complexType>
+
+
+
+
+    <xs:complexType name="networkServicesType">
+    	<xs:sequence>
+    		<xs:element name="firewallService" type="firewallServiceType"></xs:element>
+    		<xs:element name="natService" type="natServiceType"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="firewallServiceType">
+    	<xs:sequence>
+    		<xs:element name="rules" type="firewallRulesType" minOccurs="1" maxOccurs="1"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="firewallRulesType">
+    	<xs:sequence>
+    		<xs:element name="rule" type="firewallRuleType" minOccurs="1" maxOccurs="unbounded"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="firewallRuleType">
+    	<xs:attribute name="name" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="sourceIp" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="sourcePort" type="xs:int" use="required"></xs:attribute>
+    	<xs:attribute name="destinationIp" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="destinationPort" type="xs:int" use="required"></xs:attribute>
+    	<xs:attribute name="protocol" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+    				<xs:enumeration value="TCP"></xs:enumeration>
+    				<xs:enumeration value="UDP"></xs:enumeration>
+    				<xs:enumeration value="ICMP"></xs:enumeration>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="usersType">
+    	<xs:sequence>
+    		<xs:element name="user" type="credentialType"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="vmsType">
+    	<xs:sequence>
+    		<xs:element name="vm" type="vmType"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="natServiceType">
+    	<xs:sequence>
+    		<xs:element name="rules" type="natRulesType" minOccurs="1" maxOccurs="1"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="natRulesType">
+    	<xs:sequence>
+    		<xs:element name="rule" type="natRuleType" minOccurs="1" maxOccurs="unbounded"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="natRuleType">
+    	<xs:attribute name="networkName" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="description" type="xs:string" use="required"></xs:attribute>
+        <xs:attribute name="originalIp" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="originalPort" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="translatedIp" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="translatedPort" type="xs:string" use="required"></xs:attribute>
+    	<xs:attribute name="protocol" type="xs:string" use="required"></xs:attribute>
+        <xs:attribute name="type" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+    				<xs:enumeration value="DNAT"></xs:enumeration>
+    				<xs:enumeration value="SNAT"></xs:enumeration>
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+    </xs:complexType>
+</xs:schema>

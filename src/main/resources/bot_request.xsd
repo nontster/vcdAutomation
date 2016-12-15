@@ -22,9 +22,7 @@
     <xs:complexType name="vmType">
     	<xs:attribute name="nonMobileNumber" use="required">
     		<xs:simpleType>
-    			<xs:restriction base="xs:string">
-    				<xs:length value="10"></xs:length>
-    			</xs:restriction>
+    			<xs:restriction base="xs:string"></xs:restriction>
     		</xs:simpleType>
     	</xs:attribute>
     	<xs:attribute name="osImageName" type="xs:string"
@@ -59,12 +57,15 @@
     
     <xs:complexType name="organizationType">
     	<xs:sequence>
-            <xs:element name="users" type="usersType" minOccurs="1" maxOccurs="1"></xs:element>
-            <xs:element name="vms" type="vmsType" minOccurs="1"
+    		<xs:element name="users" type="usersType" minOccurs="1"
+    			maxOccurs="1">
+    		</xs:element>
+    		<xs:element name="vms" type="vmsType" minOccurs="1"
     			maxOccurs="1">
     		</xs:element>
     	</xs:sequence>
-    	<xs:attribute name="name" use="required">
+        <xs:attribute name="orderId" type="xs:string" use="required"></xs:attribute>
+        <xs:attribute name="name" use="required">
     		<xs:simpleType>
     			<xs:restriction base="xs:string">
     				<xs:minLength value="3"></xs:minLength>

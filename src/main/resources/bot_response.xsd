@@ -9,39 +9,29 @@
     <xs:complexType name="vmType">
     	<xs:attribute name="nonMobileNumber" use="required">
     		<xs:simpleType>
-    			<xs:restriction base="xs:string">
-    				<xs:length value="10"></xs:length>
-    			</xs:restriction>
+    			<xs:restriction base="xs:string"></xs:restriction>
     		</xs:simpleType>
     	</xs:attribute>
     	<xs:attribute name="osImageName" use="required" type="xs:string">
     	</xs:attribute>
     	<xs:attribute name="noOfCpus" use="required">
     		<xs:simpleType>
-    			<xs:restriction base="xs:int">
-    				<xs:minExclusive value="1"></xs:minExclusive>
-    			</xs:restriction>
+    			<xs:restriction base="xs:int"></xs:restriction>
     		</xs:simpleType>
     	</xs:attribute>
     	<xs:attribute name="coresPerSocket" use="required">
     		<xs:simpleType>
-    			<xs:restriction base="xs:int">
-    				<xs:minExclusive value="1"></xs:minExclusive>
-    			</xs:restriction>
+    			<xs:restriction base="xs:int"></xs:restriction>
     		</xs:simpleType>
     	</xs:attribute>
     	<xs:attribute name="memorySize" use="required">
     		<xs:simpleType>
-    			<xs:restriction base="xs:int">
-    				<xs:minExclusive value="1"></xs:minExclusive>
-    			</xs:restriction>
+    			<xs:restriction base="xs:int"></xs:restriction>
     		</xs:simpleType>
     	</xs:attribute>
     	<xs:attribute name="storageSize" use="optional">
     		<xs:simpleType>
-    			<xs:restriction base="xs:int">
-    				<xs:minExclusive value="50"></xs:minExclusive>
-    			</xs:restriction>
+    			<xs:restriction base="xs:int"></xs:restriction>
     		</xs:simpleType>
     	</xs:attribute>
     	<xs:attribute name="username" type="xs:string" use="required"></xs:attribute>
@@ -53,20 +43,18 @@
     
     <xs:complexType name="organizationType">
     	<xs:sequence>
-            <xs:element name="users" type="usersType"></xs:element>
-            <xs:element name="vms" type="vmsType" minOccurs="1"
+    		<xs:element name="users" type="usersType" minOccurs="1"
+    			maxOccurs="1">
+    		</xs:element>
+    		<xs:element name="vms" type="vmsType" minOccurs="1"
     			maxOccurs="1">
     		</xs:element>
     		<xs:element name="networkServices"
     			type="networkServicesType" minOccurs="1" maxOccurs="1">
     		</xs:element>
     	</xs:sequence>
-    	<xs:attribute name="orderId" use="required">
-    		<xs:simpleType>
-    			<xs:restriction base="xs:string"></xs:restriction>
-    		</xs:simpleType>
-    	</xs:attribute>
-    	<xs:attribute name="name" use="required">
+        <xs:attribute name="orderId" type="xs:string" use="required"></xs:attribute>
+        <xs:attribute name="name" use="required">
     		<xs:simpleType>
     			<xs:restriction base="xs:string">
     				<xs:minLength value="3"></xs:minLength>
@@ -85,8 +73,6 @@
     		</xs:simpleType>
     	</xs:attribute>
 
-    	<xs:attribute name="username" type="xs:string" use="required"></xs:attribute>
-    	<xs:attribute name="password" type="xs:string" use="required"></xs:attribute>
     </xs:complexType>
 
 

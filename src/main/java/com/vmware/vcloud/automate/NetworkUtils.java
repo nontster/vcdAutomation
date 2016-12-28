@@ -150,9 +150,10 @@ public class NetworkUtils {
 				}
 			}
 
-			for (String ipAddress : ipScope.getAllocatedIpAddresses().getIpAddress()) {
-				ips.add(ipAddress);
-			}
+			if (ipScope.getAllocatedIpAddresses() != null)
+				for (String ipAddress : ipScope.getAllocatedIpAddresses().getIpAddress()) {
+					ips.add(ipAddress);
+				}
 
 			Collections.sort(ips, ipComparator);
 			Collections.sort(ipsAll, ipComparator);

@@ -68,15 +68,17 @@
 								<minVersion>1.6.0</minVersion>
 								<opts>
 									<opt>-Djava.endorsed.dirs=./endorsed</opt>
+									<opt>-Dlazybee.exedir="%EXEDIR%"</opt>
+									<opt>-Dlazybee.confdir="%EXEDIR%\\..\\conf\\"</opt>
 								</opts>
 							</jre>
 							<versionInfo>
-								<fileVersion>1.0.0.0</fileVersion>
-								<txtFileVersion>1.0.0.0</txtFileVersion>
+								<fileVersion>1.1.2.0</fileVersion>
+								<txtFileVersion>1.1.2.0</txtFileVersion>
 								<fileDescription>VMware vCloud Director Automation Tool</fileDescription>
 								<copyright>Advanced Wireless Network Co., Ltd.</copyright>
-								<productVersion>1.0.0.0</productVersion>
-								<txtProductVersion>1.0.0.0</txtProductVersion>
+								<productVersion>1.1.2.0</productVersion>
+								<txtProductVersion>1.1.2.0</txtProductVersion>
 								<productName>Bee</productName>
 								<internalName>bee</internalName>
 								<originalFilename>bee.exe</originalFilename>
@@ -86,6 +88,15 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<resources>
+        	<resource>
+            	<directory>src/main/resources</directory>
+            	<excludes>
+                	<exclude>*.properties</exclude>
+            	</excludes>
+            	<filtering>false</filtering>
+        	</resource>
+    	</resources>
 	</build>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

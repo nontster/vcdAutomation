@@ -2,6 +2,7 @@ package com.vmware.vcloud.automate;
 
 import java.io.Console;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -63,7 +64,7 @@ public class VcdPush {
 		CommandLineParser parser = new DefaultParser();
 		Console cnsl = null;
 
-	      
+ 
 		Option optHelp = Option.builder("h").longOpt("help").desc("print usage").hasArg(false).required(false)
 				.argName("help").build();
 
@@ -105,10 +106,9 @@ public class VcdPush {
 		}		
 		
 		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			input = classLoader.getResourceAsStream("config.properties");
-
+ 
 			// load a properties file
+			FileInputStream input = new FileInputStream(System.getProperty("lazybee.confdir")+"config.properties");			
 			prop.load(input);
 						
 			CommandLine cmd = parser.parse(options, args);

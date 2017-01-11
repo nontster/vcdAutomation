@@ -168,15 +168,19 @@ public class NetworkUtils {
 			throw new InsufficientIPAddressesException(errMsg.toString());
 		}
 
-		int startIdx = 0;
+		int endIdx = 0;
 
+		// reserve 1 for VSE which automatically allocated
+		numIP = numIP + 1; 
+		
 		// validate array index
 		if (ipsAll.size() - numIP < 0)
-			startIdx = 0;
+			endIdx = ipsAll.size();
 		else
-			startIdx = ipsAll.size() - numIP;
+			endIdx = numIP;
 
-		return ipsAll.subList(startIdx, ipsAll.size());
+		// Skip index 0 for VSE
+		return ipsAll.subList(1, endIdx);
 	}
 	
 	private static void addNatRule(GatewayInterfaceType gatewayInterface, NatServiceType natService, String pubIP, String privIP) {
@@ -525,7 +529,6 @@ public class NetworkUtils {
 			addFirewallRule(fwRules, "DNS OUT", "UDP", "10.1.1.0/24", "Any", "53");
 			addFirewallRule(fwRules, "NTP OUT", "UDP", "10.1.1.0/24", "Any", "123");
 			addFirewallRule(fwRules, "HTTP OUT", "TCP", "10.1.1.0/24", "Any", "80");
-			addFirewallRule(fwRules, "HTTP OUT", "TCP", "10.1.1.0/24", "Any", "80");
 			addFirewallRule(fwRules, "HTTPS OUT", "TCP", "10.1.1.0/24", "Any", "443");
 			addFirewallRule(fwRules, "PING IN", "ICMP", "Any", "internal", "Any");
 		}
@@ -702,18 +705,18 @@ public class NetworkUtils {
 			}
 		} else {
 			IpScopeType ipScope = new IpScopeType();
-			ipScope.setNetmask("255.255.255.0");
-			ipScope.setGateway("10.1.1.1");
+			ipScope.setNetmask(getValueOrDefault(prop.getProperty("netmask"),"255.255.255.0"));
+			ipScope.setGateway(getValueOrDefault(prop.getProperty("gateway"),"10.1.1.1"));
 			ipScope.setIsEnabled(Boolean.TRUE);
 			ipScope.setIsInherited(Boolean.TRUE);
-			ipScope.setDns1("115.178.58.10");
-			ipScope.setDns2("115.178.58.26");
+			ipScope.setDns1(getValueOrDefault(prop.getProperty("dns1"),"115.178.58.10"));
+			ipScope.setDns2(getValueOrDefault(prop.getProperty("dns2"),"115.178.58.26"));
 
 			// IP Ranges
 			IpRangesType ipRangesType = new IpRangesType();
 			IpRangeType ipRangeType = new IpRangeType();
-			ipRangeType.setStartAddress("10.1.1.11");
-			ipRangeType.setEndAddress("10.1.1.254");
+			ipRangeType.setStartAddress(getValueOrDefault(prop.getProperty("startAddress"),"10.1.1.11"));
+			ipRangeType.setEndAddress(getValueOrDefault(prop.getProperty("endAddress"),"10.1.1.254"));
 
 			ipRangesType.getIpRange().add(ipRangeType);
 			ipScope.setIpRanges(ipRangesType);
@@ -843,5 +846,13 @@ public class NetworkUtils {
 			}
 		}
 		return null;
+	}
+	
+	private static boolean isNotNullOrEmpty(String str) {
+        return str != null && !str.isEmpty();
+    }
+	
+	public static String getValueOrDefault(String value, String defaultValue) {
+	    return isNotNullOrEmpty(value) ? value : defaultValue;
 	}
 }

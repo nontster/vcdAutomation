@@ -54,8 +54,7 @@ public class VcdPush {
 	private static String output;	
 
 	private static Properties prop = new Properties();
-	private static InputStream input = null;
-
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		// create Options object
@@ -98,7 +97,7 @@ public class VcdPush {
 			System.err.println("Type Bee -h or --help for usage.");
 			return;
 		} else if (args[0].equals("-v") || args[0].equals("--version")) {
-			System.out.println("Bee version 1.1.1");
+			System.out.println("Bee version 1.1.2");
 			return;
 		} else if(args[0].equals("-h") || args[0].equals("--help")){
 			formatter.printHelp("bee", options); 
@@ -106,11 +105,21 @@ public class VcdPush {
 		}		
 		
 		try {
- 
 			// load a properties file
-			FileInputStream input = new FileInputStream(System.getProperty("lazybee.confdir")+"config.properties");			
-			prop.load(input);
-						
+			File file = new File(System.getProperty("lazybee.confdir")+"config.properties");
+				
+			// If config.properties in conf folder not found find another from classpath
+			if(file.exists() && !file.isDirectory()) { 
+				System.out.println("Loading configuration from conf folder");
+				FileInputStream fs = new FileInputStream(file);	
+				prop.load(fs);
+			} else {
+				System.out.println("Loading configuration from classpath");
+				ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+				InputStream input = classLoader.getResourceAsStream("config.properties");
+				prop.load(input);
+			}
+									
 			CommandLine cmd = parser.parse(options, args);
 
 			if (cmd.hasOption("vcdurl")) {

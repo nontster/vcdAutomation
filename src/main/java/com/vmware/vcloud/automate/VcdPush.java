@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
@@ -61,9 +62,9 @@ public class VcdPush {
 		Options options = new Options();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLineParser parser = new DefaultParser();
-		Console cnsl = null;
-
- 
+		Console cnsl = null;		
+		long startTime = 0;
+		
 		Option optHelp = Option.builder("h").longOpt("help").desc("print usage").hasArg(false).required(false)
 				.argName("help").build();
 
@@ -97,7 +98,7 @@ public class VcdPush {
 			System.err.println("Type Bee -h or --help for usage.");
 			return;
 		} else if (args[0].equals("-v") || args[0].equals("--version")) {
-			System.out.println("Bee version 1.1.2");
+			System.out.println("Bee version 1.1.3");
 			return;
 		} else if(args[0].equals("-h") || args[0].equals("--help")){
 			formatter.printHelp("bee", options); 
@@ -182,6 +183,8 @@ public class VcdPush {
 				System.exit(1);
 			}
 
+			startTime = System.currentTimeMillis();
+			
 			VcloudClient.setLogLevel(Level.OFF);
 			System.out.println("Vcloud Login");
 			client = new VcloudClient(vcdurl, Version.V5_5);
@@ -202,6 +205,7 @@ public class VcdPush {
 			System.out.println(adminOrg.getResource().getHref() + "\n");
 
 			// Set vCloud director URL for organization
+			vcdurl = ((vcdurl.length()-1) != '/')? vcdurl+'/' : vcdurl;
 			vCloudOrg.setUrl(vcdurl + "cloud/org/" + vCloudOrg.getName() + "/");
 
 			// Create vDC You may end using one of the following.
@@ -287,6 +291,14 @@ public class VcdPush {
 			System.err.println("MissingParameter exception: \n" + e.getMessage());
 		} 
 
+		long endTime = System.currentTimeMillis();
+		
+		long totalTime = endTime - startTime;
+		
+		System.out.println("Time spent: " +String.format("%d min, %d sec", 
+			    TimeUnit.MILLISECONDS.toMinutes(totalTime),
+			    TimeUnit.MILLISECONDS.toSeconds(totalTime) - 
+			    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(totalTime))));
 	}
 
 }

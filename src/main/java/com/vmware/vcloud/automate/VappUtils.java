@@ -76,8 +76,7 @@ public class VappUtils {
 		System.out.println("	Setting vApp ParantNetwork: "+ vdc.getResource().getAvailableNetworks().getNetwork().get(0).getName());
 		networkConfigurationType.setParentNetwork(vdc.getResource().getAvailableNetworks().getNetwork().get(0));
 		
-		// FIXME: use NATROUTED and change BRIDGED later to solve vCloud Director bug
-		networkConfigurationType.setFenceMode(FenceModeValuesType.NATROUTED.value()); 
+		networkConfigurationType.setFenceMode(FenceModeValuesType.BRIDGED.value()); 
 
 		VAppNetworkConfigurationType vAppNetworkConfigurationType = new VAppNetworkConfigurationType();
 		vAppNetworkConfigurationType.setConfiguration(networkConfigurationType); 
@@ -317,7 +316,11 @@ public class VappUtils {
 					}
 
 					vm.updateDisks(disks).waitForTask(0);
-
+					System.out.println("	VM has been deloyed"); 
+					
+					// Deploy VM
+					vm.deploy(true, 0, false).waitForTask(0);
+					
 					// Display summary
 					System.out.println("	Status : " + vm.getVMStatus());
 					System.out.println("	No of CPUs : " + vm.getCpu().getNoOfCpus());

@@ -81,8 +81,9 @@
     		<xs:simpleType>
     			<xs:restriction base="xs:string">
     				<xs:enumeration value="trial"></xs:enumeration>
-    				<xs:enumeration value="standard"></xs:enumeration>
-    				<xs:enumeration value="customize"></xs:enumeration>
+    				<xs:enumeration value="new"></xs:enumeration>
+    				<xs:enumeration value="test"></xs:enumeration>
+    				<xs:enumeration value="append"></xs:enumeration>
     			</xs:restriction>
     		</xs:simpleType>
     	</xs:attribute>

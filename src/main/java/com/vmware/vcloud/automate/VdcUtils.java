@@ -271,22 +271,7 @@ public class VdcUtils {
 		return adminVdc;
 
 	}
-	
-	/**
-	 * Finding a vdc
-	 * 
-	 * @param vdcName
-	 * @param orgName
-	 * @return {@link Vdc}
-	 * @throws VCloudException
-	 */
-	public static Vdc findVdc(VcloudClient client, String orgName, String vdcName) throws VCloudException {
-		ReferenceType orgRef = client.getOrgRefsByName().get(orgName);
-		Organization org = Organization.getOrganizationByReference(client, orgRef);
-		ReferenceType vdcRef = org.getVdcRefByName(vdcName);
-		return Vdc.getVdcByReference(client, vdcRef);
-	}	
-	
+		
 	static String generateVdcName(VCloudOrganization org){
 		
 		String characters = "abcdefghijklmnopqrstuvwxyz0123456789";	
@@ -294,6 +279,8 @@ public class VdcUtils {
 		
 		if(org.getOrderType().name().equalsIgnoreCase(OrderType.TRIAL.name()))
 			vdcName.append("trial-");
+		else if(org.getOrderType().name().equalsIgnoreCase(OrderType.TEST.name()))
+			vdcName.append("test-");		
 		if(org.getShortName() != null && !org.getShortName().isEmpty())
 			vdcName.append(org.getShortName());
 		else

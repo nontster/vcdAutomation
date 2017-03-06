@@ -291,7 +291,9 @@ public class NetworkUtils {
 		else{
 			if(vCloudOrg.getOrderType() == OrderType.TRIAL)
 				edgeGatewayName.append("Trial-");
-			
+			else if(vCloudOrg.getOrderType() == OrderType.TEST)
+				edgeGatewayName.append("Test-");
+							
 			edgeGatewayName.append(vCloudOrg.getShortName());
 			edgeGatewayName.append("-edgegw-01");
 		}

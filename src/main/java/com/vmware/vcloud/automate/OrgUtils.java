@@ -11,19 +11,58 @@ import com.vmware.vcloud.api.rest.schema.OrgLeaseSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgPasswordPolicySettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgSettingsType;
 import com.vmware.vcloud.api.rest.schema.OrgVAppTemplateLeaseSettingsType;
+import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.TaskType;
 import com.vmware.vcloud.api.rest.schema.TasksInProgressType;
+import com.vmware.vcloud.exception.InvalidParameterException;
 import com.vmware.vcloud.exception.InvalidTemplateException;
 import com.vmware.vcloud.exception.MissingParameterException;
 import com.vmware.vcloud.model.OrderType;
 import com.vmware.vcloud.model.VCloudOrganization;
+import com.vmware.vcloud.sdk.Expression;
+import com.vmware.vcloud.sdk.Filter;
+import com.vmware.vcloud.sdk.QueryParams;
+import com.vmware.vcloud.sdk.ReferenceResult;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VcloudClient;
 import com.vmware.vcloud.sdk.admin.AdminOrganization;
+import com.vmware.vcloud.sdk.constants.query.ExpressionType;
+import com.vmware.vcloud.sdk.constants.query.QueryReferenceField;
+import com.vmware.vcloud.sdk.constants.query.QueryReferenceType;
 
 public class OrgUtils {
 
+	static Boolean findOrgByName(VcloudClient client, String orgName) throws VCloudException {
+
+		if(!orgName.matches("^[a-zA-Z0-9_\\-]*$"))
+			throw new InvalidParameterException("Allow only Alphabet, Number, Minus and Underscore");
+						
+		if(orgName.length() > 10)
+			throw new InvalidParameterException("name parameter cannot logner than 10 characters");
+		
+		AdminOrganization checkedAdminOrg = null;
+		Boolean existStatus = Boolean.FALSE;
+		
+		QueryParams<QueryReferenceField> params = new QueryParams<QueryReferenceField>();
+		Filter filter = new Filter(new Expression(QueryReferenceField.NAME, orgName, ExpressionType.EQUALS));
+		params.setFilter(filter);
+      
+		ReferenceResult result  = client.getQueryService().queryReferences(QueryReferenceType.ORGANIZATION, params);
+		
+		for (ReferenceType orgReference : result.getReferences()) {
+			checkedAdminOrg = AdminOrganization.getAdminOrgById(client, orgReference.getId());
+			System.out.println(checkedAdminOrg.getResource().getName());
+		}
+					
+		if(checkedAdminOrg != null){
+			existStatus = Boolean.TRUE;					
+		}
+							
+		return existStatus;
+	}
+	
+	
 	/**
 	 * Creates a new admin org type object
 	 * 
@@ -116,6 +155,8 @@ public class OrgUtils {
 				
 				if(vCloudOrg.getOrderType().name().equalsIgnoreCase("trial"))
 					orgName.append("Trial-");	
+				else if(vCloudOrg.getOrderType().name().equalsIgnoreCase("test"))
+					orgName.append("Test-");
 				
 				orgName.append(vCloudOrg.getShortName());
 				

@@ -178,7 +178,7 @@ public class VcdPush {
 			vCloudOrg = cParser.getOrg();
 
 			// Check template version
-			if (!vCloudOrg.getTemplate_version().equalsIgnoreCase("2016-10-25")) {
+			if (!vCloudOrg.getTemplate_version().equalsIgnoreCase("2017-03-06")) {
 				System.err.println("Invalid template version!");
 				System.exit(1);
 			}

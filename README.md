@@ -40,5 +40,5 @@ $ mvn package
 ## Usage
 
 ```
-bee -l <vCloud Director URL> –u <username> -t <template file>
+bee -l <vCloud Director URL> –u <username> -t <template file>.yml -o <output file>.xlsx
 ```

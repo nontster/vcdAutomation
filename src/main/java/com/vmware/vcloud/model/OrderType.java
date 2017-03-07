@@ -1,5 +1,5 @@
 package com.vmware.vcloud.model;
 
 public enum OrderType {
-	TRIAL, NEW, TEST, APPEND
+	TRIAL, NEW, TEST, ADD
 }

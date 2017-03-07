@@ -83,7 +83,7 @@
     				<xs:enumeration value="trial"></xs:enumeration>
     				<xs:enumeration value="new"></xs:enumeration>
     				<xs:enumeration value="test"></xs:enumeration>
-    				<xs:enumeration value="append"></xs:enumeration>
+    				<xs:enumeration value="add"></xs:enumeration>
     			</xs:restriction>
     		</xs:simpleType>
     	</xs:attribute>

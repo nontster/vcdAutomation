@@ -152,10 +152,6 @@ public class VcdPush {
 				vcdurl = prop.getProperty("url");
 			}
 
-			if (vcdurl.charAt(vcdurl.length() - 1) != '/') {
-				vcdurl += '/';
-			}
-
 			if (password == null) {
 				// creates a console object
 				cnsl = System.console();

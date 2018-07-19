@@ -33,16 +33,16 @@ import com.vmware.vcloud.sdk.constants.query.QueryReferenceType;
 
 public class OrgUtils {
 
-	static Boolean findOrgByName(VcloudClient client, String orgName) throws VCloudException {
+	static AdminOrganization findOrgByName(VcloudClient client, String orgName) throws VCloudException {
 
 		if(!orgName.matches("^[a-zA-Z0-9_\\-]*$"))
 			throw new InvalidParameterException("Allow only Alphabet, Number, Minus and Underscore");
 						
-		if(orgName.length() > 10)
-			throw new InvalidParameterException("name parameter cannot logner than 10 characters");
+		if(orgName.length() > 20)
+            throw new InvalidParameterException("name parameter cannot logner than 20 characters");
 		
 		AdminOrganization checkedAdminOrg = null;
-		Boolean existStatus = Boolean.FALSE;
+		//Boolean existStatus = Boolean.FALSE;
 		
 		QueryParams<QueryReferenceField> params = new QueryParams<QueryReferenceField>();
 		Filter filter = new Filter(new Expression(QueryReferenceField.NAME, orgName, ExpressionType.EQUALS));
@@ -53,13 +53,15 @@ public class OrgUtils {
 		for (ReferenceType orgReference : result.getReferences()) {
 			checkedAdminOrg = AdminOrganization.getAdminOrgById(client, orgReference.getId());
 			System.out.println(checkedAdminOrg.getResource().getName());
+			return checkedAdminOrg;
 		}
-					
-		if(checkedAdminOrg != null){
+				
+		return null;
+/*		if(checkedAdminOrg != null){
 			existStatus = Boolean.TRUE;					
 		}
-							
-		return existStatus;
+		checkedAdminOrg.getadminvdc				
+		return existStatus;*/
 	}
 	
 	
@@ -150,18 +152,9 @@ public class OrgUtils {
 		if(vCloudOrg.getName() != null)
 			adminOrgType.setName(vCloudOrg.getName());
 		else {					
-			if(vCloudOrg.getShortName() != null){
-				StringBuffer orgName = new StringBuffer();	
-				
-				if(vCloudOrg.getOrderType().name().equalsIgnoreCase("trial"))
-					orgName.append("Trial-");	
-				else if(vCloudOrg.getOrderType().name().equalsIgnoreCase("test"))
-					orgName.append("Test-");
-				
-				orgName.append(vCloudOrg.getShortName());
-				
-				adminOrgType.setName(orgName.toString());
-				vCloudOrg.setName(orgName.toString());				
+			if(vCloudOrg.getShortName() != null){				
+				adminOrgType.setName(getOrgNameFromOrderType(vCloudOrg));
+				vCloudOrg.setName(getOrgNameFromOrderType(vCloudOrg));				
 			} else {
 				throw new MissingParameterException("Missing shortName parameter");
 			}
@@ -226,6 +219,21 @@ public class OrgUtils {
 				return new Task(client, task);
 			}
 		return null;
+	}
+	
+	static String getOrgNameFromOrderType(VCloudOrganization vCloudOrg){
+		
+		StringBuffer orgName = new StringBuffer();	
+		
+		if(vCloudOrg.getOrderType().name().equalsIgnoreCase("trial"))
+			orgName.append("Trial-");	
+		else if(vCloudOrg.getOrderType().name().equalsIgnoreCase("test"))
+			orgName.append("Test-");
+		
+		orgName.append(vCloudOrg.getShortName());
+				
+		return orgName.toString();
+		
 	}
 
 }

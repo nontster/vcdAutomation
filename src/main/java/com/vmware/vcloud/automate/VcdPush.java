@@ -21,6 +21,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.exception.ExternalNetworkNotFoundException;
 import com.vmware.vcloud.exception.InsufficientIPAddressesException;
 import com.vmware.vcloud.exception.InvalidTemplateException;
@@ -192,62 +193,75 @@ public class VcdPush {
 			admin = client.getVcloudAdmin();
 			System.out.println("	" + admin.getResource().getHref() + "\n");
 
-			System.out.print("Add New Organization : ");
-			AdminOrganization adminOrg = admin.createAdminOrg(OrgUtils.createNewAdminOrgType(vCloudOrg));
-			Task task = OrgUtils.returnTask(client, adminOrg);
-			if (task != null)
-				task.waitForTask(0);
-			System.out.print(adminOrg.getResource().getName() + " : ");
-			System.out.println(adminOrg.getResource().getHref() + "\n");
+			// find existing organization, if any
+			AdminOrganization adminOrg = OrgUtils.findOrgByName(client, OrgUtils.getOrgNameFromOrderType(vCloudOrg));
+			
+			if(adminOrg != null){
+				for(ReferenceType providerVdcRef: admin.getProviderVdcRefs()){
+				System.out.println(providerVdcRef.toString());
+				}
+			} else {
+				
+				System.out.print("Add New Organization : ");
+			
+				adminOrg = admin.createAdminOrg(OrgUtils.createNewAdminOrgType(vCloudOrg));
+				Task task = OrgUtils.returnTask(client, adminOrg);
+			
+				if (task != null)
+					task.waitForTask(0);
+			
+				System.out.print(adminOrg.getResource().getName() + " : ");
+				System.out.println(adminOrg.getResource().getHref() + "\n");
 
-			// Set vCloud director URL for organization
-			vcdurl = ((vcdurl.length()-1) != '/')? vcdurl+'/' : vcdurl;
-			vCloudOrg.setUrl(vcdurl + "cloud/org/" + vCloudOrg.getName() + "/");
+				// Set vCloud director URL for organization
+				vcdurl = ((vcdurl.length()-1) != '/')? vcdurl+'/' : vcdurl;
+				vCloudOrg.setUrl(vcdurl + "cloud/org/" + vCloudOrg.getName() + "/");
 
-			// Create vDC You may end using one of the following.
-			adminVdc = VdcUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg, prop);
+				// Create vDC You may end using one of the following.
+				adminVdc = VdcUtils.addPayAsYouGoVdc(vCloudOrg, admin, client, adminOrg, prop);
 
-			// Create user on the organization
-			UserUtils.addUserToOrg(vCloudOrg, admin, adminOrg);
+				// Create user on the organization
+				UserUtils.addUserToOrg(vCloudOrg, admin, adminOrg);
 
-			// Create org vdc networks on the organizaiton
-			edgeGateway = NetworkUtils.addNatRoutedOrgVdcNetwork(client, vCloudOrg, adminVdc, adminOrg, prop);
+				// Create org vdc networks on the organizaiton
+				edgeGateway = NetworkUtils.addNatRoutedOrgVdcNetwork(client, vCloudOrg, adminVdc, adminOrg, prop);
 
-			// find the vdc ref
-			Vdc vdc = Vdc.getVdcByReference(client, adminVdc.getVdcReference());
+				// find the vdc ref
+				Vdc vdc = Vdc.getVdcByReference(client, adminVdc.getVdcReference());
 
-			// find the vapp template ref
-			String catalogName = null;
+				// find the vapp template ref
+				String catalogName = null;
 
-			if (vCloudOrg.getCloudResources() != null && vCloudOrg.getCloudResources().getCatalog() != null
-					&& vCloudOrg.getCloudResources().getCatalog().getName() != null)
-				catalogName = vCloudOrg.getCloudResources().getCatalog().getName();
-			else
-				catalogName = prop.getProperty("catalog");
+				if (vCloudOrg.getCloudResources() != null && vCloudOrg.getCloudResources().getCatalog() != null
+						&& vCloudOrg.getCloudResources().getCatalog().getName() != null)
+					catalogName = vCloudOrg.getCloudResources().getCatalog().getName();
+				else
+					catalogName = prop.getProperty("catalog");
 
-			// Composed vApp.
-			if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getName() != null)
-				System.out.println("vApp: " + vCloudOrg.getvApp().getName());
-			else
-				System.out.println("vApp: vApp_system_1");
+				// Composed vApp.
+				if (vCloudOrg.getvApp() != null && vCloudOrg.getvApp().getName() != null)
+					System.out.println("vApp: " + vCloudOrg.getvApp().getName());
+				else
+					System.out.println("vApp: vApp_system_1");
 
-			Vapp vapp = vdc.composeVapp(VappUtils.createComposeParams(client, vCloudOrg, catalogName, vdc));
-			System.out.print("	Composing vApp : " + vapp.getResource().getName());
-			List<Task> tasks = vapp.getTasks();
-			if (tasks.size() > 0)
-				tasks.get(0).waitForTask(0);
+				Vapp vapp = vdc.composeVapp(VappUtils.createComposeParams(client, vCloudOrg, catalogName, vdc));
+				System.out.print("	Composing vApp : " + vapp.getResource().getName());
+				List<Task> tasks = vapp.getTasks();
+				if (tasks.size() > 0)
+					tasks.get(0).waitForTask(0);
 
-			// refresh the vapp
-			vapp = Vapp.getVappByReference(client, vapp.getReference());
+				// refresh the vapp
+				vapp = Vapp.getVappByReference(client, vapp.getReference());
 
-			System.out.println(" - " + vapp.getResource().getHref());
+				System.out.println(" - " + vapp.getResource().getHref());
 
-			// reconfigure Vms
-			VappUtils.reconfigureVms(vapp, vCloudOrg);
+				// reconfigure Vms
+				VappUtils.reconfigureVms(vapp, vCloudOrg);
 
-			// generate report
-			ReportUtils.generateReport(client, vapp, edgeGateway, vCloudOrg, adminVdc.getResource().getName(), output);
-			System.out.println("---------- Completed! ----------");
+				// generate report
+				ReportUtils.generateReport(client, vapp, edgeGateway, vCloudOrg, adminVdc.getResource().getName(), output);
+				System.out.println("---------- Completed! ----------");
+			}
 			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
